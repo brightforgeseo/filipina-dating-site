@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# Environment (set these in Netlify's UI, not in git)
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Legacy scratch files (pre-Astro)
+/app.jsx
+/auth.jsx
+/data.jsx
+/icons.jsx
+/icons (1).jsx
+/marketing.jsx
+/shared.jsx
+/styles.css
+/Tala.html
+/tala-astro/

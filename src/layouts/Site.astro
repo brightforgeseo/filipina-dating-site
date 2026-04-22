@@ -1,0 +1,19 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/globals.css';
+const { title = 'FilWest — Filipina Dating' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{title}</title>
+</head>
+<body>
+  <Nav />
+  <slot />
+  <Footer />
+</body>
+</html>

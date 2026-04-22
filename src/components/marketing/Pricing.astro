@@ -1,0 +1,40 @@
+---
+const tiers = [
+  { name: 'Free', price: '$0', per: 'forever', desc: 'Free for women from the Philippines. Always.', feats: ['Unlimited swipes','Full messaging','ID verification','Translation'], cta: 'Get started', featured: false },
+  { name: 'Plus', price: '$19', per: '/ month', desc: 'For partners abroad serious about meeting.', feats: ['Everything in Free','See who liked you','5 super likes / day','Read receipts','Priority support'], cta: 'Start free trial', featured: true },
+  { name: 'VIP', price: '$49', per: '/ month', desc: 'Maximum visibility and features.', feats: ['Everything in Plus','Monthly profile boost','Unlimited super likes','Incognito browsing','Featured in Discover'], cta: 'Go VIP', featured: false },
+];
+---
+<section id="pricing" class="pb-24">
+  <div class="max-w-[1240px] mx-auto px-8">
+    <div class="max-w-[760px] mx-auto text-center mb-14 flex flex-col gap-3.5">
+      <div class="eyebrow">Pricing</div>
+      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">Free for Filipinas.<br/>Fair for everyone else.</h2>
+      <p class="text-[16px] leading-[1.55] text-ink-soft">Women from the Philippines use FilWest free, forever. Partners abroad pick the plan that fits.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {tiers.map(t => (
+        <div class={`rounded-2xl p-8 flex flex-col gap-5 ${t.featured ? 'text-white shadow-lg' : 'bg-white border border-line'}`} style={t.featured ? 'background: linear-gradient(135deg, var(--forest) 0%, var(--coral) 100%)' : ''}>
+          <div class="flex justify-between items-center">
+            <h3 class="font-display font-bold text-[24px] m-0">{t.name}</h3>
+            {t.featured && <span class="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: rgba(255,255,255,0.25)">Most popular</span>}
+          </div>
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-display font-bold text-[44px] tracking-[-0.02em] leading-none">{t.price}</span>
+            <span class="text-sm" style={t.featured ? 'color: rgba(255,255,255,0.7)' : 'color: var(--muted)'}>{t.per}</span>
+          </div>
+          <p class="text-sm m-0" style={t.featured ? 'color: rgba(255,255,255,0.85)' : 'color: var(--ink-soft)'}>{t.desc}</p>
+          <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
+            {t.feats.map(f => (
+              <li class="flex gap-2 items-start text-sm" style={t.featured ? 'color: #fff' : 'color: var(--ink-soft)'}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style={`margin-top:2px; flex-shrink:0; color: ${t.featured ? '#fff' : 'var(--coral)'}`}><path d="M5 12l4 4L19 6"/></svg>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <a href="/signup" class={`btn ${t.featured ? '' : 'btn-ghost'}`} style={t.featured ? 'background: #fff; color: var(--forest-deep); justify-content: center' : 'justify-content: center'}>{t.cta}</a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

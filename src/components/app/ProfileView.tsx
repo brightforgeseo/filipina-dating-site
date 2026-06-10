@@ -6,8 +6,7 @@ import { getProfile, saveProfile, deleteProfile, type Profile } from '../../lib/
 import { recordSwipe } from '../../lib/matching';
 import { signOutUser, deleteAccount } from '../../lib/auth';
 import { uploadProfileImage } from '../../lib/storage';
-
-const INTEREST_OPTIONS = ['Family', 'Traveling', 'Cooking', 'Faith', 'Beaches', 'Hiking', 'Books', 'Movies', 'Music', 'Fitness'];
+import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS, SUPPORT_EMAIL, reportMailto } from '../../lib/constants';
 
 export default function ProfileView() {
   const { user, loading } = useAuth();
@@ -78,12 +77,7 @@ export default function ProfileView() {
             {isMyProfile ? (editing ? 'Edit your profile' : 'Your profile') : `${p.name}'s profile`}
           </h1>
           {!isMyProfile && (
-            <a
-              href={`mailto:support@filwest.com?subject=${encodeURIComponent(`Report profile ${p.id}`)}&body=${encodeURIComponent(`I want to report ${p.name} (profile id: ${p.id}).\n\nReason:\n`)}`}
-              className="icon-btn"
-              title="Report this profile"
-              aria-label="Report this profile"
-            >
+            <a href={reportMailto(p.id, p.name)} className="icon-btn" title="Report this profile" aria-label="Report this profile">
               <Icon.Flag size={14} />
             </a>
           )}
@@ -229,16 +223,20 @@ function EditProfile({ profile, onSaved, onCancel }: { profile: Profile; onSaved
     if (!window.confirm('Delete your FilWest account? Your profile will be removed permanently. This cannot be undone.')) return;
     setErr(null);
     setDeleting(true);
+    const { id: _id, ...backup } = profile;
     try {
       await deleteProfile(profile.id);
       await deleteAccount();
       window.location.href = '/';
     } catch (ex: any) {
+      // The auth deletion failed after the profile doc was removed — restore
+      // it so a failed attempt doesn't wipe the user's profile.
+      await saveProfile(profile.id, backup).catch(() => {});
       if (ex?.code?.includes('requires-recent-login')) {
         setErr('For security, deleting your account requires a recent login. Please log out, log back in, and try again.');
         await signOutUser().catch(() => {});
       } else {
-        setErr('Could not delete your account. Please try again or contact support@filwest.com.');
+        setErr(`Could not delete your account. Please try again or contact ${SUPPORT_EMAIL}.`);
       }
       setDeleting(false);
     }
@@ -278,22 +276,14 @@ function EditProfile({ profile, onSaved, onCancel }: { profile: Profile; onSaved
           <div className="field">
             <label>Country</label>
             <select value={country} onChange={(e) => setCountry(e.target.value)}>
-              <option>Philippines</option>
-              <option>United States</option>
-              <option>Canada</option>
-              <option>United Kingdom</option>
-              <option>Australia</option>
-              <option>Other</option>
+              {COUNTRY_OPTIONS.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
         </div>
         <div className="field">
           <label>Looking for</label>
           <select value={lookingFor} onChange={(e) => setLookingFor(e.target.value)}>
-            <option>Serious relationship</option>
-            <option>Marriage</option>
-            <option>Long-term partner</option>
-            <option>Getting to know people</option>
+            {LOOKING_FOR_OPTIONS.map((o) => <option key={o}>{o}</option>)}
           </select>
         </div>
         <div className="field">

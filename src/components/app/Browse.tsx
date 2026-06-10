@@ -92,7 +92,7 @@ export default function Browse() {
                 <div key={p.id} className="bg-white border border-line rounded-2xl overflow-hidden flex flex-col transition hover:-translate-y-1 hover:shadow">
                   <a href={`/app/profile?id=${p.id}`} className="aspect-[4/5] relative block" style={{ background: p.images?.[0] ? `url(${p.images[0]}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
                     {!p.images?.[0] && (
-                      <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{p.name[0]}</div>
+                      <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{p.name?.[0] || '?'}</div>
                     )}
                     <div className="absolute top-3 left-3 flex gap-1.5">
                       {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 8px', fontSize: 10 }}><Icon.Shield size={10} />Verified</span>}

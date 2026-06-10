@@ -12,6 +12,7 @@ import {
   type Conversation,
   type ChatMessage,
 } from '../../lib/chat';
+import { reportMailto } from '../../lib/constants';
 
 export default function Chat() {
   const { user, loading } = useAuth();
@@ -50,12 +51,13 @@ export default function Chat() {
     const unsub = subscribeMessages(openId, (msgs) => {
       setMessages(msgs);
       const unreadFrom = msgs.find((m) => m.senderId !== user.uid && !m.isRead)?.senderId;
-      if (unreadFrom) {
-        markMessagesRead(openId, unreadFrom).catch(() => {});
-        setConversations((cs) =>
-          cs ? cs.map((c) => (c.matchId === openId ? { ...c, unreadCount: 0 } : c)) : cs
-        );
-      }
+      if (unreadFrom) markMessagesRead(openId, unreadFrom).catch(() => {});
+      // The open conversation is read by definition — zero it unconditionally,
+      // since a conversation-list refetch can race the read-receipt batch and
+      // restore a stale count with no later event to clear it.
+      setConversations((cs) =>
+        cs ? cs.map((c) => (c.matchId === openId && c.unreadCount ? { ...c, unreadCount: 0 } : c)) : cs
+      );
     });
     return () => unsub();
   }, [openId, user]);
@@ -83,10 +85,10 @@ export default function Chat() {
   const active = conversations?.find((c) => c.matchId === openId);
 
   return (
-    <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1">
+    <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1 max-md:grid-rows-[auto_1fr] max-md:h-dvh max-md:min-h-0">
       <Sidebar route="chat" user={user} me={me} />
-      <main>
-        <div className="grid grid-cols-[340px_1fr] h-screen max-md:grid-cols-1 max-md:h-[calc(100dvh-53px)]">
+      <main className="max-md:min-h-0">
+        <div className="grid grid-cols-[340px_1fr] h-screen max-md:grid-cols-1 max-md:h-full">
           <aside className={`border-r border-line overflow-y-auto bg-white ${openId ? 'max-md:hidden' : ''}`}>
             <div className="sticky top-0 px-5 py-6 border-b border-line bg-white z-10">
               <h2 className="font-display font-bold text-[26px] m-0 tracking-[-0.015em]">Messages</h2>
@@ -139,12 +141,7 @@ export default function Chat() {
                     {active.unreadCount > 0 && <div className="text-xs text-coral">{active.unreadCount} new</div>}
                   </div>
                   <div className="ml-auto flex gap-2">
-                    <a
-                      href={`mailto:support@filwest.com?subject=${encodeURIComponent(`Report member ${active.otherId}`)}&body=${encodeURIComponent(`I want to report ${active.otherName} (member id: ${active.otherId}).\n\nReason:\n`)}`}
-                      className="icon-btn"
-                      title="Report this member"
-                      aria-label="Report this member"
-                    >
+                    <a href={reportMailto(active.otherId, active.otherName)} className="icon-btn" title="Report this member" aria-label="Report this member">
                       <Icon.Flag size={14} />
                     </a>
                   </div>

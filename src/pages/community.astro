@@ -1,5 +1,6 @@
 ---
 import Legal from '../layouts/Legal.astro';
+import { SUPPORT_EMAIL } from '../lib/constants';
 ---
 <Legal title="Community Rules — FilWest" eyebrow="Legal" heading="Community Rules." updated="June 10, 2026">
   <p>FilWest exists so that people with honest intentions can find each other. These rules keep it that way. They apply everywhere on the Service — profiles, photos, and messages — and they form part of our <a href="/terms">Terms of Service</a>. Breaking them can mean a warning, content removal, or a permanent ban.</p>
@@ -23,5 +24,5 @@ import Legal from '../layouts/Legal.astro';
   <p>One profile per person. Don't use the Service to advertise, recruit, drive traffic elsewhere, or collect members' information.</p>
 
   <h2>Report what you see</h2>
-  <p>Every report is reviewed by a person. Use the flag button on any profile, or email <a href="mailto:support@filwest.com">support@filwest.com</a>. Reporting is confidential — the member you report is never told who reported them. For guidance on staying safe while dating long-distance, read our <a href="/safety">Safety guide</a>.</p>
+  <p>Every report is reviewed by a person. Use the flag button on any profile, or email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Reporting is confidential — the member you report is never told who reported them. For guidance on staying safe while dating long-distance, read our <a href="/safety">Safety guide</a>.</p>
 </Legal>

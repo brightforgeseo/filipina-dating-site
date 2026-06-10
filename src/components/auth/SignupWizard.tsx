@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from '../icons';
 import { signUpEmail, signInGoogle } from '../../lib/auth';
 import { saveProfile } from '../../lib/profiles';
+import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS } from '../../lib/constants';
 
 type Gender = 'female' | 'male' | 'other';
 
@@ -150,22 +151,14 @@ export default function SignupWizard() {
               <div className="field">
                 <label>Country</label>
                 <select value={country} onChange={(e) => setCountry(e.target.value)}>
-                  <option>Philippines</option>
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>United Kingdom</option>
-                  <option>Australia</option>
-                  <option>Other</option>
+                  {COUNTRY_OPTIONS.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
             </div>
             <div className="field">
               <label>Looking for</label>
               <select value={lookingFor} onChange={(e) => setLookingFor(e.target.value)}>
-                <option>Serious relationship</option>
-                <option>Marriage</option>
-                <option>Long-term partner</option>
-                <option>Getting to know people</option>
+                {LOOKING_FOR_OPTIONS.map((o) => <option key={o}>{o}</option>)}
               </select>
             </div>
             <div className="field">
@@ -175,7 +168,7 @@ export default function SignupWizard() {
             <div className="field">
               <label>Interests</label>
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {['Family', 'Traveling', 'Cooking', 'Faith', 'Beaches', 'Hiking', 'Books', 'Movies', 'Music', 'Fitness'].map((t) => (
+                {INTEREST_OPTIONS.map((t) => (
                   <span
                     key={t}
                     onClick={() => toggle(t)}

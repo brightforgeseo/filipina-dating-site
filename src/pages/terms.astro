@@ -1,5 +1,6 @@
 ---
 import Legal from '../layouts/Legal.astro';
+import { SUPPORT_EMAIL } from '../lib/constants';
 ---
 <Legal title="Terms of Service — FilWest" eyebrow="Legal" heading="Terms of Service." updated="June 10, 2026">
   <p>Welcome to FilWest. These Terms of Service ("Terms") govern your use of the FilWest website, mobile app, and related services (together, the "Service"). By creating an account or using the Service, you agree to these Terms. If you do not agree, do not use the Service.</p>
@@ -49,5 +50,5 @@ import Legal from '../layouts/Legal.astro';
   <p>We may update these Terms from time to time. If we make material changes we will notify you through the Service or by email before they take effect. Continuing to use the Service after changes take effect means you accept the updated Terms.</p>
 
   <h2>11. Contact</h2>
-  <p>Questions about these Terms? Contact us at <a href="mailto:support@filwest.com">support@filwest.com</a>.</p>
+  <p>Questions about these Terms? Contact us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
 </Legal>

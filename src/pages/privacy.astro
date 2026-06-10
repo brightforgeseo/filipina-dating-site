@@ -1,5 +1,6 @@
 ---
 import Legal from '../layouts/Legal.astro';
+import { SUPPORT_EMAIL } from '../lib/constants';
 ---
 <Legal title="Privacy Policy — FilWest" eyebrow="Legal" heading="Privacy Policy." updated="June 10, 2026">
   <p>This Privacy Policy explains what information FilWest collects, how we use it, and the choices you have. It applies to the FilWest website and mobile app (the "Service").</p>
@@ -32,7 +33,7 @@ import Legal from '../layouts/Legal.astro';
   <p>We keep your information while your account is active. If you delete your account, we delete your profile, matches, and messages, except where we need to retain limited information to comply with law, resolve disputes, prevent banned users from returning, or enforce our Terms.</p>
 
   <h2>6. Your rights</h2>
-  <p>Depending on where you live (including under the GDPR and the Philippine Data Privacy Act of 2012), you may have the right to access, correct, export, or delete your personal information, and to object to or restrict certain processing. To exercise these rights, contact us at <a href="mailto:support@filwest.com">support@filwest.com</a>. You can delete your account at any time from your profile settings.</p>
+  <p>Depending on where you live (including under the GDPR and the Philippine Data Privacy Act of 2012), you may have the right to access, correct, export, or delete your personal information, and to object to or restrict certain processing. To exercise these rights, contact us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. You can delete your account at any time from your profile settings.</p>
 
   <h2>7. Children</h2>
   <p>The Service is strictly for adults aged 18 and over. We do not knowingly collect information from anyone under 18, and we remove underage accounts when we become aware of them.</p>
@@ -41,5 +42,5 @@ import Legal from '../layouts/Legal.astro';
   <p>We may update this Privacy Policy from time to time. If we make material changes we will notify you through the Service or by email before they take effect.</p>
 
   <h2>9. Contact</h2>
-  <p>Privacy questions or requests: <a href="mailto:support@filwest.com">support@filwest.com</a>.</p>
+  <p>Privacy questions or requests: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
 </Legal>

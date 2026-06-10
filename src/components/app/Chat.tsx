@@ -22,6 +22,7 @@ export default function Chat() {
   const [text, setText] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const autoSelected = React.useRef(false);
 
   React.useEffect(() => {
     if (loading) return;
@@ -32,7 +33,14 @@ export default function Chat() {
     getProfile(user.uid).then(setMe);
     const unsub = subscribeConversations(user.uid, (cs) => {
       setConversations(cs);
-      setOpenId((prev) => prev ?? cs[0]?.matchId ?? null);
+      // Auto-open the latest conversation once, desktop only — on mobile the
+      // list and the thread are separate screens, so start on the list.
+      if (!autoSelected.current) {
+        autoSelected.current = true;
+        if (window.matchMedia('(min-width: 768px)').matches) {
+          setOpenId((prev) => prev ?? cs[0]?.matchId ?? null);
+        }
+      }
     });
     return () => unsub();
   }, [user, loading]);
@@ -78,8 +86,8 @@ export default function Chat() {
     <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1">
       <Sidebar route="chat" user={user} me={me} />
       <main>
-        <div className="grid grid-cols-[340px_1fr] h-screen max-md:grid-cols-1">
-          <aside className="border-r border-line overflow-y-auto bg-white">
+        <div className="grid grid-cols-[340px_1fr] h-screen max-md:grid-cols-1 max-md:h-[calc(100dvh-53px)]">
+          <aside className={`border-r border-line overflow-y-auto bg-white ${openId ? 'max-md:hidden' : ''}`}>
             <div className="sticky top-0 px-5 py-6 border-b border-line bg-white z-10">
               <h2 className="font-display font-bold text-[26px] m-0 tracking-[-0.015em]">Messages</h2>
             </div>
@@ -116,10 +124,13 @@ export default function Chat() {
             )}
           </aside>
 
-          <section className="flex flex-col bg-ivory">
+          <section className={`flex flex-col bg-ivory ${!openId ? 'max-md:hidden' : ''}`}>
             {active ? (
               <>
-                <div className="flex items-center gap-3.5 px-6 py-4 border-b border-line backdrop-blur-md bg-white/80">
+                <div className="flex items-center gap-3.5 px-6 py-4 border-b border-line backdrop-blur-md bg-white/80 max-md:px-4 max-md:gap-2.5">
+                  <button onClick={() => setOpenId(null)} className="hidden max-md:inline-flex icon-btn" aria-label="Back to conversations">
+                    <span className="rotate-180 inline-flex"><Icon.Arrow /></span>
+                  </button>
                   <div className="w-11 h-11 rounded-full flex items-center justify-center font-display font-semibold text-ink" style={{ background: active.otherPhoto ? `url(${active.otherPhoto}) center/cover` : 'var(--blush)' }}>
                     {!active.otherPhoto && active.otherName?.[0]}
                   </div>

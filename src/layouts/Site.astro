@@ -2,7 +2,10 @@
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/globals.css';
-const { title = 'FilWest — Filipina Dating' } = Astro.props;
+const {
+  title = 'FilWest — Filipina Dating',
+  description = 'FilWest is a dating site for Filipinas and the people who love them. Verified profiles, honest intentions — on the web and on the app.',
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="en">
@@ -10,6 +13,14 @@ const { title = 'FilWest — Filipina Dating' } = Astro.props;
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>{title}</title>
+  <meta name="description" content={description}/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <meta name="theme-color" content="#FF1493"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="FilWest"/>
+  <meta property="og:title" content={title}/>
+  <meta property="og:description" content={description}/>
+  <meta name="twitter:card" content="summary"/>
 </head>
 <body>
   <Nav />

@@ -30,12 +30,17 @@ export default function ProfileView() {
 
   const like = async () => {
     if (!user || !target) return;
-    const res = await recordSwipe(user.uid, target.id, 'right');
-    if (res.matched) {
-      setToast(`It's a match with ${res.matchedName || target.name}!`);
-      setTimeout(() => (window.location.href = '/app/messages'), 1400);
-    } else {
-      setToast('Liked! We’ll let them know.');
+    try {
+      const res = await recordSwipe(user.uid, target.id, 'right');
+      if (res.matched) {
+        setToast(`It's a match with ${res.matchedName || target.name}!`);
+        setTimeout(() => (window.location.href = '/app/messages'), 1400);
+      } else {
+        setToast('Liked! We’ll let them know.');
+        setTimeout(() => setToast(null), 2200);
+      }
+    } catch {
+      setToast('Could not send your like. Please try again.');
       setTimeout(() => setToast(null), 2200);
     }
   };

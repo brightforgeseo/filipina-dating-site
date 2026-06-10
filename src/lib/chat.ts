@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { firebase } from './firebase';
@@ -49,6 +50,21 @@ export async function sendMessage(matchId: string, senderId: string, text: strin
     lastMessage: text,
     lastMessageTime: serverTimestamp(),
   });
+}
+
+export async function markMessagesRead(matchId: string, otherId: string) {
+  const { db } = firebase();
+  const snap = await getDocs(
+    query(
+      collection(db, 'matches', matchId, 'messages'),
+      where('senderId', '==', otherId),
+      where('isRead', '==', false)
+    )
+  );
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.forEach((d) => batch.update(d.ref, { isRead: true }));
+  await batch.commit();
 }
 
 export function subscribeMessages(matchId: string, cb: (msgs: ChatMessage[]) => void): Unsubscribe {

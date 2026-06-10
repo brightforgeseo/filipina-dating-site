@@ -3,7 +3,7 @@ import { Icon } from '../icons';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../lib/useAuth';
 import { getProfile, listProfiles, type Profile } from '../../lib/profiles';
-import { recordSwipe } from '../../lib/matching';
+import { recordSwipe, getSwipedIds } from '../../lib/matching';
 
 export default function Browse() {
   const { user, loading } = useAuth();
@@ -11,6 +11,7 @@ export default function Browse() {
   const [profiles, setProfiles] = React.useState<Profile[] | null>(null);
   const [swiped, setSwiped] = React.useState<Record<string, 'left' | 'right' | 'up'>>({});
   const [toast, setToast] = React.useState<string | null>(null);
+  const [error, setError] = React.useState(false);
 
   React.useEffect(() => {
     if (loading) return;
@@ -19,12 +20,17 @@ export default function Browse() {
       return;
     }
     (async () => {
-      const [mine, list] = await Promise.all([
-        getProfile(user.uid),
-        listProfiles({ excludeId: user.uid, max: 50 }),
-      ]);
-      setMe(mine);
-      setProfiles(list);
+      try {
+        const [mine, list, alreadySwiped] = await Promise.all([
+          getProfile(user.uid),
+          listProfiles({ excludeId: user.uid, max: 50 }),
+          getSwipedIds(user.uid),
+        ]);
+        setMe(mine);
+        setProfiles(list.filter((p) => !alreadySwiped.has(p.id)));
+      } catch {
+        setError(true);
+      }
     })();
   }, [user, loading]);
 
@@ -71,7 +77,13 @@ export default function Browse() {
         )}
 
         <div className="p-10">
-          {profiles === null ? (
+          {error ? (
+            <div className="text-center py-24">
+              <div className="font-display font-semibold text-2xl mb-2">Couldn't load profiles.</div>
+              <div className="text-ink-soft mb-5">Check your connection and try again.</div>
+              <button onClick={() => window.location.reload()} className="btn btn-primary">Retry</button>
+            </div>
+          ) : profiles === null ? (
             <div className="text-center py-24 text-muted">Loading profiles…</div>
           ) : profiles.length === 0 ? (
             <div className="text-center py-24">

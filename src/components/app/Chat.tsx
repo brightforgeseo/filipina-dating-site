@@ -7,6 +7,7 @@ import {
   subscribeConversations,
   subscribeMessages,
   sendMessage,
+  markMessagesRead,
   formatTime,
   type Conversation,
   type ChatMessage,
@@ -37,10 +38,19 @@ export default function Chat() {
   }, [user, loading]);
 
   React.useEffect(() => {
-    if (!openId) return;
-    const unsub = subscribeMessages(openId, setMessages);
+    if (!openId || !user) return;
+    const unsub = subscribeMessages(openId, (msgs) => {
+      setMessages(msgs);
+      const unreadFrom = msgs.find((m) => m.senderId !== user.uid && !m.isRead)?.senderId;
+      if (unreadFrom) {
+        markMessagesRead(openId, unreadFrom).catch(() => {});
+        setConversations((cs) =>
+          cs ? cs.map((c) => (c.matchId === openId ? { ...c, unreadCount: 0 } : c)) : cs
+        );
+      }
+    });
     return () => unsub();
-  }, [openId]);
+  }, [openId, user]);
 
   React.useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

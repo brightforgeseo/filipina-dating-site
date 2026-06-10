@@ -79,6 +79,14 @@ export async function recordSwipe(
   return { matched: true, matchedName: u2d.name };
 }
 
+export async function getSwipedIds(userId: string): Promise<Set<string>> {
+  const { db } = firebase();
+  const snap = await getDocs(query(collection(db, 'swipes'), where('fromUserId', '==', userId)));
+  const ids = new Set<string>();
+  snap.forEach((d) => ids.add((d.data() as any).toUserId));
+  return ids;
+}
+
 async function findExistingMatch(a: string, b: string): Promise<Match | null> {
   const { db } = firebase();
   const [s1, s2] = await Promise.all([

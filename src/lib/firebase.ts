@@ -19,6 +19,11 @@ let _storage: FirebaseStorage | null = null;
 
 export function firebase() {
   if (!_app) {
+    if (!config.apiKey || !config.projectId || !config.appId) {
+      throw new Error(
+        'Firebase is not configured. Set the PUBLIC_FIREBASE_* environment variables (see .env.example).'
+      );
+    }
     _app = getApps().length ? getApps()[0] : initializeApp(config);
     _auth = getAuth(_app);
     _db = getFirestore(_app);

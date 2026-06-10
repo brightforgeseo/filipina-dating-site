@@ -26,10 +26,16 @@ export default function ProfileView() {
       return;
     }
     (async () => {
-      const mine = await getProfile(user.uid);
-      setMe(mine);
-      if (!targetId || targetId === user.uid) setTarget(mine ?? { id: user.uid, name: user.displayName || 'You' });
-      else setTarget(await getProfile(targetId));
+      try {
+        const mine = await getProfile(user.uid);
+        setMe(mine);
+        if (!targetId || targetId === user.uid) setTarget(mine ?? { id: user.uid, name: user.displayName || 'You' });
+        else setTarget(await getProfile(targetId));
+      } catch {
+        // Malformed ?id= (Firestore rejects ids containing '/') or a failed
+        // fetch — treat both as not found rather than loading forever.
+        setTarget(null);
+      }
     })();
   }, [user, loading, targetId]);
 

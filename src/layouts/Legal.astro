@@ -1,0 +1,34 @@
+---
+import Site from '../layouts/Site.astro';
+const { title, eyebrow, heading, updated } = Astro.props;
+---
+<Site title={title} description={`${heading} for FilWest.`}>
+  <div class="max-w-[760px] mx-auto px-8 pt-16 pb-24">
+    <div class="eyebrow">{eyebrow}</div>
+    <h1 class="heading-display mt-3" style="font-size: clamp(36px, 5vw, 56px)">{heading}</h1>
+    <p class="text-[13px] text-muted mt-4">Last updated: {updated}</p>
+    <div class="legal-body mt-10">
+      <slot />
+    </div>
+  </div>
+</Site>
+
+<style is:global>
+  .legal-body h2 {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-size: 22px;
+    margin: 36px 0 12px;
+  }
+  .legal-body p, .legal-body li {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .legal-body p { margin: 0 0 14px; }
+  .legal-body ul { margin: 0 0 14px; padding-left: 22px; }
+  .legal-body li { margin-bottom: 6px; }
+  .legal-body a { color: var(--coral); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .legal-body strong { color: var(--ink); }
+</style>

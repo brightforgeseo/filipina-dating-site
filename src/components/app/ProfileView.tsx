@@ -4,8 +4,11 @@ import Sidebar from './Sidebar';
 import { useAuth } from '../../lib/useAuth';
 import { getProfile, saveProfile, deleteProfile, type Profile } from '../../lib/profiles';
 import { recordSwipe } from '../../lib/matching';
-import { signOutUser, deleteAccount } from '../../lib/auth';
+import { signOutUser, deleteAccount, needsEmailVerification } from '../../lib/auth';
 import { uploadProfileImage } from '../../lib/storage';
+import { blockUser } from '../../lib/blocking';
+import { markOnline } from '../../lib/presence';
+import VerifyEmail from './VerifyEmail';
 import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS, SUPPORT_EMAIL, reportMailto } from '../../lib/constants';
 
 export default function ProfileView() {
@@ -25,6 +28,8 @@ export default function ProfileView() {
       window.location.href = '/login';
       return;
     }
+    if (needsEmailVerification(user)) return;
+    markOnline(user.uid);
     (async () => {
       try {
         const mine = await getProfile(user.uid);
@@ -56,7 +61,9 @@ export default function ProfileView() {
     }
   };
 
-  if (loading || !user || target === undefined) return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">Loading…</div>;
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">Loading…</div>;
+  if (needsEmailVerification(user)) return <VerifyEmail user={user} />;
+  if (target === undefined) return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">Loading…</div>;
 
   if (target === null) {
     return (
@@ -83,9 +90,28 @@ export default function ProfileView() {
             {isMyProfile ? (editing ? 'Edit your profile' : 'Your profile') : `${p.name}'s profile`}
           </h1>
           {!isMyProfile && (
-            <a href={reportMailto(p.id, p.name)} className="icon-btn" title="Report this profile" aria-label="Report this profile">
-              <Icon.Flag size={14} />
-            </a>
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  if (!window.confirm(`Block ${p.name}? They won't be able to see you or message you.`)) return;
+                  try {
+                    await blockUser(user.uid, p.id);
+                    window.location.href = '/app';
+                  } catch {
+                    setToast('Could not block this member. Please try again.');
+                    setTimeout(() => setToast(null), 2200);
+                  }
+                }}
+                className="icon-btn"
+                title="Block this member"
+                aria-label="Block this member"
+              >
+                <Icon.Ban size={14} />
+              </button>
+              <a href={reportMailto(p.id, p.name)} className="icon-btn" title="Report this profile" aria-label="Report this profile">
+                <Icon.Flag size={14} />
+              </a>
+            </div>
           )}
           {isMyProfile && !editing && (
             <button onClick={() => setEditing(true)} className="btn btn-ghost btn-sm">Edit profile</button>

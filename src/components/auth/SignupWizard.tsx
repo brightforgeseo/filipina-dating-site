@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from '../icons';
-import { signUpEmail, signInGoogle } from '../../lib/auth';
+import { signUpEmail, signInGoogle, sendVerification } from '../../lib/auth';
 import { saveProfile } from '../../lib/profiles';
 import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS } from '../../lib/constants';
 
@@ -34,6 +34,8 @@ export default function SignupWizard() {
     setBusy(true);
     try {
       const user = await signUpEmail(email.trim(), password);
+      // Fire-and-forget: the /app pages gate on emailVerified and offer resend.
+      sendVerification(user).catch(() => {});
       await saveProfile(user.uid, {
         name: firstName.trim(),
         age: Number(age) || undefined,

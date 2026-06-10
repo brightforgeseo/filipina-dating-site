@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
+  sendEmailVerification,
   deleteUser,
   type User,
 } from 'firebase/auth';
@@ -42,6 +43,15 @@ export async function signOutUser() {
 export async function resetPassword(email: string) {
   const { auth } = firebase();
   await sendPasswordResetEmail(auth, email);
+}
+
+export async function sendVerification(user: User) {
+  await sendEmailVerification(user);
+}
+
+// Google accounts arrive verified; only password accounts need the email step.
+export function needsEmailVerification(user: User): boolean {
+  return user.providerData.some((p) => p.providerId === 'password') && !user.emailVerified;
 }
 
 export async function deleteAccount() {

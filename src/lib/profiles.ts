@@ -25,6 +25,7 @@ export type Profile = {
   lookingFor?: string;
   verified?: boolean;
   online?: boolean;
+  preferences?: { gender?: 'female' | 'male' | 'all'; ageMin?: number; ageMax?: number };
   lastActive?: any;
   createdAt?: any;
 };

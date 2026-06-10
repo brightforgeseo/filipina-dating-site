@@ -1,8 +1,12 @@
 import React from 'react';
 import { Icon } from '../icons';
 import Sidebar from './Sidebar';
+import VerifyEmail from './VerifyEmail';
 import { useAuth } from '../../lib/useAuth';
+import { needsEmailVerification } from '../../lib/auth';
 import { getProfile, type Profile } from '../../lib/profiles';
+import { blockUser, getBlockedIds, unmatch } from '../../lib/blocking';
+import { markOnline } from '../../lib/presence';
 import {
   subscribeConversations,
   subscribeMessages,
@@ -24,6 +28,7 @@ export default function Chat() {
   const [sending, setSending] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const autoSelected = React.useRef(false);
+  const blockedRef = React.useRef<Set<string>>(new Set());
 
   React.useEffect(() => {
     if (loading) return;
@@ -31,8 +36,17 @@ export default function Chat() {
       window.location.href = '/login';
       return;
     }
+    if (needsEmailVerification(user)) return;
+    markOnline(user.uid);
     getProfile(user.uid).then(setMe);
-    const unsub = subscribeConversations(user.uid, (cs) => {
+    getBlockedIds(user.uid)
+      .then((ids) => {
+        blockedRef.current = ids;
+        setConversations((cs) => (cs ? cs.filter((c) => !ids.has(c.otherId)) : cs));
+      })
+      .catch(() => {});
+    const unsub = subscribeConversations(user.uid, (raw) => {
+      const cs = raw.filter((c) => !blockedRef.current.has(c.otherId));
       setConversations(cs);
       // Auto-open the latest conversation once, desktop only — on mobile the
       // list and the thread are separate screens, so start on the list.
@@ -81,8 +95,43 @@ export default function Chat() {
   };
 
   if (loading || !user) return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">Loading…</div>;
+  if (needsEmailVerification(user)) return <VerifyEmail user={user} />;
 
   const active = conversations?.find((c) => c.matchId === openId);
+
+  const removeConversation = (matchId: string) => {
+    setConversations((cs) => (cs ? cs.filter((c) => c.matchId !== matchId) : cs));
+    setOpenId(null);
+  };
+
+  const doUnmatch = async () => {
+    if (!active) return;
+    if (!window.confirm(`Unmatch ${active.otherName}? The conversation will be deleted for both of you.`)) return;
+    const id = active.matchId;
+    removeConversation(id);
+    try {
+      await unmatch(id);
+    } catch {
+      window.alert('Could not unmatch. Please try again.');
+      window.location.reload();
+    }
+  };
+
+  const doBlock = async () => {
+    if (!active) return;
+    if (!window.confirm(`Block ${active.otherName}? They won't be able to see you or message you, and this conversation will be deleted.`)) return;
+    const id = active.matchId;
+    const otherId = active.otherId;
+    removeConversation(id);
+    try {
+      await blockUser(user.uid, otherId);
+      blockedRef.current.add(otherId);
+      await unmatch(id).catch(() => {});
+    } catch {
+      window.alert('Could not block this member. Please try again.');
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1 max-md:grid-rows-[auto_1fr] max-md:h-dvh max-md:min-h-0">
@@ -141,6 +190,12 @@ export default function Chat() {
                     {active.unreadCount > 0 && <div className="text-xs text-coral">{active.unreadCount} new</div>}
                   </div>
                   <div className="ml-auto flex gap-2">
+                    <button onClick={doUnmatch} className="icon-btn" title="Unmatch" aria-label="Unmatch">
+                      <Icon.X size={14} />
+                    </button>
+                    <button onClick={doBlock} className="icon-btn" title="Block this member" aria-label="Block this member">
+                      <Icon.Ban size={14} />
+                    </button>
                     <a href={reportMailto(active.otherId, active.otherName)} className="icon-btn" title="Report this member" aria-label="Report this member">
                       <Icon.Flag size={14} />
                     </a>

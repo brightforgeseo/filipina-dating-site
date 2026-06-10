@@ -1,8 +1,8 @@
 ---
 const tiers = [
-  { name: 'Free', price: '$0', per: 'forever', desc: 'Free for women from the Philippines. Always.', feats: ['Unlimited swipes','Full messaging','ID verification','Translation'], cta: 'Get started', featured: false },
-  { name: 'Plus', price: '$19', per: '/ month', desc: 'For partners abroad serious about meeting.', feats: ['Everything in Free','See who liked you','5 super likes / day','Read receipts','Priority support'], cta: 'Start free trial', featured: true },
-  { name: 'VIP', price: '$49', per: '/ month', desc: 'Maximum visibility and features.', feats: ['Everything in Plus','Monthly profile boost','Unlimited super likes','Incognito browsing','Featured in Discover'], cta: 'Go VIP', featured: false },
+  { name: 'Free', price: '$0', per: 'forever', desc: 'Free for women from the Philippines. Always.', feats: ['Unlimited swipes','Full messaging','ID verification','Translation'], cta: 'Get started', href: '/signup', featured: false },
+  { name: 'Plus', price: '$19', per: '/ month', desc: 'For partners abroad serious about meeting.', feats: ['Everything in Free','See who liked you','5 super likes / day','Read receipts','Priority support'], cta: 'Upgrade in the app', href: '/#app', featured: true },
+  { name: 'VIP', price: '$49', per: '/ month', desc: 'Maximum visibility and features.', feats: ['Everything in Plus','Monthly profile boost','Unlimited super likes','Incognito browsing','Featured in Discover'], cta: 'Upgrade in the app', href: '/#app', featured: false },
 ];
 ---
 <section id="pricing" class="pb-24">
@@ -32,9 +32,12 @@ const tiers = [
               </li>
             ))}
           </ul>
-          <a href="/signup" class={`btn ${t.featured ? '' : 'btn-ghost'}`} style={t.featured ? 'background: #fff; color: var(--forest-deep); justify-content: center' : 'justify-content: center'}>{t.cta}</a>
+          <a href={t.href} class={`btn ${t.featured ? '' : 'btn-ghost'}`} style={t.featured ? 'background: #fff; color: var(--forest-deep); justify-content: center' : 'justify-content: center'}>{t.cta}</a>
         </div>
       ))}
     </div>
+    <p class="text-center text-[13px] text-muted mt-8">
+      Subscriptions are purchased and managed in the FilWest mobile app. Your account — and everything a plan unlocks — is the same on the app and on the web.
+    </p>
   </div>
 </section>

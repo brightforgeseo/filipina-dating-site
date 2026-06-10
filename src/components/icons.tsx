@@ -41,4 +41,10 @@ export const Icon = {
   Flag: ({ size=16 }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 22V3h10l1 2h5v10h-7l-1-2H6v9"/></svg>
   ),
+  Ban: ({ size=16 }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M5.5 5.5l13 13"/></svg>
+  ),
+  Mail: ({ size=16 }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+  ),
 };

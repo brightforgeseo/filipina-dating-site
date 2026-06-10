@@ -18,9 +18,11 @@ npm run preview
 ```
 
 ## Netlify deploy
-1. Connect this repo on Netlify (build command and publish dir are in `netlify.toml`).
+1. Connect this repo on Netlify (build command, publish dir, and security headers are in `netlify.toml`).
 2. Under **Site settings → Environment variables**, add the six `PUBLIC_FIREBASE_*` keys (see `.env.example`). These mirror the values the mobile app uses.
-3. Deploy.
+3. Optionally set `PUBLIC_APP_STORE_URL` / `PUBLIC_PLAY_STORE_URL` — the homepage download buttons stay hidden until these exist.
+4. Add the production domain to **Firebase Console → Authentication → Settings → Authorized domains**, or Google sign-in will fail.
+5. Deploy.
 
 ## Structure
 ```
@@ -36,21 +38,26 @@ src/
     app/                # Sidebar, Browse, ProfileView, Chat (Firebase-backed)
   lib/
     firebase.ts         # web SDK init
-    auth.ts             # email + Google auth
-    profiles.ts         # read/write profiles/{uid}
+    auth.ts             # email + Google auth, password reset, account deletion
+    profiles.ts         # read/write/delete profiles/{uid}
     matching.ts         # swipes + match creation
-    chat.ts             # messages subscriptions + send
+    chat.ts             # messages subscriptions, send, read receipts
+    storage.ts          # profile photo upload (Firebase Storage)
     useAuth.ts          # React hook
   pages/
     index.astro         # /
-    login.astro         # /login
+    login.astro         # /login (incl. forgot-password)
     signup.astro        # /signup
     safety.astro        # /safety
     pricing.astro       # /pricing
+    terms.astro         # /terms
+    privacy.astro       # /privacy
+    community.astro     # /community
+    404.astro           # not-found page
     app/
       index.astro       # /app              → Discover
       messages.astro    # /app/messages     → Chat
-      profile.astro     # /app/profile?id=  → Profile detail
+      profile.astro     # /app/profile?id=  → Profile detail / edit own
   styles/globals.css
 ```
 

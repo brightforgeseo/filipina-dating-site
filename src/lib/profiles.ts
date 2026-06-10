@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -37,15 +38,23 @@ export async function getProfile(userId: string): Promise<Profile | null> {
 
 export async function saveProfile(userId: string, data: Partial<Profile>) {
   const { db } = firebase();
-  await setDoc(
-    doc(db, 'profiles', userId),
-    {
-      ...data,
-      createdAt: data.createdAt ?? serverTimestamp(),
-      lastActive: serverTimestamp(),
-    },
-    { merge: true }
+  const ref = doc(db, 'profiles', userId);
+  // Firestore rejects undefined field values, and createdAt must only be
+  // written once or edits would reset the original signup date.
+  const payload: Record<string, any> = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
   );
+  payload.lastActive = serverTimestamp();
+  if (!payload.createdAt) {
+    const existing = await getDoc(ref);
+    if (!existing.exists()) payload.createdAt = serverTimestamp();
+  }
+  await setDoc(ref, payload, { merge: true });
+}
+
+export async function deleteProfile(userId: string) {
+  const { db } = firebase();
+  await deleteDoc(doc(db, 'profiles', userId));
 }
 
 export async function listProfiles(opts: { excludeId?: string; max?: number } = {}): Promise<Profile[]> {

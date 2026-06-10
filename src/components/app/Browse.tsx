@@ -63,10 +63,6 @@ export default function Browse() {
             <h1 className="font-display font-bold text-[30px] m-0 tracking-[-0.015em]">Discover</h1>
             <div className="text-[13px] text-muted mt-1">Real people, ready to meet.</div>
           </div>
-          <div className="flex gap-2.5 items-center">
-            <button className="icon-btn"><Icon.Bell size={16} /></button>
-            <button className="icon-btn"><Icon.Settings size={16} /></button>
-          </div>
         </div>
 
         {toast && (

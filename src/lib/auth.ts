@@ -5,6 +5,8 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
+  deleteUser,
   type User,
 } from 'firebase/auth';
 import { firebase } from './firebase';
@@ -35,6 +37,18 @@ export async function signInGoogle() {
 export async function signOutUser() {
   const { auth } = firebase();
   await signOut(auth);
+}
+
+export async function resetPassword(email: string) {
+  const { auth } = firebase();
+  await sendPasswordResetEmail(auth, email);
+}
+
+export async function deleteAccount() {
+  const { auth } = firebase();
+  const u = auth.currentUser;
+  if (!u) throw new Error('not-signed-in');
+  await deleteUser(u);
 }
 
 export function currentUser(): User | null {

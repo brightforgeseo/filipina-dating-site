@@ -128,9 +128,14 @@ export default function Chat() {
                     {active.unreadCount > 0 && <div className="text-xs text-coral">{active.unreadCount} new</div>}
                   </div>
                   <div className="ml-auto flex gap-2">
-                    <button className="icon-btn" title="Translate"><Icon.Translate size={16} /></button>
-                    <button className="icon-btn" title="Video call"><Icon.Video size={16} /></button>
-                    <button className="icon-btn"><Icon.More size={16} /></button>
+                    <a
+                      href={`mailto:support@filwest.com?subject=${encodeURIComponent(`Report member ${active.otherId}`)}&body=${encodeURIComponent(`I want to report ${active.otherName} (member id: ${active.otherId}).\n\nReason:\n`)}`}
+                      className="icon-btn"
+                      title="Report this member"
+                      aria-label="Report this member"
+                    >
+                      <Icon.Flag size={14} />
+                    </a>
                   </div>
                 </div>
                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 flex flex-col gap-2.5">
@@ -163,7 +168,7 @@ export default function Chat() {
                     placeholder="Type a message…"
                     className="flex-1 px-4 py-3 border border-line rounded-full bg-ivory text-sm outline-none focus:border-coral"
                   />
-                  <button onClick={send} disabled={sending || !text.trim()} className="w-[44px] h-[44px] rounded-full text-white flex items-center justify-center border-0 disabled:opacity-40" style={{ background: 'var(--coral)' }}>
+                  <button onClick={send} disabled={sending || !text.trim()} aria-label="Send message" className="w-[44px] h-[44px] rounded-full text-white flex items-center justify-center border-0 disabled:opacity-40" style={{ background: 'var(--coral)' }}>
                     <Icon.Send size={16} />
                   </button>
                 </div>

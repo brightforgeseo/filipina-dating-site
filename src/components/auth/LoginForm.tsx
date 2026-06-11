@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '../icons';
+import { Icon, BrandMark } from '../icons';
 import { signInEmail, signInGoogle, resetPassword } from '../../lib/auth';
 
 export default function LoginForm() {
@@ -123,9 +123,7 @@ export default function LoginForm() {
       <div className="hidden md:flex p-14 flex-col justify-between relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #2A1F24 0%, #4A2332 100%)', color: '#FFF5F7' }}>
         <div>
           <div className="flex items-center gap-2.5 text-[22px] font-display font-bold">
-            <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--coral)' }}>
-              <Icon.Heart size={16} filled className="text-white" />
-            </span>
+            <BrandMark size={32} />
             FilWest
           </div>
           <div className="mt-10 flex gap-2 flex-wrap">

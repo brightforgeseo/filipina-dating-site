@@ -2,6 +2,18 @@ import React from 'react';
 
 type IconProps = { size?: number; filled?: boolean; className?: string };
 
+// FilWest brand mark — two hearts, matching public/favicon.svg and LogoMark.astro.
+export const BrandMark = ({ size = 28 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 512 512" aria-hidden="true">
+    <g transform="translate(-39 26)">
+      <path d="M256 444C150 360 84 290 84 208 84 148 130 108 182 108c30 0 58 16 74 46 16-30 44-46 74-46 52 0 98 40 98 100 0 82-66 152-172 236Z" fill="#A01C40"/>
+      <g transform="translate(318 16) scale(0.37)">
+        <path d="M256 444C150 360 84 290 84 208 84 148 130 108 182 108c30 0 58 16 74 46 16-30 44-46 74-46 52 0 98 40 98 100 0 82-66 152-172 236Z" fill="#D62246"/>
+      </g>
+    </g>
+  </svg>
+);
+
 export const Icon = {
   Heart: ({ size=16, filled=false, className='' }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?'currentColor':'none'} stroke="currentColor" strokeWidth="1.8" className={className}>

@@ -15,12 +15,14 @@ const {
   <title>{title}</title>
   <meta name="description" content={description}/>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
   <meta name="theme-color" content="#FF1493"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="FilWest"/>
   <meta property="og:title" content={title}/>
   <meta property="og:description" content={description}/>
-  <meta name="twitter:card" content="summary"/>
+  <meta property="og:image" content={new URL('/og-image.png', Astro.site)}/>
+  <meta name="twitter:card" content="summary_large_image"/>
 </head>
 <body>
   <Nav />

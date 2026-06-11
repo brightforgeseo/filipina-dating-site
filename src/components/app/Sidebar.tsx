@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '../icons';
+import { Icon, BrandMark } from '../icons';
 import type { User } from 'firebase/auth';
 import type { Profile } from '../../lib/profiles';
 import { signOutUser } from '../../lib/auth';
@@ -18,9 +18,7 @@ export default function Sidebar({ route, user, me }: { route: RouteKey; user: Us
   return (
     <aside className="sticky top-0 z-20 h-screen border-r border-line p-[18px] flex flex-col gap-1 w-60 flex-shrink-0 bg-white max-md:h-auto max-md:w-full max-md:flex-row max-md:items-center max-md:gap-2 max-md:border-r-0 max-md:border-b max-md:px-4 max-md:py-2.5">
       <a href="/" className="flex items-center gap-2.5 px-2.5 pt-1.5 pb-6 font-display text-xl font-bold max-md:p-0 max-md:text-lg">
-        <span className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'var(--coral)' }}>
-          <Icon.Heart size={14} filled className="text-white" />
-        </span>
+        <BrandMark size={28} />
         <span className="max-md:hidden">FilWest</span>
       </a>
       <nav className="flex flex-col gap-0.5 max-md:flex-row max-md:gap-1 max-md:mx-auto">

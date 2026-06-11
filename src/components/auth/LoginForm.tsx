@@ -129,7 +129,7 @@ export default function LoginForm() {
             FilWest
           </div>
           <div className="mt-10 flex gap-2 flex-wrap">
-            <span className="chip" style={{ background: 'rgba(255,107,157,0.15)', color: 'var(--coral-2)', borderColor: 'rgba(255,107,157,0.25)' }}><Icon.Shield size={12} /> Verified members only</span>
+            <span className="chip" style={{ background: 'rgba(255,107,157,0.15)', color: 'var(--coral-2)', borderColor: 'rgba(255,107,157,0.25)' }}><Icon.Shield size={12} /> ID-verified badges</span>
             <span className="chip" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,245,247,0.85)', borderColor: 'rgba(255,255,255,0.12)' }}>38 countries</span>
           </div>
         </div>

@@ -1,3 +1,5 @@
+// TODO: the mobile app's legal pages use support@filwest.app while the site
+// uses support@filwest.com — confirm the canonical address and align both.
 export const SUPPORT_EMAIL = 'support@filwest.com';
 
 export const INTEREST_OPTIONS = ['Family', 'Traveling', 'Cooking', 'Faith', 'Beaches', 'Hiking', 'Books', 'Movies', 'Music', 'Fitness'];

@@ -11,11 +11,19 @@ import { markOnline } from '../../lib/presence';
 import { useLang } from '../../i18n/react';
 import { COUNTRY_OPTIONS } from '../../lib/constants';
 
-type Prefs = { gender: 'female' | 'male' | 'all'; ageMin: number; ageMax: number; country: string };
-const DEFAULT_PREFS: Prefs = { gender: 'all', ageMin: 18, ageMax: 99, country: 'all' };
+type Prefs = { ageMin: number; ageMax: number; country: string };
+const DEFAULT_PREFS: Prefs = { ageMin: 18, ageMax: 99, country: 'all' };
 
-function matchesPrefs(p: Profile, prefs: Prefs): boolean {
-  if (prefs.gender !== 'all' && p.gender && p.gender !== prefs.gender) return false;
+// Straight matching is built in: men are shown women and women are shown men.
+// Members with another / unset gender see everyone.
+function wantedGenderFor(me: Profile | null): 'female' | 'male' | null {
+  if (me?.gender === 'male') return 'female';
+  if (me?.gender === 'female') return 'male';
+  return null;
+}
+
+function matchesPrefs(p: Profile, prefs: Prefs, wanted: 'female' | 'male' | null): boolean {
+  if (wanted && p.gender !== wanted) return false;
   if (prefs.country !== 'all' && p.country !== prefs.country) return false;
   if (p.age && (p.age < prefs.ageMin || p.age > prefs.ageMax)) return false;
   return true;
@@ -49,7 +57,12 @@ export default function Browse() {
           getBlockedIds(user.uid),
         ]);
         setMe(mine);
-        setPrefs({ ...DEFAULT_PREFS, ...(mine?.preferences ?? {}) });
+        const { ageMin, ageMax, country } = mine?.preferences ?? {};
+        setPrefs({
+          ageMin: ageMin ?? DEFAULT_PREFS.ageMin,
+          ageMax: ageMax ?? DEFAULT_PREFS.ageMax,
+          country: country ?? DEFAULT_PREFS.country,
+        });
         setProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id)));
       } catch (ex: any) {
         setError(ex?.code === 'permission-denied' ? 'rules' : 'network');
@@ -90,7 +103,7 @@ export default function Browse() {
   if (loading || !user) return <FullScreenLoader text={d.app.loading} />;
   if (needsEmailVerification(user)) return <VerifyEmail user={user} />;
 
-  const visible = profiles?.filter((p) => !swiped[p.id] && matchesPrefs(p, prefs));
+  const visible = profiles?.filter((p) => !swiped[p.id] && matchesPrefs(p, prefs, wantedGenderFor(me)));
 
   return (
     <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1">
@@ -103,17 +116,6 @@ export default function Browse() {
               <div className="text-[13px] text-muted mt-1">{B.sub}</div>
             </div>
             <div className="flex gap-2 items-center flex-wrap text-[13px]">
-              <label className="text-muted" htmlFor="pref-gender">{B.show}</label>
-              <select
-                id="pref-gender"
-                value={prefs.gender}
-                onChange={(e) => updatePrefs({ ...prefs, gender: e.target.value as Prefs['gender'] })}
-                className="px-3 py-2 rounded-xl border border-line bg-white outline-none focus:border-coral"
-              >
-                <option value="all">{B.everyone}</option>
-                <option value="female">{B.women}</option>
-                <option value="male">{B.men}</option>
-              </select>
               <label className="text-muted" htmlFor="pref-country">{B.country}</label>
               <select
                 id="pref-country"

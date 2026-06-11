@@ -272,10 +272,6 @@ export const en = {
     browse: {
       title: 'Discover',
       sub: 'Real people, ready to meet.',
-      show: 'Show',
-      everyone: 'Everyone',
-      women: 'Women',
-      men: 'Men',
       country: 'Country',
       allCountries: 'All countries',
       age: 'Age',

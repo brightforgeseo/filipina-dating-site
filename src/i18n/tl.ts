@@ -274,10 +274,6 @@ export const tl: Dict = {
     browse: {
       title: 'Discover',
       sub: 'Mga totoong tao, handang magkita.',
-      show: 'Ipakita',
-      everyone: 'Lahat',
-      women: 'Mga babae',
-      men: 'Mga lalaki',
       country: 'Bansa',
       allCountries: 'Lahat ng bansa',
       age: 'Edad',

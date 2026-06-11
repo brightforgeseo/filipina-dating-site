@@ -274,10 +274,6 @@ export const ceb: Dict = {
     browse: {
       title: 'Discover',
       sub: 'Mga tinuod nga tawo, andam magkita.',
-      show: 'Ipakita',
-      everyone: 'Tanan',
-      women: 'Mga babaye',
-      men: 'Mga lalaki',
       country: 'Nasod',
       allCountries: 'Tanan nga nasod',
       age: 'Edad',

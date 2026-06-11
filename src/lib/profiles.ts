@@ -23,9 +23,15 @@ export type Profile = {
   images?: string[];
   interests?: string[];
   lookingFor?: string;
+  occupation?: string;
+  education?: string;
+  height?: number; // cm
+  religion?: string;
+  drinking?: string;
+  smoking?: string;
   verified?: boolean;
   online?: boolean;
-  preferences?: { gender?: 'female' | 'male' | 'all'; ageMin?: number; ageMax?: number };
+  preferences?: { gender?: 'female' | 'male' | 'all'; ageMin?: number; ageMax?: number; country?: string };
   lastActive?: any;
   createdAt?: any;
 };

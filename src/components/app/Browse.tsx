@@ -9,12 +9,14 @@ import { recordSwipe, getSwipedIds } from '../../lib/matching';
 import { getBlockedIds } from '../../lib/blocking';
 import { markOnline } from '../../lib/presence';
 import { useLang } from '../../i18n/react';
+import { COUNTRY_OPTIONS } from '../../lib/constants';
 
-type Prefs = { gender: 'female' | 'male' | 'all'; ageMin: number; ageMax: number };
-const DEFAULT_PREFS: Prefs = { gender: 'all', ageMin: 18, ageMax: 99 };
+type Prefs = { gender: 'female' | 'male' | 'all'; ageMin: number; ageMax: number; country: string };
+const DEFAULT_PREFS: Prefs = { gender: 'all', ageMin: 18, ageMax: 99, country: 'all' };
 
 function matchesPrefs(p: Profile, prefs: Prefs): boolean {
   if (prefs.gender !== 'all' && p.gender && p.gender !== prefs.gender) return false;
+  if (prefs.country !== 'all' && p.country !== prefs.country) return false;
   if (p.age && (p.age < prefs.ageMin || p.age > prefs.ageMax)) return false;
   return true;
 }
@@ -28,7 +30,7 @@ export default function Browse() {
   const [prefs, setPrefs] = React.useState<Prefs>(DEFAULT_PREFS);
   const [swiped, setSwiped] = React.useState<Record<string, 'left' | 'right' | 'up'>>({});
   const [toast, setToast] = React.useState<string | null>(null);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState<'rules' | 'network' | null>(null);
 
   React.useEffect(() => {
     if (loading) return;
@@ -49,8 +51,8 @@ export default function Browse() {
         setMe(mine);
         setPrefs({ ...DEFAULT_PREFS, ...(mine?.preferences ?? {}) });
         setProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id)));
-      } catch {
-        setError(true);
+      } catch (ex: any) {
+        setError(ex?.code === 'permission-denied' ? 'rules' : 'network');
       }
     })();
   }, [user, loading]);
@@ -112,6 +114,16 @@ export default function Browse() {
                 <option value="female">{B.women}</option>
                 <option value="male">{B.men}</option>
               </select>
+              <label className="text-muted" htmlFor="pref-country">{B.country}</label>
+              <select
+                id="pref-country"
+                value={prefs.country}
+                onChange={(e) => updatePrefs({ ...prefs, country: e.target.value })}
+                className="px-3 py-2 rounded-xl border border-line bg-white outline-none focus:border-coral"
+              >
+                <option value="all">{B.allCountries}</option>
+                {COUNTRY_OPTIONS.map((c) => <option key={c} value={c}>{d.options.countries[c] || c}</option>)}
+              </select>
               <label className="text-muted" htmlFor="pref-age-min">{B.age}</label>
               <input
                 id="pref-age-min"
@@ -141,9 +153,9 @@ export default function Browse() {
 
         <div className="p-10 max-md:p-5">
           {error ? (
-            <div className="text-center py-24">
+            <div className="text-center py-24 max-w-[560px] mx-auto">
               <div className="font-display font-semibold text-2xl mb-2">{B.loadFailTitle}</div>
-              <div className="text-ink-soft mb-5">{B.loadFailBody}</div>
+              <div className="text-ink-soft mb-5">{error === 'rules' ? d.app.rulesHint : B.loadFailBody}</div>
               <button onClick={() => window.location.reload()} className="btn btn-primary">{B.retry}</button>
             </div>
           ) : visible === undefined || profiles === null ? (

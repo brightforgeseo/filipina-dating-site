@@ -16,8 +16,5 @@ export const DRINKING_OPTIONS = ['Never', 'Socially', 'Often'];
 export const SMOKING_OPTIONS = ['No', 'Sometimes', 'Yes'];
 export const MAX_PHOTOS = 6;
 
-export function reportMailto(memberId: string, memberName?: string): string {
-  const subject = `Report member ${memberId}`;
-  const body = `I want to report ${memberName || 'a member'} (member id: ${memberId}).\n\nReason:\n`;
-  return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
+// In-app reports now go to the Firestore `reports` collection (see
+// lib/reports.ts); SUPPORT_EMAIL remains for the public contact links.

@@ -12,10 +12,23 @@ import VerifyEmail from './VerifyEmail';
 import {
   INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS,
   EDUCATION_OPTIONS, RELIGION_OPTIONS, DRINKING_OPTIONS, SMOKING_OPTIONS,
-  MAX_PHOTOS, SUPPORT_EMAIL, reportMailto,
+  MAX_PHOTOS, SUPPORT_EMAIL,
 } from '../../lib/constants';
+import ReportDialog, { type ReportTarget } from './ReportDialog';
 import { useLang } from '../../i18n/react';
 import type { Dict } from '../../i18n';
+
+// Fields counted toward profile completion — photos and bio matter most for
+// getting matches, so they're weighted double.
+function completionPercent(p: Profile): number {
+  const checks = [
+    !!p.images?.length, !!p.images?.length,
+    !!p.bio, !!p.bio,
+    !!p.age, !!p.city, !!p.country, !!p.lookingFor, !!p.interests?.length,
+    !!p.occupation, !!p.education, !!p.height, !!p.religion, !!p.drinking, !!p.smoking,
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
 
 export default function ProfileView() {
   const { d } = useLang();
@@ -27,6 +40,7 @@ export default function ProfileView() {
   const [toast, setToast] = React.useState<string | null>(null);
   const [editing, setEditing] = React.useState(false);
   const [photoIdx, setPhotoIdx] = React.useState(0);
+  const [report, setReport] = React.useState<ReportTarget | null>(null);
 
   const targetId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
@@ -131,9 +145,14 @@ export default function ProfileView() {
               >
                 <Icon.Ban size={14} />
               </button>
-              <a href={reportMailto(p.id, p.name)} className="icon-btn" title={P.reportAction} aria-label={P.reportAction}>
+              <button
+                onClick={() => setReport({ targetId: p.id, targetName: p.name })}
+                className="icon-btn"
+                title={P.reportAction}
+                aria-label={P.reportAction}
+              >
                 <Icon.Flag size={14} />
-              </a>
+              </button>
             </div>
           )}
           {isMyProfile && !editing && (
@@ -233,13 +252,23 @@ export default function ProfileView() {
                   </div>
                 )}
                 {isMyProfile && (
-                  <div className="mt-6 text-sm text-muted">{P.howOthersSee}</div>
+                  <div className="mt-6">
+                    <div className="flex justify-between items-baseline text-[13px] mb-1.5">
+                      <span className="font-semibold">{P.completion}</span>
+                      <span className="text-muted">{completionPercent(p)}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-line overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${completionPercent(p)}%`, background: 'var(--coral)' }} />
+                    </div>
+                    <div className="text-xs text-muted mt-2">{completionPercent(p) < 100 ? P.completionHint : P.howOthersSee}</div>
+                  </div>
                 )}
               </div>
             </div>
           )}
         </div>
       </main>
+      {report && <ReportDialog reporterId={user.uid} target={report} d={d} onClose={() => setReport(null)} />}
     </div>
   );
 }

@@ -18,7 +18,8 @@ import {
   type ChatMessage,
 } from '../../lib/chat';
 import { uploadChatImage } from '../../lib/storage';
-import { reportMailto } from '../../lib/constants';
+import { hasScamSignals } from '../../lib/safety';
+import ReportDialog, { type ReportTarget } from './ReportDialog';
 import { useLang } from '../../i18n/react';
 
 export default function Chat() {
@@ -32,6 +33,7 @@ export default function Chat() {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
   const [text, setText] = React.useState('');
   const [sending, setSending] = React.useState(false);
+  const [report, setReport] = React.useState<ReportTarget | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const autoSelected = React.useRef(false);
   const blockedRef = React.useRef<Set<string>>(new Set());
@@ -217,9 +219,14 @@ export default function Chat() {
                     <button onClick={doBlock} className="icon-btn" title={C.block} aria-label={C.block}>
                       <Icon.Ban size={14} />
                     </button>
-                    <a href={reportMailto(active.otherId, active.otherName)} className="icon-btn" title={C.report} aria-label={C.report}>
+                    <button
+                      onClick={() => setReport({ targetId: active.otherId, targetName: active.otherName, matchId: active.matchId })}
+                      className="icon-btn"
+                      title={C.report}
+                      aria-label={C.report}
+                    >
                       <Icon.Flag size={14} />
-                    </a>
+                    </button>
                   </div>
                 </div>
                 <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 flex flex-col gap-2.5">
@@ -249,6 +256,17 @@ export default function Chat() {
                                 {formatTime(m.timestamp, time)}
                                 {mine && m.id === lastMine?.id && m.isRead ? ` · ${C.seen}` : ''}
                               </div>
+                              {!mine && hasScamSignals(m.text) && active && (
+                                <div className="mt-1 px-3 py-2 rounded-xl text-[11px] leading-snug max-w-[260px]" style={{ background: 'rgba(255,180,0,0.12)', color: '#8a6100', border: '1px solid rgba(255,180,0,0.3)' }}>
+                                  ⚠️ {C.scamWarning}{' '}
+                                  <button
+                                    onClick={() => setReport({ targetId: active.otherId, targetName: active.otherName, defaultReason: 'money', matchId: active.matchId, messageId: m.id, messageText: m.text })}
+                                    className="font-semibold underline underline-offset-2"
+                                  >
+                                    {C.reportMessage}
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -281,6 +299,7 @@ export default function Chat() {
           </section>
         </div>
       </main>
+      {report && <ReportDialog reporterId={user.uid} target={report} d={d} onClose={() => setReport(null)} />}
     </div>
   );
 }

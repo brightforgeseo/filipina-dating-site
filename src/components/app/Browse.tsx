@@ -32,6 +32,18 @@ function matchesPrefs(p: Profile, prefs: Prefs, wanted: 'female' | 'male' | null
 
 const VIEW_KEY = 'filwest.discover-view';
 
+const DAY_MS = 86400000;
+const lastActiveMs = (p: Profile): number => (p.lastActive?.seconds ? p.lastActive.seconds * 1000 : 0);
+const isRecentlyActive = (p: Profile): boolean => Date.now() - lastActiveMs(p) < 7 * DAY_MS;
+
+// Keep the deck feeling alive: drop profiles idle for over 30 days (profiles
+// without a lastActive yet are kept), and show complete, active profiles first.
+function rankProfiles(list: Profile[]): Profile[] {
+  const fresh = list.filter((p) => !lastActiveMs(p) || Date.now() - lastActiveMs(p) < 30 * DAY_MS);
+  const score = (p: Profile) => (p.images?.length ? 2 : 0) + (isRecentlyActive(p) ? 1 : 0);
+  return fresh.sort((a, b) => score(b) - score(a) || lastActiveMs(b) - lastActiveMs(a));
+}
+
 export default function Browse() {
   const { d } = useLang();
   const B = d.app.browse;
@@ -84,7 +96,7 @@ export default function Browse() {
           ageMax: ageMax ?? DEFAULT_PREFS.ageMax,
           country: country ?? DEFAULT_PREFS.country,
         });
-        setProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id)));
+        setProfiles(rankProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id))));
       } catch (ex: any) {
         setError(ex?.code === 'permission-denied' ? 'rules' : 'network');
       }
@@ -177,9 +189,13 @@ export default function Browse() {
       {!p.images?.[0] && (
         <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[140px] text-white/50">{p.name?.[0] || '?'}</div>
       )}
-      <div className="absolute top-4 left-4 flex gap-1.5">
+      <div className="absolute top-4 left-4 flex gap-1.5 flex-wrap">
         {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 9px', fontSize: 10 }}><Icon.Shield size={10} />{B.verified}</span>}
-        {p.online && <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 9px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>}
+        {p.online ? (
+          <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 9px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>
+        ) : isRecentlyActive(p) ? (
+          <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--muted)', border: 'none', padding: '3px 9px', fontSize: 10 }}>{B.activeRecently}</span>
+        ) : null}
       </div>
       <a href={`/app/profile?id=${p.id}`} className="absolute inset-x-0 bottom-0 p-6 text-white block" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
         <div className="font-display font-bold text-[34px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
@@ -302,9 +318,13 @@ export default function Browse() {
                     {!p.images?.[0] && (
                       <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{p.name?.[0] || '?'}</div>
                     )}
-                    <div className="absolute top-3 left-3 flex gap-1.5">
+                    <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
                       {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 8px', fontSize: 10 }}><Icon.Shield size={10} />{B.verified}</span>}
-                      {p.online && <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 8px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>}
+                      {p.online ? (
+                        <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 8px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>
+                      ) : isRecentlyActive(p) ? (
+                        <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--muted)', border: 'none', padding: '3px 8px', fontSize: 10 }}>{B.activeRecently}</span>
+                      ) : null}
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 text-white">
                       <div className="font-display font-bold text-[24px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>

@@ -3,13 +3,22 @@ import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
+const fallbackConfig = {
+  apiKey: 'AIzaSyC9xZNXi3i1bHEObdOEd4S5E1GPfMj6Slg',
+  authDomain: 'filwest.firebaseapp.com',
+  projectId: 'filwest',
+  storageBucket: 'filwest.firebasestorage.app',
+  messagingSenderId: '675978841548',
+  appId: '1:675978841548:web:8b80d3351d93c0f1606169',
+};
+
 const config = {
-  apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY,
-  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID,
+  apiKey: import.meta.env.PUBLIC_FIREBASE_API_KEY || fallbackConfig.apiKey,
+  authDomain: import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN || fallbackConfig.authDomain,
+  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || fallbackConfig.projectId,
+  storageBucket: import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET || fallbackConfig.storageBucket,
+  messagingSenderId: import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID || fallbackConfig.messagingSenderId,
+  appId: import.meta.env.PUBLIC_FIREBASE_APP_ID || fallbackConfig.appId,
 };
 
 let _app: FirebaseApp | null = null;

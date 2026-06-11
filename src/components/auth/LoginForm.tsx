@@ -21,7 +21,7 @@ export default function LoginForm({ lang = 'en' }: { lang?: Lang }) {
       await signInEmail(email, pw);
       window.location.href = '/app';
     } catch (e: any) {
-      setErr(humanizeAuthError(e?.code, d));
+      setErr(humanizeAuthError(e, d));
     } finally {
       setBusy(false);
     }
@@ -50,7 +50,7 @@ export default function LoginForm({ lang = 'en' }: { lang?: Lang }) {
       await signInGoogle();
       window.location.href = '/app';
     } catch (e: any) {
-      setErr(humanizeAuthError(e?.code, d));
+      setErr(humanizeAuthError(e, d));
     } finally {
       setBusy(false);
     }
@@ -149,8 +149,10 @@ export default function LoginForm({ lang = 'en' }: { lang?: Lang }) {
   );
 }
 
-function humanizeAuthError(code: string | undefined, d: Dict): string {
+function humanizeAuthError(e: any, d: Dict): string {
   const E = d.auth.errors;
+  if (e?.message === 'firebase-not-configured') return E.notConfigured;
+  const code: string | undefined = e?.code;
   if (!code) return E.generic;
   if (code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential'))
     return E.noMatch;

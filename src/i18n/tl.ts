@@ -229,6 +229,7 @@ export const tl: Dict = {
       panelNote: 'Hindi kailanman makikita ng ibang member ang password mo.',
     },
     errors: {
+      notConfigured: 'Hindi pa nakakonekta sa server ang pag-sign in sa deploy na ito. Sa may-ari ng site: idagdag ang PUBLIC_FIREBASE_* environment variables sa Netlify at mag-redeploy.',
       generic: 'May nangyaring mali. Pakisubukan ulit.',
       noMatch: 'Hindi magkatugma ang email at password. Subukan ulit, o mag-sign up.',
       invalidEmail: 'Maglagay ng wastong email address.',

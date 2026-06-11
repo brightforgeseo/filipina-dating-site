@@ -227,6 +227,7 @@ export const en = {
       panelNote: 'Your password is never visible to other members.',
     },
     errors: {
+      notConfigured: "Sign-in isn't connected to the server on this deploy. Site owner: add the PUBLIC_FIREBASE_* environment variables in Netlify and redeploy.",
       generic: 'Something went wrong. Please try again.',
       noMatch: "That email and password don't match. Try again, or sign up.",
       invalidEmail: 'Please enter a valid email address.',

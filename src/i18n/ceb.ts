@@ -229,6 +229,7 @@ export const ceb: Dict = {
       panelNote: 'Dili gyud makita sa ubang member ang imong password.',
     },
     errors: {
+      notConfigured: 'Wala pa makakonekta sa server ang pag-sign in niini nga deploy. Sa tag-iya sa site: idugang ang PUBLIC_FIREBASE_* environment variables sa Netlify ug pag-redeploy.',
       generic: 'Adunay sayop nga nahitabo. Palihug suwayi pag-usab.',
       noMatch: 'Wala magkatugma ang email ug password. Suwayi pag-usab, o pag-sign up.',
       invalidEmail: 'Pagbutang og husto nga email address.',

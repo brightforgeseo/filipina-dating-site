@@ -20,9 +20,14 @@ let _storage: FirebaseStorage | null = null;
 export function firebase() {
   if (!_app) {
     if (!config.apiKey || !config.projectId || !config.appId) {
-      throw new Error(
-        'Firebase is not configured. Set the PUBLIC_FIREBASE_* environment variables (see .env.example).'
+      // Log loudly — the auth forms catch this error and show a soft message,
+      // which makes a missing-config deploy look like a silent failure.
+      console.error(
+        '[FilWest] Firebase is NOT configured on this deploy. ' +
+          'Set the PUBLIC_FIREBASE_* environment variables in Netlify ' +
+          '(Site configuration → Environment variables) and trigger a redeploy. See .env.example.'
       );
+      throw new Error('firebase-not-configured');
     }
     _app = getApps().length ? getApps()[0] : initializeApp(config);
     _auth = getAuth(_app);

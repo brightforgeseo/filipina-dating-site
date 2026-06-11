@@ -11,11 +11,13 @@ import {
   subscribeConversations,
   subscribeMessages,
   sendMessage,
+  sendImageMessage,
   markMessagesRead,
   formatTime,
   type Conversation,
   type ChatMessage,
 } from '../../lib/chat';
+import { uploadChatImage } from '../../lib/storage';
 import { reportMailto } from '../../lib/constants';
 import { useLang } from '../../i18n/react';
 
@@ -93,6 +95,21 @@ export default function Chat() {
       await sendMessage(openId, user.uid, toSend);
     } catch {
       setText(toSend);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const sendPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !openId || !user || sending) return;
+    setSending(true);
+    try {
+      const url = await uploadChatImage(user.uid, file);
+      await sendImageMessage(openId, user.uid, url);
+    } catch {
+      window.alert(C.photoFail);
     } finally {
       setSending(false);
     }
@@ -209,25 +226,41 @@ export default function Chat() {
                   {messages.length === 0 ? (
                     <div className="text-center text-muted my-10 text-sm">{C.startOfConvo}</div>
                   ) : (
-                    messages.map((m) => {
-                      const mine = m.senderId === user.uid;
-                      return (
-                        <div key={m.id} className={`flex max-w-[70%] ${mine ? 'self-end flex-row-reverse' : 'self-start'}`}>
-                          <div>
-                            <div
-                              className={`px-4 py-2.5 rounded-2xl text-sm leading-[1.45] ${mine ? 'text-white rounded-br-sm' : 'bg-white border border-line rounded-bl-sm'}`}
-                              style={mine ? { background: 'var(--coral)' } : {}}
-                            >
-                              {m.text || (m.imageUrl ? C.photo : m.videoUrl ? C.video : '')}
+                    (() => {
+                      const lastMine = [...messages].reverse().find((m) => m.senderId === user.uid);
+                      return messages.map((m) => {
+                        const mine = m.senderId === user.uid;
+                        return (
+                          <div key={m.id} className={`flex max-w-[70%] ${mine ? 'self-end flex-row-reverse' : 'self-start'}`}>
+                            <div>
+                              {m.imageUrl ? (
+                                <a href={m.imageUrl} target="_blank" rel="noopener noreferrer" className={`block rounded-2xl overflow-hidden border ${mine ? 'border-transparent rounded-br-sm' : 'border-line rounded-bl-sm'}`}>
+                                  <img src={m.imageUrl} alt={C.photo} className="block max-w-[220px] max-h-[280px] object-cover" loading="lazy" />
+                                </a>
+                              ) : (
+                                <div
+                                  className={`px-4 py-2.5 rounded-2xl text-sm leading-[1.45] ${mine ? 'text-white rounded-br-sm' : 'bg-white border border-line rounded-bl-sm'}`}
+                                  style={mine ? { background: 'var(--coral)' } : {}}
+                                >
+                                  {m.text || (m.videoUrl ? C.video : '')}
+                                </div>
+                              )}
+                              <div className={`text-[10px] text-muted mt-1 ${mine ? 'text-right' : 'text-left'}`}>
+                                {formatTime(m.timestamp, time)}
+                                {mine && m.id === lastMine?.id && m.isRead ? ` · ${C.seen}` : ''}
+                              </div>
                             </div>
-                            <div className={`text-[10px] text-muted mt-1 ${mine ? 'text-right' : 'text-left'}`}>{formatTime(m.timestamp, time)}</div>
                           </div>
-                        </div>
-                      );
-                    })
+                        );
+                      });
+                    })()
                   )}
                 </div>
-                <div className="px-6 py-4 border-t border-line flex gap-2.5 items-center bg-white">
+                <div className="px-6 py-4 border-t border-line flex gap-2.5 items-center bg-white max-md:px-4">
+                  <label className="icon-btn cursor-pointer flex-shrink-0" title={C.sendPhoto} aria-label={C.sendPhoto}>
+                    <Icon.Camera size={16} />
+                    <input type="file" accept="image/*" onChange={sendPhoto} disabled={sending} className="hidden" />
+                  </label>
                   <input
                     value={text}
                     onChange={(e) => setText(e.target.value)}

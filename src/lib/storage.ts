@@ -15,3 +15,14 @@ export async function uploadProfileImage(userId: string, file: File): Promise<st
   await uploadBytes(r, file, { contentType: file.type });
   return getDownloadURL(r);
 }
+
+export async function uploadChatImage(userId: string, file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) throw new Error('not-an-image');
+  if (file.size > MAX_IMAGE_BYTES) throw new Error('too-large');
+  const { storage } = firebase();
+  const rawExt = file.name.split('.').pop()?.toLowerCase() ?? '';
+  const ext = /^[a-z0-9]{1,8}$/.test(rawExt) ? rawExt : 'jpg';
+  const r = ref(storage, `chat_images/${userId}/${Date.now()}.${ext}`);
+  await uploadBytes(r, file, { contentType: file.type });
+  return getDownloadURL(r);
+}

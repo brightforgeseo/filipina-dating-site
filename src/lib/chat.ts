@@ -158,3 +158,19 @@ export function formatTime(ts: any, t: TimeStrings = TIME_EN): string {
   if (days < 7) return t.days(days);
   return d.toLocaleDateString();
 }
+
+export async function sendImageMessage(matchId: string, senderId: string, imageUrl: string) {
+  const { db } = firebase();
+  await addDoc(collection(db, 'matches', matchId, 'messages'), {
+    matchId,
+    senderId,
+    imageUrl,
+    type: 'image',
+    timestamp: serverTimestamp(),
+    isRead: false,
+  });
+  await updateDoc(doc(db, 'matches', matchId), {
+    lastMessage: '📷',
+    lastMessageTime: serverTimestamp(),
+  });
+}

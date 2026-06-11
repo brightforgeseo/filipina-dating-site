@@ -6,7 +6,7 @@ import { signOutUser } from '../../lib/auth';
 import { useLang } from '../../i18n/react';
 import { setClientLang, type Lang } from '../../i18n';
 
-type RouteKey = 'browse' | 'matches' | 'chat' | 'profile' | 'safety';
+type RouteKey = 'browse' | 'likes' | 'matches' | 'chat' | 'profile' | 'safety';
 
 export default function Sidebar({ route, user, me }: { route: RouteKey; user: User | null; me: Profile | null }) {
   const { lang, d } = useLang();
@@ -16,6 +16,7 @@ export default function Sidebar({ route, user, me }: { route: RouteKey; user: Us
   const changeLang = (next: Lang) => { setClientLang(next); window.location.reload(); };
   const items: { k: RouteKey; href: string; t: string; icon: React.ReactNode }[] = [
     { k: 'browse', href: '/app', t: L.discover, icon: <Icon.Home size={16} /> },
+    { k: 'likes', href: '/app/likes', t: L.likes, icon: <Icon.Heart size={16} /> },
     { k: 'chat', href: '/app/messages', t: L.messages, icon: <Icon.Msg size={16} /> },
     { k: 'profile', href: '/app/profile', t: L.myProfile, icon: <Icon.Eye size={16} /> },
     { k: 'safety', href: '/safety', t: L.safety, icon: <Icon.Shield size={16} /> },

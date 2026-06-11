@@ -22,9 +22,12 @@ service cloud.firestore {
       allow write: if isOwner(userId);
     }
 
-    // Swipes — only the swiper can create or read their own swipes.
+    // Swipes — the swiper can read their own; the recipient can read likes
+    // aimed at them (powers the "Likes you" page).
     match /swipes/{swipeId} {
-      allow read: if isSignedIn() && resource.data.fromUserId == request.auth.uid;
+      allow read: if isSignedIn()
+        && (resource.data.fromUserId == request.auth.uid
+            || resource.data.toUserId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
     }
 

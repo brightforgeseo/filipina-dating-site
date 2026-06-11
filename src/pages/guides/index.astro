@@ -1,0 +1,49 @@
+---
+import Site from '../../layouts/Site.astro';
+
+const guides = [
+  {
+    href: '/guides/dating-a-filipina-respectfully',
+    title: 'Dating a Filipina respectfully',
+    desc: 'Family, faith, and courtship — what matters in Filipino dating culture and how to show up well.',
+  },
+  {
+    href: '/guides/first-video-call-tips',
+    title: 'Your first video call: how to make it great',
+    desc: 'Beat the nerves, handle the time difference, and turn a first call into a second one.',
+  },
+  {
+    href: '/guides/red-flags-international-dating',
+    title: 'Red flags in international dating',
+    desc: 'The patterns scammers use, the warning signs to watch for, and what to do when something feels off.',
+  },
+  {
+    href: '/guides/meeting-safely-in-the-philippines',
+    title: 'Meeting safely in the Philippines',
+    desc: 'Planning the first real-life meeting: where to meet, what to arrange, and how to keep both people comfortable.',
+  },
+];
+---
+<Site
+  title="Dating Guides — FilWest"
+  description="Practical guides for Filipino-Western dating: culture, video calls, red flags, and meeting safely in the Philippines."
+>
+  <div class="max-w-[1240px] mx-auto px-8 pt-16 pb-24">
+    <div class="eyebrow">Guides</div>
+    <h1 class="heading-display mt-3" style="font-size: clamp(42px, 6vw, 72px)">
+      Date smarter,<br/><span class="text-coral">love safer.</span>
+    </h1>
+    <p class="text-[16px] leading-[1.6] text-ink-soft max-w-[640px] mt-5">
+      Honest, practical advice for Filipinas and Western partners building something real across the distance.
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
+      {guides.map((g) => (
+        <a href={g.href} class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-2 hover:shadow-lg hover:-translate-y-0.5 transition">
+          <h2 class="font-display font-semibold text-[20px] tracking-[-0.01em] leading-[1.25] m-0">{g.title}</h2>
+          <p class="text-sm text-ink-soft leading-[1.55] m-0">{g.desc}</p>
+          <span class="text-coral text-sm font-semibold mt-1">Read the guide →</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</Site>

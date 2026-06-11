@@ -5,8 +5,8 @@ import type { Dict } from './en';
 export const ceb: Dict = {
   meta: {
     home: {
-      title: 'FilWest — Dating para sa mga Filipina ug sa mga nahigugma kanila',
-      desc: 'Ang FilWest usa ka dating site para sa mga Filipina ug sa mga tawong nahigugma kanila. Verified nga mga profile, matinud-anon nga tuyo — sa web ug sa app.',
+      title: 'FilWest — Verified nga Filipino-Western Dating para sa Tinuod nga Relasyon',
+      desc: 'Ang FilWest mao ang dapit diin ang mga Filipina ug Western nga lalaki magtukod og tinuod nga relasyon. Verified nga profile, pasidaan batok sa scam sa matag chat, libre nga EN–Tagalog nga translation, ug video call sa dili pa mopalit og ticket.',
     },
     pricing: {
       title: 'Presyo — FilWest',
@@ -37,6 +37,7 @@ export const ceb: Dict = {
     company: 'Kompanya',
     legal: 'Legal',
     aboutSafety: 'Bahin sa kaluwasan',
+    guides: 'Mga giya sa dating',
     contact: 'Kontaka kami',
     terms: 'Mga Termino',
     privacy: 'Privacy',
@@ -45,10 +46,10 @@ export const ceb: Dict = {
 
   hero: {
     chip: 'Sa iOS, Android, ug web',
-    line1: 'Tinuod nga tawo.',
-    line2: 'Tinuod nga tuyo.',
+    line1: 'Verified nga profile.',
+    line2: 'Matinud-anon nga tuyo.',
     line3: 'Tinuod nga gugma.',
-    body: 'Ang FilWest usa ka dating app para sa mga Filipina ug sa mga tawong nahigugma kanila. ID-verified nga badge, libre nga tap-to-translate sa chat sa English ug Tagalog, ug usa ra ka account — naa ka man sa phone o sa browser.',
+    body: 'Ang FilWest mao ang dapit diin ang mga Filipina ug Western nga lalaki magtukod og tinuod nga relasyon. ID-verified nga badge, pasidaan batok sa scam sa matag chat, libre nga translation sa English ug Tagalog, ug video call sa dili pa mopalit og ticket si bisan kinsa.',
     ctaSignup: 'Pag-sign up nga libre',
     ctaHow: 'Tan-awa giunsa kini',
     freeNote: 'Libre para sa mga babaye gikan sa Pilipinas. Kanunay.',
@@ -134,6 +135,25 @@ export const ceb: Dict = {
       },
     ],
     note: 'Ang mga subscription gipalit ug gidumala sa FilWest mobile app. Parehas ang imong account — ug ang tanan nga maablihan sa plan — sa app ug sa web.',
+    promisesTitle: 'Patas ug transparent.',
+    promises: [
+      { t: 'Libre para sa mga Filipina, hangtod sa hangtod', d: 'Ang tibuok app — messaging, matching, translation — walay bayad para sa mga babaye gikan sa Pilipinas.' },
+      { t: 'Walay credits, walay coins', d: 'Usa ka subscription, apil na ang tanan. Dili kami maningil matag mensahe.' },
+      { t: 'Kanselaha bisan kanus-a', d: 'Gidumala ang subscription sa app store — kanselaha sa duha ka tap ug magamit gihapon hangtod mahuman ang panahon.' },
+      { t: 'Dili gyud bayran ang kaluwasan', d: 'Libre ang blocking, reporting, pasidaan batok sa scam, ug verification para sa matag member.' },
+    ],
+  },
+
+  different: {
+    eyebrow: 'Ngano FilWest',
+    title: 'Dili basta usa pa ka dating app.',
+    items: [
+      { t: 'Dili database sa patay nga mga profile', d: 'Awtomatikong gitago ang dili aktibo nga mga profile. Ang imong makita sa Discover mga tawong tinuod nga ania.' },
+      { t: 'Dili dula sa swipe', d: 'Ang mga profile gitukod palibot sa tuyo — kaminyoon, long-term nga plano, timeline sa panagkita — dili lang mga photo.' },
+      { t: 'Walay credit traps', d: 'Walay coins, walay bayad matag mensahe. Usa ka simple nga subscription para sa mga partner sa abroad; dili gyud mobayad ang mga Filipina.' },
+      { t: 'Walay pressure nga mobiya sa platform', d: 'Ang messaging, photo, ug video magpabilin sulod sa FilWest, diin panalipdan ka sa blocking, reporting, ug pasidaan batok sa scam.' },
+      { t: 'Gihimo para sa Filipino-Western nga gugma', d: 'Adunay built-in nga Tagalog ug Cebuano, gitahod ang kulturang pamilya-una, ug gidesinyo para sa distansya tali sa Manila ug Manchester.' },
+    ],
   },
 
   pricingPage: { eyebrow: 'Presyo', h1a: 'Patas nga presyo.', h1b: 'Matinud-anon nga tuyo.' },
@@ -143,6 +163,15 @@ export const ceb: Dict = {
     h1a: 'Kaluwasan una,',
     h1b: 'sa matag lakang.',
     intro: 'Molihok ra ang long-distance dating kung luwas ang gibati sa tanan. Pagpa-verify gamit ang government ID ug live selfie aron makuha ang imong badge, magkita nga nawong sa nawong pinaagi sa encrypted video call sa dili pa magplano og biyahe, ug pasagdi nga awtomatikong i-flag sa among mga sistema ang pagpangayo og kwarta aron susihon sa tawo.',
+    howTitle: 'Giunsa ka panalipdan sa FilWest',
+    how: [
+      { t: 'Paglikay sa peke nga profile', d: 'Kinahanglan i-verify sa matag account ang email sa dili pa gamiton ang FilWest, ug mahimong magpa-verify ang mga member gamit ang government ID ug live selfie sa app. Awtomatikong gitangtang sa Discover ang dili aktibo ug dili kompleto nga mga profile.' },
+      { t: 'Supak sa lagda ang pagpangayo og kwarta', d: 'Ang pagpangayo og kwarta, gift card, o padala sa mga member rason aron ma-ban. Awtomatikong magpakita og pasidaan ang chat kung adunay paghisgot og pagbalhin og kwarta, ug usa ka tap ra ang pag-report.' },
+      { t: 'Unsa ang mahitabo kung mo-report ka', d: 'Direkta nga moadto ang mga report sa among review queue uban ang ebidensya sa mensahe. Dili gyud mahibaloan sa gi-report kung kinsa ang nag-report, ug gi-ban ang balik-balik nga molapas.' },
+      { t: 'Video sa dili pa molupad', d: 'Magkita nga nawong sa nawong sa video call sa app sa dili pa magplano og bisan unsang biyahe. Ang tawong kanunay adunay rason aron likayan ang video usa ka red flag.' },
+      { t: 'Para sa mga lalaki sa abroad', d: 'Ayaw gyud pagpadala og kwarta sa tawong wala pa nimo maila og personal — bisan unsa pa ang istorya. Masabtan kini sa tinuod nga partner. Ipabilin ang istoryahanay sulod sa FilWest diin panalipdan ka sa mga pasidaan ug pag-report.' },
+      { t: 'Para sa mga Filipina', d: 'Wala kay utang nga photo, video, o atensyon kang bisan kinsa tungod lang kay aduna silay subscription. I-block ug i-report si bisan kinsa nga mamugos — kompidensyal kini, ug dili na gyud nimo sila makita pag-usab.' },
+    ],
   },
 
   showcase: {

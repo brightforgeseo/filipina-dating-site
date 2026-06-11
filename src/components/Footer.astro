@@ -33,6 +33,7 @@ const switchBase = LOCALIZED_PATHS.includes(base) ? base : '/';
         <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">{d.footer.company}</h4>
         <ul class="flex flex-col gap-2.5 text-sm text-ink-soft">
           <li><a href={l('/safety')} class="hover:text-coral">{d.footer.aboutSafety}</a></li>
+          <li><a href="/guides" class="hover:text-coral">{d.footer.guides}</a></li>
           <li><a href={`mailto:${SUPPORT_EMAIL}`} class="hover:text-coral">{d.footer.contact}</a></li>
         </ul>
       </div>

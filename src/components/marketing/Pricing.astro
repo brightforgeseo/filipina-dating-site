@@ -40,6 +40,20 @@ const featuredIdx = 1;
         );
       })}
     </div>
+    <div class="mt-12">
+      <h3 class="font-display font-semibold text-[24px] text-center mb-7">{d.pricing.promisesTitle}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {d.pricing.promises.map((pr) => (
+          <div class="bg-white border border-line rounded-2xl p-6 flex flex-col gap-2">
+            <div class="flex items-center gap-2 font-semibold text-[15px]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 12l4 4L19 6"/></svg>
+              {pr.t}
+            </div>
+            <p class="text-[13px] text-ink-soft leading-[1.55] m-0">{pr.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
     <p class="text-center text-[13px] text-muted mt-8">
       {d.pricing.note}
     </p>

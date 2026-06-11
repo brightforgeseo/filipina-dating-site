@@ -17,4 +17,20 @@ const d = t(lang);
     </p>
   </div>
   <Safety lang={lang} />
+  <section class="pb-24">
+    <div class="max-w-[1240px] mx-auto px-8">
+      <h2 class="heading-1 text-center mb-12" style="font-size: clamp(32px, 4.5vw, 48px)">{d.safetyPage.howTitle}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {d.safetyPage.how.map((b) => (
+          <div class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-2.5">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(255,20,147,0.08); color: var(--coral)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v7c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <h3 class="font-display font-semibold text-[18px] tracking-[-0.01em] leading-[1.25] m-0 mt-1">{b.t}</h3>
+            <p class="text-sm text-ink-soft leading-[1.55] m-0">{b.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 </Site>

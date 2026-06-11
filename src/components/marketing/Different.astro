@@ -1,0 +1,24 @@
+---
+import { t, type Lang } from '../../i18n';
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<section class="pb-24">
+  <div class="max-w-[1240px] mx-auto px-8">
+    <div class="max-w-[760px] mx-auto text-center mb-14 flex flex-col gap-3.5">
+      <div class="eyebrow">{d.different.eyebrow}</div>
+      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">{d.different.title}</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {d.different.items.map((item) => (
+        <div class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-2.5">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-white" style="background: var(--coral)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-[19px] tracking-[-0.01em] leading-[1.25] m-0 mt-1">{item.t}</h3>
+          <p class="text-sm text-ink-soft leading-[1.55] m-0">{item.d}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

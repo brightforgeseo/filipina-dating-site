@@ -5,8 +5,8 @@ import type { Dict } from './en';
 export const tl: Dict = {
   meta: {
     home: {
-      title: 'FilWest — Dating para sa mga Filipina at sa mga nagmamahal sa kanila',
-      desc: 'Ang FilWest ay dating site para sa mga Filipina at sa mga taong nagmamahal sa kanila. Verified na mga profile, tapat na hangarin — sa web at sa app.',
+      title: 'FilWest — Verified na Filipino-Western Dating para sa Totoong Relasyon',
+      desc: 'Ang FilWest ang lugar kung saan bumubuo ng totoong relasyon ang mga Filipina at Western na lalaki. Verified na profile, babala laban sa scam sa bawat chat, libreng EN–Tagalog na translation, at video call bago bumili ng ticket.',
     },
     pricing: {
       title: 'Presyo — FilWest',
@@ -37,6 +37,7 @@ export const tl: Dict = {
     company: 'Kumpanya',
     legal: 'Legal',
     aboutSafety: 'Tungkol sa kaligtasan',
+    guides: 'Mga gabay sa dating',
     contact: 'Makipag-ugnayan',
     terms: 'Mga Tuntunin',
     privacy: 'Privacy',
@@ -45,10 +46,10 @@ export const tl: Dict = {
 
   hero: {
     chip: 'Sa iOS, Android, at web',
-    line1: 'Totoong tao.',
-    line2: 'Totoong hangarin.',
+    line1: 'Verified na profile.',
+    line2: 'Tapat na hangarin.',
     line3: 'Totoong pag-ibig.',
-    body: 'Ang FilWest ay dating app para sa mga Filipina at sa mga taong nagmamahal sa kanila. ID-verified na badge, libreng tap-to-translate sa chat sa English at Tagalog, at iisang account — sa phone ka man o sa browser.',
+    body: 'Ang FilWest ang lugar kung saan bumubuo ng totoong relasyon ang mga Filipina at Western na lalaki. ID-verified na badge, babala laban sa scam sa bawat chat, libreng translation sa English at Tagalog, at video call bago pa man bumili ng ticket ang sinuman.',
     ctaSignup: 'Mag-sign up nang libre',
     ctaHow: 'Paano ito gumagana',
     freeNote: 'Libre para sa mga babaeng taga-Pilipinas. Palagi.',
@@ -134,6 +135,25 @@ export const tl: Dict = {
       },
     ],
     note: 'Ang mga subscription ay binibili at pinamamahalaan sa FilWest mobile app. Pareho ang account mo — at lahat ng binubuksan ng plan — sa app at sa web.',
+    promisesTitle: 'Patas at transparent.',
+    promises: [
+      { t: 'Libre para sa mga Filipina, habambuhay', d: 'Ang buong app — messaging, matching, translation — ay walang bayad para sa mga babaeng taga-Pilipinas.' },
+      { t: 'Walang credits, walang coins', d: 'Isang subscription, kasama na ang lahat. Hindi kami naniningil kada mensahe.' },
+      { t: 'Kanselahin anumang oras', d: 'Pinamamahalaan ang subscription sa app store — kanselahin sa dalawang tap at magagamit pa rin hanggang matapos ang panahon.' },
+      { t: 'Hindi kailanman binabayaran ang kaligtasan', d: 'Libre ang blocking, reporting, babala laban sa scam, at verification para sa bawat member.' },
+    ],
+  },
+
+  different: {
+    eyebrow: 'Bakit FilWest',
+    title: 'Hindi basta isa pang dating app.',
+    items: [
+      { t: 'Hindi database ng mga patay na profile', d: 'Awtomatikong tinatago ang mga hindi aktibong profile. Ang nakikita mo sa Discover ay mga taong talagang narito.' },
+      { t: 'Hindi laro ng swipe', d: 'Ang mga profile ay nakatuon sa hangarin — kasal, pangmatagalang plano, timeline ng pagkikita — hindi lang mga photo.' },
+      { t: 'Walang credit traps', d: 'Walang coins, walang bayad kada mensahe. Isang simpleng subscription para sa mga partner sa abroad; hinding-hindi nagbabayad ang mga Filipina.' },
+      { t: 'Walang pressure na umalis ng platform', d: 'Ang messaging, photo, at video ay nananatili sa loob ng FilWest, kung saan pinoprotektahan ka ng blocking, reporting, at babala laban sa scam.' },
+      { t: 'Ginawa para sa Filipino-Western na pag-ibig', d: 'May built-in na Tagalog at Cebuano, iginagalang ang kulturang pamilya-muna, at dinisenyo para sa distansya sa pagitan ng Maynila at Manchester.' },
+    ],
   },
 
   pricingPage: { eyebrow: 'Presyo', h1a: 'Patas na presyo.', h1b: 'Tapat na hangarin.' },
@@ -143,6 +163,15 @@ export const tl: Dict = {
     h1a: 'Kaligtasan muna,',
     h1b: 'sa bawat hakbang.',
     intro: 'Gumagana lang ang long-distance dating kung ligtas ang pakiramdam ng lahat. Magpa-verify gamit ang government ID at live selfie para makuha ang badge mo, magkita nang harapan sa encrypted video call bago magplano ng biyahe, at hayaang awtomatikong i-flag ng aming mga sistema ang panghihingi ng pera para suriin ng tao.',
+    howTitle: 'Paano ka pinoprotektahan ng FilWest',
+    how: [
+      { t: 'Pag-iwas sa pekeng profile', d: 'Kailangang i-verify ng bawat account ang email bago gamitin ang FilWest, at maaaring magpa-verify ang mga member gamit ang government ID at live selfie sa app. Awtomatikong inaalis sa Discover ang mga hindi aktibo at hindi kumpletong profile.' },
+      { t: 'Labag sa patakaran ang panghihingi ng pera', d: 'Ang paghingi ng pera, gift card, o padala sa mga member ay dahilan para ma-ban. Awtomatikong nagpapakita ng babala ang chat kapag may binanggit na paglilipat ng pera, at isang tap lang ang pag-report.' },
+      { t: 'Ano ang nangyayari kapag nag-report ka', d: 'Direktang napupunta ang mga report sa aming review queue kasama ang ebidensya ng mensahe. Hindi kailanman malalaman ng na-report kung sino ang nag-report, at bina-ban ang paulit-ulit na lumalabag.' },
+      { t: 'Video bago lumipad', d: 'Magkita nang harapan sa video call sa app bago magplano ng kahit anong biyahe. Ang taong laging may dahilan para iwasan ang video ay red flag.' },
+      { t: 'Para sa mga lalaki sa abroad', d: 'Huwag kailanman magpadala ng pera sa taong hindi mo pa nakikilala nang personal — anuman ang kwento. Mauunawaan ito ng totoong partner. Panatilihin ang usapan sa loob ng FilWest kung saan pinoprotektahan ka ng mga babala at pag-report.' },
+      { t: 'Para sa mga Filipina', d: 'Wala kang utang na photo, video, o atensyon kaninuman dahil lang may subscription sila. I-block at i-report ang sinumang namimilit — kumpidensyal ito, at hinding-hindi mo na sila makikita ulit.' },
+    ],
   },
 
   showcase: {

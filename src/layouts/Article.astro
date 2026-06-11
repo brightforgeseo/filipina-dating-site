@@ -1,0 +1,37 @@
+---
+import Site from './Site.astro';
+const { title, description, eyebrow = 'Guides', heading } = Astro.props;
+---
+<Site title={title} description={description}>
+  <article class="max-w-[760px] mx-auto px-8 pt-16 pb-24">
+    <div class="eyebrow">{eyebrow}</div>
+    <h1 class="heading-display mt-3" style="font-size: clamp(36px, 5vw, 56px)">{heading}</h1>
+    <div class="legal-body mt-10">
+      <slot />
+    </div>
+    <div class="mt-14 pt-8 border-t border-line flex flex-wrap gap-3 items-center justify-between">
+      <a href="/guides" class="btn btn-ghost btn-sm">← All guides</a>
+      <a href="/signup" class="btn btn-primary btn-sm">Join FilWest free</a>
+    </div>
+  </article>
+</Site>
+
+<style is:global>
+  .legal-body h2 {
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    font-size: 22px;
+    margin: 36px 0 12px;
+  }
+  .legal-body p, .legal-body li {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .legal-body p { margin: 0 0 14px; }
+  .legal-body ul { margin: 0 0 14px; padding-left: 22px; }
+  .legal-body li { margin-bottom: 6px; }
+  .legal-body a { color: var(--coral); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .legal-body strong { color: var(--ink); }
+</style>

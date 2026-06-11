@@ -3,8 +3,8 @@
 export const en = {
   meta: {
     home: {
-      title: 'FilWest — Dating for Filipinas and the people who love them',
-      desc: 'FilWest is a dating site for Filipinas and the people who love them. Verified profiles, honest intentions — on the web and on the app.',
+      title: 'FilWest — Verified Filipino-Western Dating for Real Relationships',
+      desc: 'FilWest is where Filipinas and Western men build real relationships. Verified profiles, scam warnings in every chat, free EN–Tagalog translation, and video calls before anyone books a flight.',
     },
     pricing: {
       title: 'Pricing — FilWest',
@@ -35,6 +35,7 @@ export const en = {
     company: 'Company',
     legal: 'Legal',
     aboutSafety: 'About safety',
+    guides: 'Dating guides',
     contact: 'Contact',
     terms: 'Terms',
     privacy: 'Privacy',
@@ -43,10 +44,10 @@ export const en = {
 
   hero: {
     chip: 'On iOS, Android, and the web',
-    line1: 'Real people.',
-    line2: 'Real intent.',
+    line1: 'Verified profiles.',
+    line2: 'Honest intentions.',
     line3: 'Real love.',
-    body: "FilWest is a dating app for Filipinas and the people who love them. ID-verified badges, free tap-to-translate chat in English and Tagalog, and the same account whether you're on your phone or your browser.",
+    body: 'FilWest is where Filipinas and Western men build real relationships. ID-verified badges, scam warnings in every chat, free translation between English and Tagalog, and video calls before anyone books a flight.',
     ctaSignup: 'Sign up free',
     ctaHow: 'See how it works',
     freeNote: 'Free for women from the Philippines. Always.',
@@ -132,6 +133,25 @@ export const en = {
       },
     ],
     note: 'Subscriptions are purchased and managed in the FilWest mobile app. Your account — and everything a plan unlocks — is the same on the app and on the web.',
+    promisesTitle: 'Fair and transparent.',
+    promises: [
+      { t: 'Free for Filipinas, forever', d: 'The whole app — messaging, matching, translation — costs nothing for women from the Philippines.' },
+      { t: 'No credits, no coins', d: 'One subscription with everything included. We never charge per message.' },
+      { t: 'Cancel anytime', d: 'Subscriptions are managed in the app store — cancel in two taps and keep access until the period ends.' },
+      { t: 'Safety is never paywalled', d: 'Blocking, reporting, scam warnings, and verification are free for every member.' },
+    ],
+  },
+
+  different: {
+    eyebrow: 'Why FilWest',
+    title: 'Not another dating app.',
+    items: [
+      { t: 'Not a dead-profile database', d: 'Inactive profiles are hidden automatically. What you see in Discover is people who are actually here.' },
+      { t: 'Not a casual swipe game', d: 'Profiles are built around intent — marriage, long-term plans, timelines to meet — not just photos.' },
+      { t: 'No credit traps', d: 'No coins, no pay-per-message. One simple subscription for partners abroad; Filipinas never pay.' },
+      { t: 'No pressure to move off-platform', d: 'Messaging, photos, and video stay inside FilWest, where blocking, reporting, and scam warnings protect you.' },
+      { t: 'Built for Filipino-Western love', d: 'Tagalog and Cebuano built in, family-first culture respected, and designed for the distance between Manila and Manchester.' },
+    ],
   },
 
   pricingPage: { eyebrow: 'Pricing', h1a: 'Fair pricing.', h1b: 'Honest intent.' },
@@ -141,6 +161,15 @@ export const en = {
     h1a: 'Safety first,',
     h1b: 'every step.',
     intro: 'Long-distance dating only works if everyone feels safe. Verify with a government ID and a live selfie to earn your badge, meet face-to-face over encrypted video calls before planning a trip, and let our systems flag money requests automatically for human review.',
+    howTitle: 'How FilWest protects you',
+    how: [
+      { t: 'Fake-profile prevention', d: 'Every account must verify its email before using FilWest, and members can verify with a government ID and live selfie in the app. Inactive and incomplete profiles are pushed out of Discover automatically.' },
+      { t: 'Money requests are against the rules', d: 'Asking members for money, gift cards, or remittances is a bannable offence. Chat shows an automatic warning whenever a message mentions money transfers, and reporting it takes one tap.' },
+      { t: 'What happens when you report', d: 'Reports go straight to our review queue with the message evidence attached. The member you report is never told who reported them, and repeat offenders are banned.' },
+      { t: 'Video before you fly', d: 'Meet face-to-face over a video call in the app before planning any trip. Someone who always has a reason to avoid video is a red flag.' },
+      { t: 'For men abroad', d: 'Never send money to someone you have not met — no matter the story. Real partners will understand. Keep conversations inside FilWest, where warnings and reporting protect you.' },
+      { t: 'For Filipinas', d: 'You never owe anyone photos, video, or attention because they have a subscription. Block and report anyone who pressures you — it is confidential, and you will never see them again.' },
+    ],
   },
 
   showcase: {

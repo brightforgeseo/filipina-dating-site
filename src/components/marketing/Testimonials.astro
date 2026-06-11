@@ -1,28 +1,27 @@
 ---
-const stories = [
-  { quote: "I signed up on my laptop, finished my profile on the app on the train, and had my first real conversation that evening. Same account, no friction.", name: "David", meta: "Austin · matched with Mariel, Cebu", color: "var(--blush)" },
-  { quote: "The ID check gave me confidence. Every match I've had is a real person — no fakes, no time wasters.", name: "Marcus", meta: "London · matched with Angeline, Davao", color: "#FFE5EC" },
-  { quote: "The translation button changed how I talk to him. I can say what I actually mean in Tagalog and he still reads it in English.", name: "Rhea", meta: "Iloilo · matched with Tom, Vancouver", color: "#FFD6E0" },
-];
+import { t, type Lang } from '../../i18n';
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+const colors = ['var(--blush)', '#FFE5EC', '#FFD6E0'];
 ---
 <section id="stories" class="pb-24">
   <div class="max-w-[1240px] mx-auto px-8">
     <div class="max-w-[760px] mx-auto text-center mb-14 flex flex-col gap-3.5">
-      <div class="eyebrow">From members</div>
-      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">Couples who started here.</h2>
+      <div class="eyebrow">{d.stories.eyebrow}</div>
+      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">{d.stories.title}</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      {stories.map(t => (
+      {d.stories.items.map((s, i) => (
         <div class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-4">
           <div class="font-display text-[44px] text-coral leading-none -mb-3">“</div>
-          <div class="text-[16px] leading-[1.5] text-ink">{t.quote}</div>
+          <div class="text-[16px] leading-[1.5] text-ink">{s.quote}</div>
           <div class="flex items-center gap-3 mt-auto pt-5 border-t border-line">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center font-display font-semibold text-ink" style={`background: ${t.color}`}>
-              {t.name[0]}
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-display font-semibold text-ink" style={`background: ${colors[i]}`}>
+              {s.name[0]}
             </div>
             <div>
-              <div class="text-sm font-semibold">{t.name}</div>
-              <div class="text-xs text-muted">{t.meta}</div>
+              <div class="text-sm font-semibold">{s.name}</div>
+              <div class="text-xs text-muted">{s.meta}</div>
             </div>
           </div>
         </div>

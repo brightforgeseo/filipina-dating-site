@@ -2,13 +2,26 @@
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/globals.css';
+import { parsePath, localizePath, LOCALIZED_PATHS, type Lang } from '../i18n';
+
 const {
   title = 'FilWest — Filipina Dating',
   description = 'FilWest is a dating site for Filipinas and the people who love them. Verified profiles, honest intentions — on the web and on the app.',
-} = Astro.props;
+  lang = 'en',
+} = Astro.props as { title?: string; description?: string; lang?: Lang };
+
+// hreflang alternates only for pages that actually exist in all languages.
+const { base } = parsePath(Astro.url.pathname);
+const localized = LOCALIZED_PATHS.includes(base);
+const alternates = localized
+  ? (['en', 'tl', 'ceb'] as Lang[]).map((code) => ({
+      code,
+      href: new URL(localizePath(base, code), Astro.site),
+    }))
+  : [];
 ---
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -23,10 +36,19 @@ const {
   <meta property="og:description" content={description}/>
   <meta property="og:image" content={new URL('/og-image.png', Astro.site)}/>
   <meta name="twitter:card" content="summary_large_image"/>
+  {alternates.map((a) => <link rel="alternate" hreflang={a.code} href={a.href} />)}
+  {localized && <link rel="alternate" hreflang="x-default" href={new URL(base, Astro.site)} />}
 </head>
 <body>
-  <Nav />
+  {localized && (
+    // Visiting a localized page is choosing that language — remember it so
+    // the app (/app/*) follows along.
+    <script is:inline define:vars={{ lang }}>
+      try { localStorage.setItem('filwest.lang', lang); } catch {}
+    </script>
+  )}
+  <Nav lang={lang} />
   <slot />
-  <Footer />
+  <Footer lang={lang} />
 </body>
 </html>

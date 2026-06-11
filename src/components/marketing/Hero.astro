@@ -1,4 +1,8 @@
 ---
+import { t, localizePath, type Lang } from '../../i18n';
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+const l = (p: string) => localizePath(p, lang);
 ---
 <section class="relative pt-16 pb-24 overflow-hidden">
   <div class="absolute -top-20 -right-20 w-[520px] h-[520px] rounded-full opacity-40" style="background: radial-gradient(closest-side, var(--blush), transparent)"></div>
@@ -8,22 +12,21 @@
     <div>
       <div class="chip chip-coral">
         <span class="w-1.5 h-1.5 rounded-full" style="background: var(--coral)"></span>
-        On iOS, Android, and the web
+        {d.hero.chip}
       </div>
       <h1 class="heading-display mt-5" style="font-size: clamp(52px, 6.8vw, 92px)">
-        Real people.<br/>
-        Real intent.<br/>
-        <span class="text-coral">Real love.</span>
+        {d.hero.line1}<br/>
+        {d.hero.line2}<br/>
+        <span class="text-coral">{d.hero.line3}</span>
       </h1>
       <p class="text-[17px] leading-[1.6] text-ink-soft max-w-[480px] mt-6">
-        FilWest is a dating app for Filipinas and the people who love them.
-        ID-verified badges, free tap-to-translate chat in English and Tagalog, and the same account whether you're on your phone or your browser.
+        {d.hero.body}
       </p>
       <div class="mt-8 flex gap-3 items-center flex-wrap">
-        <a href="/signup" class="btn btn-primary btn-lg">Sign up free <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
-        <a href="/#how" class="btn btn-ghost btn-lg">See how it works</a>
+        <a href={l('/signup')} class="btn btn-primary btn-lg">{d.hero.ctaSignup} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        <a href={l('/#how')} class="btn btn-ghost btn-lg">{d.hero.ctaHow}</a>
       </div>
-      <div class="mt-8 text-xs text-muted">Free for women from the Philippines. Always.</div>
+      <div class="mt-8 text-xs text-muted">{d.hero.freeNote}</div>
     </div>
 
     <div class="relative h-[540px] flex items-center justify-center">
@@ -36,7 +39,7 @@
             <div class="flex-1 h-1 rounded bg-white/40"></div>
           </div>
           <div class="absolute top-16 right-5 text-white text-[10px] px-2.5 py-1 rounded-full flex items-center gap-1 font-medium" style="background: var(--coral)">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 3v7c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg> Verified
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 3v7c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg> {d.hero.verified}
           </div>
           <div class="absolute bottom-5 left-5 right-5 text-ink">
             <div class="font-display font-bold text-[30px] leading-none">Mariel, 26</div>
@@ -45,7 +48,7 @@
               Cebu City
             </div>
             <div class="text-[12px] mt-3 leading-[1.45] px-3 py-2.5 rounded-xl bg-white/75 backdrop-blur-sm">
-              "Teacher, coffee person, family first. Looking for something that feels like home."
+              {d.hero.phoneBio}
             </div>
             <div class="flex gap-2.5 justify-center mt-4">
               <button class="w-[44px] h-[44px] rounded-full bg-white flex items-center justify-center text-ink-soft shadow">
@@ -67,8 +70,8 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.5-9.5-10C1 7 4 4 7.5 4c2 0 3.5 1 4.5 2.5C13 5 14.5 4 16.5 4 20 4 23 7 21.5 11 19.5 16.5 12 21 12 21z"/></svg>
         </div>
         <div>
-          <div class="text-xs font-semibold text-ink">It's a match!</div>
-          <div class="text-[10px] text-muted">You &amp; Mariel</div>
+          <div class="text-xs font-semibold text-ink">{d.hero.matchTitle}</div>
+          <div class="text-[10px] text-muted">{d.hero.matchSub}</div>
         </div>
       </div>
       <div class="absolute bottom-10 -right-2 bg-white border border-line rounded-2xl px-3.5 py-2.5 shadow flex items-center gap-2.5">
@@ -76,8 +79,8 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 6"/></svg>
         </div>
         <div>
-          <div class="text-xs font-semibold text-ink">ID verified</div>
-          <div class="text-[10px] text-muted">Look for the badge</div>
+          <div class="text-xs font-semibold text-ink">{d.hero.idVerifiedTitle}</div>
+          <div class="text-[10px] text-muted">{d.hero.idVerifiedSub}</div>
         </div>
       </div>
     </div>

@@ -1,0 +1,17 @@
+---
+import Site from '../../layouts/Site.astro';
+import Pricing from '../marketing/Pricing.astro';
+import { t, type Lang } from '../../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<Site title={d.meta.pricing.title} description={d.meta.pricing.desc} lang={lang}>
+  <div class="max-w-[1240px] mx-auto px-8 pt-16 pb-6 text-center">
+    <div class="eyebrow">{d.pricingPage.eyebrow}</div>
+    <h1 class="heading-display mt-3 mx-auto" style="font-size: clamp(42px, 6vw, 72px); max-width: 800px">
+      {d.pricingPage.h1a}<br/><span class="text-coral">{d.pricingPage.h1b}</span>
+    </h1>
+  </div>
+  <Pricing lang={lang} />
+</Site>

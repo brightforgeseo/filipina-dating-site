@@ -1,25 +1,55 @@
 ---
 import LogoMark from './LogoMark.astro';
+import { t, parsePath, localizePath, LOCALIZED_PATHS, type Lang } from '../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+const l = (p: string) => localizePath(p, lang);
+
+// Where each language's version of the current page lives. Pages that only
+// exist in English (legal pages) switch via the homepage instead of 404ing.
+const { base } = parsePath(Astro.url.pathname);
+const switchBase = LOCALIZED_PATHS.includes(base) ? base : '/';
 ---
 <nav class="sticky top-0 z-50 backdrop-blur-xl border-b border-line" style="background: rgba(255,245,247,0.88)">
-  <div class="max-w-[1240px] mx-auto px-8 h-[68px] flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2.5 font-display text-[22px] font-bold tracking-[-0.02em] text-ink">
+  <div class="max-w-[1240px] mx-auto px-8 h-[68px] flex items-center justify-between max-md:px-4">
+    <a href={l('/')} class="flex items-center gap-2.5 font-display text-[22px] font-bold tracking-[-0.02em] text-ink">
       <LogoMark />
       FilWest
     </a>
     <div class="hidden md:flex gap-7 text-sm text-ink-soft font-medium">
-      <a href="/#how" class="hover:text-coral transition">How it works</a>
-      <a href="/safety" class="hover:text-coral transition">Safety</a>
-      <a href="/#stories" class="hover:text-coral transition">Stories</a>
-      <a href="/pricing" class="hover:text-coral transition">Pricing</a>
-      <a href="/#app" class="hover:text-coral transition">Get the app</a>
+      <a href={l('/#how')} class="hover:text-coral transition">{d.nav.how}</a>
+      <a href={l('/safety')} class="hover:text-coral transition">{d.nav.safety}</a>
+      <a href={l('/#stories')} class="hover:text-coral transition">{d.nav.stories}</a>
+      <a href={l('/pricing')} class="hover:text-coral transition">{d.nav.pricing}</a>
+      <a href={l('/#app')} class="hover:text-coral transition">{d.nav.app}</a>
     </div>
-    <div class="flex gap-2.5 items-center">
-      <a href="/login" class="btn btn-ghost btn-sm">Log in</a>
-      <a href="/signup" class="btn btn-primary btn-sm">
-        Sign up
+    <div class="flex gap-2.5 items-center max-md:gap-1.5">
+      <select
+        aria-label="Language / Wika / Pinulongan"
+        class="lang-select text-[13px] font-medium border border-line rounded-lg px-1.5 py-1.5 bg-white text-ink-soft outline-none cursor-pointer hover:border-coral"
+        data-base={switchBase}
+      >
+        <option value="en" selected={lang === 'en'}>EN</option>
+        <option value="tl" selected={lang === 'tl'}>TL</option>
+        <option value="ceb" selected={lang === 'ceb'}>CEB</option>
+      </select>
+      <a href={l('/login')} class="btn btn-ghost btn-sm">{d.nav.login}</a>
+      <a href={l('/signup')} class="btn btn-primary btn-sm">
+        {d.nav.signup}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
     </div>
   </div>
 </nav>
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('.lang-select').forEach((el) => {
+    el.addEventListener('change', () => {
+      const lang = el.value;
+      const base = el.dataset.base || '/';
+      try { localStorage.setItem('filwest.lang', lang); } catch {}
+      location.href = lang === 'en' ? base : `/${lang}${base === '/' ? '/' : base}`;
+    });
+  });
+</script>

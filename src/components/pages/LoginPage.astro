@@ -1,0 +1,11 @@
+---
+import Site from '../../layouts/Site.astro';
+import LoginForm from '../auth/LoginForm.tsx';
+import { t, type Lang } from '../../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<Site title={d.meta.login.title} description={d.meta.login.desc} lang={lang}>
+  <LoginForm lang={lang} client:load />
+</Site>

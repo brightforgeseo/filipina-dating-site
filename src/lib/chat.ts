@@ -128,17 +128,33 @@ export function subscribeConversations(userId: string, cb: (cs: Conversation[]) 
   return () => { u1(); u2(); };
 }
 
-export function formatTime(ts: any): string {
+export type TimeStrings = {
+  justNow: string;
+  minutes: (m: number) => string;
+  hours: (h: number) => string;
+  yesterday: string;
+  days: (d: number) => string;
+};
+
+const TIME_EN: TimeStrings = {
+  justNow: 'Just now',
+  minutes: (m) => `${m}m ago`,
+  hours: (h) => `${h}h ago`,
+  yesterday: 'Yesterday',
+  days: (d) => `${d}d ago`,
+};
+
+export function formatTime(ts: any, t: TimeStrings = TIME_EN): string {
   if (!ts?.seconds) return '';
   const d = new Date(ts.seconds * 1000);
   const diff = Date.now() - d.getTime();
   const m = Math.floor(diff / 60000);
   const h = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
-  if (m < 1) return 'Just now';
-  if (m < 60) return `${m}m ago`;
-  if (h < 24) return `${h}h ago`;
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
+  if (m < 1) return t.justNow;
+  if (m < 60) return t.minutes(m);
+  if (h < 24) return t.hours(h);
+  if (days === 1) return t.yesterday;
+  if (days < 7) return t.days(days);
   return d.toLocaleDateString();
 }

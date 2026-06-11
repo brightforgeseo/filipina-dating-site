@@ -1,21 +1,18 @@
 ---
-const steps = [
-  { n: '1', title: 'Create your profile', body: 'Sign up free in two steps. Then get verified — a government ID and a live selfie, reviewed by a human team — to earn your badge.' },
-  { n: '2', title: 'Swipe and match', body: 'Browse real people near you and abroad. When you both like each other, it’s a match.' },
-  { n: '3', title: 'Chat and translate', body: 'Send messages, photos, and videos. Tap any message to translate between English and Tagalog — free for everyone.' },
-  { n: '4', title: 'Video call when ready', body: 'Meet face-to-face over an encrypted video call before you plan a trip. No rush, no pressure.' },
-];
+import { t, type Lang } from '../../i18n';
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
 ---
 <section id="how" class="py-24">
   <div class="max-w-[1240px] mx-auto px-8">
     <div class="max-w-[760px] mx-auto text-center mb-14 flex flex-col gap-3.5">
-      <div class="eyebrow">How FilWest works</div>
-      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">Four steps from hello to hello in person.</h2>
+      <div class="eyebrow">{d.how.eyebrow}</div>
+      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">{d.how.title}</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-      {steps.map(s => (
+      {d.how.steps.map((s, i) => (
         <div class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-3 hover:shadow-lg transition-shadow">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background: var(--coral)">{s.n}</div>
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background: var(--coral)">{i + 1}</div>
           <h3 class="font-display font-semibold text-[20px] tracking-[-0.01em] leading-[1.2] mt-2">{s.title}</h3>
           <p class="text-sm text-ink-soft leading-[1.5] m-0">{s.body}</p>
         </div>

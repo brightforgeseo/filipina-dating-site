@@ -1,0 +1,20 @@
+---
+import Site from '../../layouts/Site.astro';
+import Safety from '../marketing/Safety.astro';
+import { t, type Lang } from '../../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<Site title={d.meta.safety.title} description={d.meta.safety.desc} lang={lang}>
+  <div class="max-w-[1240px] mx-auto px-8 pt-16 pb-6">
+    <div class="eyebrow">{d.safetyPage.eyebrow}</div>
+    <h1 class="heading-display mt-3" style="font-size: clamp(42px, 6vw, 72px)">
+      {d.safetyPage.h1a}<br/><span class="text-coral">{d.safetyPage.h1b}</span>
+    </h1>
+    <p class="text-[16px] leading-[1.6] text-ink-soft max-w-[640px] mt-5">
+      {d.safetyPage.intro}
+    </p>
+  </div>
+  <Safety lang={lang} />
+</Site>

@@ -1,0 +1,23 @@
+---
+import Site from '../../layouts/Site.astro';
+import Hero from '../marketing/Hero.astro';
+import FeatureBar from '../marketing/FeatureBar.astro';
+import HowItWorks from '../marketing/HowItWorks.astro';
+import Safety from '../marketing/Safety.astro';
+import Testimonials from '../marketing/Testimonials.astro';
+import Pricing from '../marketing/Pricing.astro';
+import AppShowcase from '../marketing/AppShowcase.astro';
+import { t, type Lang } from '../../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<Site title={d.meta.home.title} description={d.meta.home.desc} lang={lang}>
+  <Hero lang={lang} />
+  <FeatureBar lang={lang} />
+  <HowItWorks lang={lang} />
+  <Safety lang={lang} />
+  <Testimonials lang={lang} />
+  <Pricing lang={lang} />
+  <AppShowcase lang={lang} />
+</Site>

@@ -8,6 +8,7 @@ import { getProfile, listProfiles, saveProfile, type Profile } from '../../lib/p
 import { recordSwipe, getSwipedIds } from '../../lib/matching';
 import { getBlockedIds } from '../../lib/blocking';
 import { markOnline } from '../../lib/presence';
+import { useLang } from '../../i18n/react';
 
 type Prefs = { gender: 'female' | 'male' | 'all'; ageMin: number; ageMax: number };
 const DEFAULT_PREFS: Prefs = { gender: 'all', ageMin: 18, ageMax: 99 };
@@ -19,6 +20,8 @@ function matchesPrefs(p: Profile, prefs: Prefs): boolean {
 }
 
 export default function Browse() {
+  const { d } = useLang();
+  const B = d.app.browse;
   const { user, loading } = useAuth();
   const [me, setMe] = React.useState<Profile | null>(null);
   const [profiles, setProfiles] = React.useState<Profile[] | null>(null);
@@ -70,7 +73,7 @@ export default function Browse() {
     try {
       const res = await recordSwipe(user.uid, p.id, direction);
       if (res.matched) {
-        setToast(`It's a match with ${res.matchedName || p.name}! Start chatting →`);
+        setToast(B.matchToast(res.matchedName || p.name));
         setTimeout(() => setToast(null), 4500);
       }
     } catch {
@@ -82,7 +85,7 @@ export default function Browse() {
     }
   };
 
-  if (loading || !user) return <FullScreenLoader />;
+  if (loading || !user) return <FullScreenLoader text={d.app.loading} />;
   if (needsEmailVerification(user)) return <VerifyEmail user={user} />;
 
   const visible = profiles?.filter((p) => !swiped[p.id] && matchesPrefs(p, prefs));
@@ -94,22 +97,22 @@ export default function Browse() {
         <div className="sticky top-0 z-10 px-10 py-6 border-b border-line backdrop-blur-xl max-md:px-5 max-md:py-4" style={{ background: 'rgba(255,245,247,0.88)' }}>
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-display font-bold text-[30px] m-0 tracking-[-0.015em]">Discover</h1>
-              <div className="text-[13px] text-muted mt-1">Real people, ready to meet.</div>
+              <h1 className="font-display font-bold text-[30px] m-0 tracking-[-0.015em]">{B.title}</h1>
+              <div className="text-[13px] text-muted mt-1">{B.sub}</div>
             </div>
             <div className="flex gap-2 items-center flex-wrap text-[13px]">
-              <label className="text-muted" htmlFor="pref-gender">Show</label>
+              <label className="text-muted" htmlFor="pref-gender">{B.show}</label>
               <select
                 id="pref-gender"
                 value={prefs.gender}
                 onChange={(e) => updatePrefs({ ...prefs, gender: e.target.value as Prefs['gender'] })}
                 className="px-3 py-2 rounded-xl border border-line bg-white outline-none focus:border-coral"
               >
-                <option value="all">Everyone</option>
-                <option value="female">Women</option>
-                <option value="male">Men</option>
+                <option value="all">{B.everyone}</option>
+                <option value="female">{B.women}</option>
+                <option value="male">{B.men}</option>
               </select>
-              <label className="text-muted" htmlFor="pref-age-min">Age</label>
+              <label className="text-muted" htmlFor="pref-age-min">{B.age}</label>
               <input
                 id="pref-age-min"
                 type="number" min={18} max={99}
@@ -119,7 +122,7 @@ export default function Browse() {
               />
               <span className="text-muted">–</span>
               <input
-                aria-label="Maximum age"
+                aria-label={B.maxAge}
                 type="number" min={18} max={99}
                 value={prefs.ageMax}
                 onChange={(e) => updatePrefs({ ...prefs, ageMax: Math.min(99, Number(e.target.value) || 99) })}
@@ -132,23 +135,23 @@ export default function Browse() {
         {toast && (
           <div className="mx-10 mt-6 px-5 py-4 rounded-2xl text-white font-semibold flex items-center gap-3 shadow-lg max-md:mx-5" style={{ background: 'linear-gradient(135deg, var(--forest), var(--coral))' }}>
             <Icon.Heart size={18} filled /> {toast}
-            <a href="/app/messages" className="ml-auto underline underline-offset-2 text-sm">Open messages</a>
+            <a href="/app/messages" className="ml-auto underline underline-offset-2 text-sm">{B.openMessages}</a>
           </div>
         )}
 
         <div className="p-10 max-md:p-5">
           {error ? (
             <div className="text-center py-24">
-              <div className="font-display font-semibold text-2xl mb-2">Couldn't load profiles.</div>
-              <div className="text-ink-soft mb-5">Check your connection and try again.</div>
-              <button onClick={() => window.location.reload()} className="btn btn-primary">Retry</button>
+              <div className="font-display font-semibold text-2xl mb-2">{B.loadFailTitle}</div>
+              <div className="text-ink-soft mb-5">{B.loadFailBody}</div>
+              <button onClick={() => window.location.reload()} className="btn btn-primary">{B.retry}</button>
             </div>
           ) : visible === undefined || profiles === null ? (
-            <div className="text-center py-24 text-muted">Loading profiles…</div>
+            <div className="text-center py-24 text-muted">{B.loadingProfiles}</div>
           ) : visible.length === 0 ? (
             <div className="text-center py-24">
-              <div className="font-display font-semibold text-2xl mb-2">No profiles match right now.</div>
-              <div className="text-ink-soft">Try widening your filters, or check back soon.</div>
+              <div className="font-display font-semibold text-2xl mb-2">{B.emptyTitle}</div>
+              <div className="text-ink-soft">{B.emptyBody}</div>
             </div>
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5 max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
@@ -159,7 +162,7 @@ export default function Browse() {
                       <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{p.name?.[0] || '?'}</div>
                     )}
                     <div className="absolute top-3 left-3 flex gap-1.5">
-                      {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 8px', fontSize: 10 }}><Icon.Shield size={10} />Verified</span>}
+                      {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 8px', fontSize: 10 }}><Icon.Shield size={10} />{B.verified}</span>}
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 text-white">
                       <div className="font-display font-bold text-[24px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
@@ -169,10 +172,10 @@ export default function Browse() {
                   {p.bio && <div className="px-4 py-3 text-[13px] text-ink-soft line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.bio}</div>}
                   <div className="flex gap-2 px-4 pb-4 mt-auto">
                     <button onClick={() => swipe(p, 'left')} className="flex-1 p-2.5 rounded-xl border border-line bg-white text-[13px] flex items-center justify-center gap-1.5 hover:bg-ivory">
-                      <Icon.X size={14} />Pass
+                      <Icon.X size={14} />{B.pass}
                     </button>
                     <button onClick={() => swipe(p, 'right')} className="flex-1 p-2.5 rounded-xl text-[13px] flex items-center justify-center gap-1.5 text-white font-semibold" style={{ background: 'var(--coral)' }}>
-                      <Icon.Heart size={14} filled />Like
+                      <Icon.Heart size={14} filled />{B.like}
                     </button>
                   </div>
                 </div>
@@ -185,6 +188,6 @@ export default function Browse() {
   );
 }
 
-function FullScreenLoader() {
-  return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">Loading…</div>;
+function FullScreenLoader({ text }: { text: string }) {
+  return <div className="min-h-screen flex items-center justify-center bg-ivory text-muted">{text}</div>;
 }

@@ -1,10 +1,7 @@
 ---
-const items = [
-  { t: 'ID + selfie verification', d: 'Members can verify with a government ID and a live selfie, reviewed by a human team. Approved members earn a verified badge — look for it before you get attached.' },
-  { t: 'Video calls built in', d: 'Encrypted video calls right in the app, so you can meet face-to-face before planning a trip. Nobody flies blind.' },
-  { t: 'No money requests', d: 'Mentions of wire transfers, gift cards, or remittances get flagged automatically for human review. Violators are banned.' },
-  { t: 'Report and block fast', d: 'One tap blocks a user everywhere, in both directions. Reports are reviewed by a real human team, not a queue that never clears.' },
-];
+import { t, type Lang } from '../../i18n';
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
 ---
 <section class="pb-24">
   <div class="max-w-[1240px] mx-auto px-8">
@@ -12,13 +9,13 @@ const items = [
       <div class="absolute top-0 right-0 w-[380px] h-[380px] rounded-full opacity-20" style="background: radial-gradient(closest-side, var(--coral), transparent)"></div>
       <div class="grid md:grid-cols-[1.1fr_1fr] gap-14 items-start relative">
         <div>
-          <div class="eyebrow" style="color: var(--coral-2)">Safety</div>
-          <h2 class="heading-1 my-4" style="font-size: clamp(36px, 5vw, 54px)">Safe by default.</h2>
+          <div class="eyebrow" style="color: var(--coral-2)">{d.safety.eyebrow}</div>
+          <h2 class="heading-1 my-4" style="font-size: clamp(36px, 5vw, 54px)">{d.safety.title}</h2>
           <p class="text-[16px] leading-[1.6] max-w-[520px]" style="color: rgba(255,245,247,0.75)">
-            Long-distance dating only works if everyone feels safe. FilWest is built around that — starting the day you sign up, not once something goes wrong.
+            {d.safety.body}
           </p>
           <div class="flex flex-col gap-4 mt-8">
-            {items.map((s,i) => (
+            {d.safety.items.map((s,i) => (
               <div class={`flex gap-4 items-start py-4 ${i>0 ? 'border-t border-white/10' : ''}`}>
                 <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background: rgba(255,107,157,0.18); color: var(--coral-2)">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v7c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg>
@@ -32,14 +29,9 @@ const items = [
           </div>
         </div>
         <div class="rounded-[20px] p-6" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1)">
-          <div class="text-[11px] tracking-[0.12em] uppercase font-semibold mb-5" style="color: rgba(255,245,247,0.55)">Verification · live</div>
+          <div class="text-[11px] tracking-[0.12em] uppercase font-semibold mb-5" style="color: rgba(255,245,247,0.55)">{d.safety.panelTitle}</div>
           <div class="flex flex-col gap-2.5">
-            {[
-              { label: 'Government ID', value: 'Passport · verified' },
-              { label: 'Live selfie check', value: 'Match score 99.2%' },
-              { label: 'Phone number', value: '+63 9•• ••• 4421' },
-              { label: 'Account age', value: '6 months · consistent' },
-            ].map(v => (
+            {d.safety.rows.map(v => (
               <div class="flex justify-between items-center px-4 py-3 rounded-xl" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08)">
                 <div>
                   <div class="text-[13px] font-medium">{v.label}</div>

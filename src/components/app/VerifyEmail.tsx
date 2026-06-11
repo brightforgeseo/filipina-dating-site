@@ -2,8 +2,11 @@ import React from 'react';
 import type { User } from 'firebase/auth';
 import { Icon } from '../icons';
 import { sendVerification, signOutUser } from '../../lib/auth';
+import { useLang } from '../../i18n/react';
 
 export default function VerifyEmail({ user }: { user: User }) {
+  const { d } = useLang();
+  const V = d.app.verify;
   const [sent, setSent] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [checking, setChecking] = React.useState(false);
@@ -16,9 +19,7 @@ export default function VerifyEmail({ user }: { user: User }) {
       await sendVerification(user);
       setSent(true);
     } catch (e: any) {
-      setErr(e?.code?.includes('too-many-requests')
-        ? 'Too many emails sent — please wait a few minutes and try again.'
-        : 'Could not send the email. Please try again.');
+      setErr(e?.code?.includes('too-many-requests') ? V.errTooMany : V.errSend);
     } finally {
       setBusy(false);
     }
@@ -33,9 +34,9 @@ export default function VerifyEmail({ user }: { user: User }) {
         window.location.reload();
         return;
       }
-      setErr("Not verified yet — click the link in the email first, then try again.");
+      setErr(V.errNotYet);
     } catch {
-      setErr('Could not check your status. Please try again.');
+      setErr(V.errCheck);
     } finally {
       setChecking(false);
     }
@@ -47,13 +48,13 @@ export default function VerifyEmail({ user }: { user: User }) {
         <div className="w-14 h-14 rounded-full mx-auto flex items-center justify-center text-white mb-5" style={{ background: 'var(--coral)' }}>
           <Icon.Mail size={26} />
         </div>
-        <h1 className="font-display font-bold text-[26px] m-0 mb-2">Verify your email</h1>
+        <h1 className="font-display font-bold text-[26px] m-0 mb-2">{V.title}</h1>
         <p className="text-[15px] text-ink-soft leading-[1.55]">
-          We sent a verification link to <strong>{user.email}</strong>. Click it, then come back here — it keeps FilWest free of fake accounts.
+          {V.body1} <strong>{user.email}</strong>. {V.body2}
         </p>
         {sent && (
           <div className="text-sm px-3 py-2 rounded-lg mt-4" style={{ background: 'rgba(76,175,80,0.1)', color: 'var(--ok)' }}>
-            Verification email sent. Check your inbox and spam folder.
+            {V.sent}
           </div>
         )}
         {err && (
@@ -63,17 +64,17 @@ export default function VerifyEmail({ user }: { user: User }) {
         )}
         <div className="flex flex-col gap-2.5 mt-6">
           <button onClick={check} disabled={checking} className="btn btn-primary justify-center disabled:opacity-60">
-            {checking ? 'Checking…' : "I've verified — continue"}
+            {checking ? V.checking : V.continueCta}
           </button>
           <button onClick={resend} disabled={busy} className="btn btn-ghost justify-center disabled:opacity-60">
-            {busy ? 'Sending…' : 'Resend email'}
+            {busy ? V.sending : V.resend}
           </button>
         </div>
         <button
           onClick={async () => { await signOutUser(); window.location.href = '/'; }}
           className="text-xs text-muted hover:text-coral mt-5"
         >
-          Log out
+          {V.logout}
         </button>
       </div>
     </div>

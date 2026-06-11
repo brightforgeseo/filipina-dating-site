@@ -1,45 +1,59 @@
 ---
 import LogoMark from './LogoMark.astro';
 import { SUPPORT_EMAIL } from '../lib/constants';
+import { t, parsePath, localizePath, LOCALIZED_PATHS, LANGS, type Lang } from '../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+const l = (p: string) => localizePath(p, lang);
+
+const { base } = parsePath(Astro.url.pathname);
+const switchBase = LOCALIZED_PATHS.includes(base) ? base : '/';
 ---
 <footer class="pt-20 pb-10 border-t border-line">
   <div class="max-w-[1240px] mx-auto px-8">
     <div class="grid grid-cols-1 md:grid-cols-5 gap-10 mb-14">
       <div class="md:col-span-2">
-        <a href="/" class="flex items-center gap-2.5 font-display text-[22px] font-bold mb-4 text-ink"><LogoMark /> FilWest</a>
-        <p class="text-[15px] text-ink-soft max-w-[300px] leading-[1.55]">Dating for Filipinas and the people who love them. Same profiles, same messages, on the web and on the app.</p>
+        <a href={l('/')} class="flex items-center gap-2.5 font-display text-[22px] font-bold mb-4 text-ink"><LogoMark /> FilWest</a>
+        <p class="text-[15px] text-ink-soft max-w-[300px] leading-[1.55]">{d.footer.tagline}</p>
         <div class="mt-5 flex gap-2">
-          <span class="chip">Free for Filipinas</span>
+          <span class="chip">{d.footer.freeChip}</span>
         </div>
       </div>
       <div>
-        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">Product</h4>
+        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">{d.footer.product}</h4>
         <ul class="flex flex-col gap-2.5 text-sm text-ink-soft">
-          <li><a href="/#how" class="hover:text-coral">How it works</a></li>
-          <li><a href="/safety" class="hover:text-coral">Safety</a></li>
-          <li><a href="/pricing" class="hover:text-coral">Pricing</a></li>
-          <li><a href="/#app" class="hover:text-coral">Get the app</a></li>
+          <li><a href={l('/#how')} class="hover:text-coral">{d.nav.how}</a></li>
+          <li><a href={l('/safety')} class="hover:text-coral">{d.nav.safety}</a></li>
+          <li><a href={l('/pricing')} class="hover:text-coral">{d.nav.pricing}</a></li>
+          <li><a href={l('/#app')} class="hover:text-coral">{d.nav.app}</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">Company</h4>
+        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">{d.footer.company}</h4>
         <ul class="flex flex-col gap-2.5 text-sm text-ink-soft">
-          <li><a href="/safety" class="hover:text-coral">About safety</a></li>
-          <li><a href={`mailto:${SUPPORT_EMAIL}`} class="hover:text-coral">Contact</a></li>
+          <li><a href={l('/safety')} class="hover:text-coral">{d.footer.aboutSafety}</a></li>
+          <li><a href={`mailto:${SUPPORT_EMAIL}`} class="hover:text-coral">{d.footer.contact}</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">Legal</h4>
+        <h4 class="text-xs uppercase tracking-[0.1em] text-muted mb-4 font-semibold">{d.footer.legal}</h4>
         <ul class="flex flex-col gap-2.5 text-sm text-ink-soft">
-          <li><a href="/terms" class="hover:text-coral">Terms</a></li>
-          <li><a href="/privacy" class="hover:text-coral">Privacy</a></li>
-          <li><a href="/community" class="hover:text-coral">Community rules</a></li>
+          <li><a href="/terms" class="hover:text-coral">{d.footer.terms}</a></li>
+          <li><a href="/privacy" class="hover:text-coral">{d.footer.privacy}</a></li>
+          <li><a href="/community" class="hover:text-coral">{d.footer.community}</a></li>
         </ul>
       </div>
     </div>
-    <div class="flex justify-between items-center pt-7 border-t border-line text-xs text-muted">
+    <div class="flex justify-between items-center pt-7 border-t border-line text-xs text-muted flex-wrap gap-3">
       <div>© 2026 FilWest</div>
-      <div>EN · Tagalog · Cebuano</div>
+      <div class="flex gap-3">
+        {(Object.entries(LANGS) as [Lang, string][]).map(([code, name]) => (
+          code === lang
+            ? <span class="font-semibold text-ink">{name}</span>
+            : <a href={localizePath(switchBase, code)} class="hover:text-coral">{name}</a>
+        ))}
+      </div>
     </div>
   </div>
 </footer>

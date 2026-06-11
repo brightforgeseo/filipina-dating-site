@@ -1,0 +1,10 @@
+---
+import SafetyPage from '../../components/pages/SafetyPage.astro';
+import type { Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'tl' } }, { params: { lang: 'ceb' } }];
+}
+const lang = Astro.params.lang as Lang;
+---
+<SafetyPage lang={lang} />

@@ -1,0 +1,11 @@
+---
+import Site from '../../layouts/Site.astro';
+import SignupWizard from '../auth/SignupWizard.tsx';
+import { t, type Lang } from '../../i18n';
+
+const { lang = 'en' } = Astro.props as { lang?: Lang };
+const d = t(lang);
+---
+<Site title={d.meta.signup.title} description={d.meta.signup.desc} lang={lang}>
+  <SignupWizard lang={lang} client:load />
+</Site>

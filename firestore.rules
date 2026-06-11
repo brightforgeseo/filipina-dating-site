@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isMatchParticipant(matchId) {
+      let m = get(/databases/$(database)/documents/matches/$(matchId)).data;
+      return request.auth.uid == m.user1Id || request.auth.uid == m.user2Id;
+    }
+
+    // Profiles — any signed-in user can browse; only the owner can write their own doc.
+    match /profiles/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // Swipes — only the swiper can create or read their own swipes.
+    match /swipes/{swipeId} {
+      allow read: if isSignedIn() && resource.data.fromUserId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
+    }
+
+    // Matches — participants can read, update (lastMessage etc.) and delete (unmatch).
+    // Creates are allowed when the caller is user1 (set by recordSwipe on the client).
+    match /matches/{matchId} {
+      allow read, update, delete: if isSignedIn()
+        && (resource.data.user1Id == request.auth.uid
+            || resource.data.user2Id == request.auth.uid);
+      allow create: if isSignedIn()
+        && request.resource.data.user1Id == request.auth.uid;
+
+      // Messages subcollection — participants only; senders must identify themselves;
+      // only the isRead field may be updated (for read-receipts).
+      match /messages/{messageId} {
+        allow read: if isSignedIn() && isMatchParticipant(matchId);
+        allow create: if isSignedIn()
+          && isMatchParticipant(matchId)
+          && request.resource.data.senderId == request.auth.uid;
+        allow update: if isSignedIn()
+          && isMatchParticipant(matchId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+        allow delete: if isSignedIn() && isMatchParticipant(matchId);
+      }
+    }
+
+    // Blocks — blockerId can create and delete; either party can read records
+    // that involve them (needed to filter blocked users from Discover).
+    match /blocks/{blockId} {
+      allow read: if isSignedIn()
+        && (resource.data.blockerId == request.auth.uid
+            || resource.data.blockedId == request.auth.uid);
+      allow create: if isSignedIn()
+        && request.resource.data.blockerId == request.auth.uid;
+      allow delete: if isSignedIn()
+        && resource.data.blockerId == request.auth.uid;
+    }
+  }
+}

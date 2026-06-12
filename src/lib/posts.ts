@@ -146,3 +146,14 @@ export async function addComment(postId: string, author: { id: string; name: str
   const r = await addDoc(collection(db, 'posts', postId, 'comments'), payload);
   return { id: r.id, ...payload, createdAt: { seconds: Math.floor(Date.now() / 1000) } };
 }
+
+// A member's own posts for their profile page (single equality filter —
+// sorted client-side to avoid a composite index).
+export async function listUserPosts(userId: string, max = 20): Promise<Post[]> {
+  const { db } = firebase();
+  const snap = await getDocs(query(collection(db, 'posts'), where('authorId', '==', userId), limit(max)));
+  const out: Post[] = [];
+  snap.forEach((d) => out.push({ id: d.id, ...(d.data() as any) }));
+  out.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+  return out;
+}

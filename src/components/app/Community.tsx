@@ -143,8 +143,9 @@ export default function Community() {
             setMemberCounts((s) => ({ ...s, [g.id]: n }));
           } catch {}
         });
-        // Deep link: /app/community?group=<id>
+        // Deep links: /app/community?group=<id> and ?tab=groups
         const params = new URLSearchParams(window.location.search);
+        if (params.get('tab') === 'groups') setView('groups');
         const gid = params.get('group');
         if (gid) {
           const g = allGroups.find((x) => x.id === gid) ?? (await getGroup(gid).catch(() => null));

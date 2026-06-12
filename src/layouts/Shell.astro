@@ -15,5 +15,11 @@ const { title = 'FilWest' } = Astro.props;
 </head>
 <body>
   <slot />
+  <style is:global>
+    /* Room for the fixed mobile bottom tab bar. */
+    @media (max-width: 767px) {
+      body { padding-bottom: 60px; }
+    }
+  </style>
 </body>
 </html>

@@ -217,6 +217,52 @@ export const sendStreamGift = onCall(async (req) => {
   return { ok: true };
 });
 
+// ---- Send a paid gift directly to a member's profile ----
+export const sendProfileGift = onCall(async (req) => {
+  const uid = requireAuth(req.auth?.uid);
+  const targetId = String(req.data?.targetId ?? '');
+  const giftType = String(req.data?.giftType ?? '');
+  const price = GIFT_PRICES[giftType];
+  if (!targetId || !price) throw new HttpsError('invalid-argument', 'Unknown gift.');
+  if (targetId === uid) throw new HttpsError('failed-precondition', 'self-gift');
+
+  const walletRef = db.collection('wallets').doc(uid);
+  const senderRef = db.collection('profiles').doc(uid);
+  const targetRef = db.collection('profiles').doc(targetId);
+
+  await db.runTransaction(async (tx) => {
+    const [wallet, sender, target] = await Promise.all([
+      tx.get(walletRef),
+      tx.get(senderRef),
+      tx.get(targetRef),
+    ]);
+    if (!target.exists) throw new HttpsError('not-found', 'Member not found.');
+    const coins = (wallet.data()?.coins as number | undefined) ?? 0;
+    if (coins < price) throw new HttpsError('failed-precondition', 'insufficient-coins');
+
+    tx.update(walletRef, {
+      coins: admin.firestore.FieldValue.increment(-price),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    tx.set(
+      db.collection('wallets').doc(targetId),
+      {
+        earned: admin.firestore.FieldValue.increment(price),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    tx.set(targetRef.collection('gifts').doc(), {
+      senderId: uid,
+      senderName: (sender.data()?.name as string | undefined) ?? 'Member',
+      type: giftType,
+      coins: price,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+  return { ok: true };
+});
+
 // ---- Request a payout of earned coins (fulfilled manually via GCash) ----
 export const requestPayout = onCall(async (req) => {
   const uid = requireAuth(req.auth?.uid);

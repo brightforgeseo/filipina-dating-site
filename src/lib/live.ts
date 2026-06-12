@@ -278,3 +278,13 @@ export async function cleanupConnections(streamId: string) {
   const snap = await getDocs(collection(db, 'streams', streamId, 'connections')).catch(() => null);
   snap?.forEach((d) => deleteDoc(d.ref).catch(() => {}));
 }
+
+// A member's stream history for their profile page.
+export async function listUserStreams(userId: string, max = 20): Promise<Stream[]> {
+  const { db } = firebase();
+  const snap = await getDocs(query(collection(db, 'streams'), where('hostId', '==', userId), limit(max)));
+  const out: Stream[] = [];
+  snap.forEach((d) => out.push({ id: d.id, ...(d.data() as any) }));
+  out.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+  return out;
+}

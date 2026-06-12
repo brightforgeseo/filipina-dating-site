@@ -6,6 +6,8 @@ import {
   getCountFromServer,
   getDoc,
   getDocs,
+  limit as qLimit,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -79,4 +81,28 @@ export async function getGiftCount(postId: string): Promise<number> {
   const { db } = firebase();
   const snap = await getCountFromServer(collection(db, 'posts', postId, 'gifts'));
   return snap.data().count;
+}
+
+// ---------- Gifts sent directly to a member's profile ----------
+
+export async function sendProfileGiftFree(targetId: string, sender: { id: string; name: string }, type: GiftType | string) {
+  const { db } = firebase();
+  await addDoc(collection(db, 'profiles', targetId, 'gifts'), {
+    senderId: sender.id,
+    senderName: sender.name,
+    type,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function getProfileGiftInfo(userId: string): Promise<{ count: number; recent: string[] }> {
+  const { db } = firebase();
+  const giftsRef = collection(db, 'profiles', userId, 'gifts');
+  const [countSnap, recentSnap] = await Promise.all([
+    getCountFromServer(giftsRef),
+    getDocs(query(giftsRef, orderBy('createdAt', 'desc'), qLimit(8))),
+  ]);
+  const recent: string[] = [];
+  recentSnap.forEach((d) => recent.push((d.data() as any).type));
+  return { count: countSnap.data().count, recent };
 }

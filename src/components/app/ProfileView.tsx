@@ -15,9 +15,18 @@ import {
   MAX_PHOTOS, SUPPORT_EMAIL,
 } from '../../lib/constants';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
-import { follow, unfollow, isFollowing, getFollowCounts } from '../../lib/social';
+import {
+  follow, unfollow, isFollowing, getFollowCounts,
+  getProfileGiftInfo, sendProfileGiftFree, GIFT_TYPES, GIFT_EMOJI,
+} from '../../lib/social';
+import { isPaidGiftsEnabled, sendProfileGiftPaid, PAID_GIFTS } from '../../lib/wallet';
+import { listUserPosts, getLikeInfo, setLiked, type Post } from '../../lib/posts';
+import { listUserStreams, type Stream } from '../../lib/live';
+import { formatTime } from '../../lib/chat';
 import { useLang } from '../../i18n/react';
 import type { Dict } from '../../i18n';
+
+const ALL_GIFT_EMOJI: Record<string, string> = { ...GIFT_EMOJI, diamond: '💎', castle: '🏰' };
 
 // Fields counted toward profile completion — photos and bio matter most for
 // getting matches, so they're weighted double.
@@ -45,6 +54,16 @@ export default function ProfileView() {
   const [followCounts, setFollowCounts] = React.useState<{ followers: number; following: number } | null>(null);
   const [iFollow, setIFollow] = React.useState<boolean | null>(null);
   const [followBusy, setFollowBusy] = React.useState(false);
+
+  // Social tabs: posts, stream history, and direct gifting.
+  const [tab, setTab] = React.useState<'about' | 'posts' | 'streams'>('about');
+  const [userPosts, setUserPosts] = React.useState<Post[] | null>(null);
+  const [postLikes, setPostLikes] = React.useState<Record<string, { count: number; likedByMe: boolean }>>({});
+  const [userStreams, setUserStreams] = React.useState<Stream[] | null>(null);
+  const [giftInfo, setGiftInfo] = React.useState<{ count: number; recent: string[] } | null>(null);
+  const [paidMode, setPaidMode] = React.useState(false);
+  const [giftPickerOpen, setGiftPickerOpen] = React.useState(false);
+  const [giftBusy, setGiftBusy] = React.useState(false);
 
   const targetId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
@@ -81,7 +100,50 @@ export default function ProfileView() {
     if (target.id !== user.uid) {
       isFollowing(user.uid, target.id).then(setIFollow).catch(() => {});
     }
+    isPaidGiftsEnabled().then(setPaidMode);
+    getProfileGiftInfo(target.id).then(setGiftInfo).catch(() => {});
+    listUserStreams(target.id).then(setUserStreams).catch(() => setUserStreams([]));
+    listUserPosts(target.id).then((ps) => {
+      setUserPosts(ps);
+      ps.forEach(async (p) => {
+        try {
+          const info = await getLikeInfo(p.id, user.uid);
+          setPostLikes((s) => ({ ...s, [p.id]: info }));
+        } catch {}
+      });
+    }).catch(() => setUserPosts([]));
   }, [user, target?.id]);
+
+  const togglePostLike = async (postId: string) => {
+    if (!user) return;
+    const cur = postLikes[postId] ?? { count: 0, likedByMe: false };
+    const next = { count: cur.count + (cur.likedByMe ? -1 : 1), likedByMe: !cur.likedByMe };
+    setPostLikes((s) => ({ ...s, [postId]: next }));
+    try {
+      await setLiked(postId, user.uid, next.likedByMe);
+    } catch {
+      setPostLikes((s) => ({ ...s, [postId]: cur }));
+    }
+  };
+
+  const sendGiftTo = async (type: string) => {
+    if (!user || !target || giftBusy) return;
+    setGiftBusy(true);
+    setGiftPickerOpen(false);
+    try {
+      if (paidMode) await sendProfileGiftPaid(target.id, type);
+      else await sendProfileGiftFree(target.id, { id: user.uid, name: me?.name || user.displayName || 'Member' }, type);
+      setGiftInfo((g) => ({ count: (g?.count ?? 0) + 1, recent: [type, ...(g?.recent ?? [])].slice(0, 8) }));
+      setToast(P.giftSentTo(target.name));
+      setTimeout(() => setToast(null), 2600);
+    } catch (ex: any) {
+      const msg = String(ex?.message ?? '');
+      setToast(msg.includes('insufficient-coins') ? d.app.wallet.insufficient : d.app.wallet.giftFail);
+      setTimeout(() => setToast(null), 2600);
+    } finally {
+      setGiftBusy(false);
+    }
+  };
 
   const toggleFollow = async () => {
     if (!user || !target || iFollow === null || followBusy) return;
@@ -210,6 +272,83 @@ export default function ProfileView() {
               onCancel={() => setEditing(false)}
             />
           ) : (
+            <>
+            {userStreams?.[0]?.status === 'live' && (
+              <a href={`/app/live?id=${userStreams[0].id}`} className="mb-6 px-5 py-3.5 rounded-2xl text-white font-semibold flex items-center gap-3 shadow-lg" style={{ background: '#E0245E' }}>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/25 animate-pulse">{d.app.live.liveBadge}</span>
+                {P.watchLive} <Icon.Arrow size={14} />
+              </a>
+            )}
+            <div className="flex gap-2 mb-6">
+              {([['about', P.tabAbout], ['posts', P.tabPosts], ['streams', P.tabStreams]] as const).map(([k, label]) => (
+                <button
+                  key={k}
+                  onClick={() => setTab(k)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === k ? 'text-white' : 'bg-white text-ink-soft border border-line hover:bg-ivory'}`}
+                  style={tab === k ? { background: 'var(--coral)' } : {}}
+                >
+                  {label}
+                  {k === 'posts' && userPosts?.length ? ` · ${userPosts.length}` : ''}
+                  {k === 'streams' && userStreams?.length ? ` · ${userStreams.length}` : ''}
+                </button>
+              ))}
+            </div>
+            {tab === 'posts' ? (
+              userPosts === null ? (
+                <div className="text-center py-16 text-muted">{d.app.loading}</div>
+              ) : userPosts.length === 0 ? (
+                <div className="text-center py-16 text-ink-soft">{P.noPosts}</div>
+              ) : (
+                <div className="flex flex-col gap-5 max-w-[560px]">
+                  {userPosts.map((post) => {
+                    const like = postLikes[post.id];
+                    return (
+                      <div key={post.id} className="bg-white border border-line rounded-2xl overflow-hidden">
+                        <div className="px-5 pt-4 text-[11px] text-muted">
+                          {formatTime(post.createdAt, d.app.time)}{post.groupName ? ` · ${post.groupName}` : ''}
+                        </div>
+                        {post.text && <div className="px-5 pt-2 text-[14px] leading-[1.55] whitespace-pre-wrap">{post.text}</div>}
+                        {post.imageUrl && <img src={post.imageUrl} alt="" loading="lazy" className="w-full max-h-[420px] object-cover mt-3" />}
+                        {post.videoUrl && <video src={post.videoUrl} controls playsInline className="w-full max-h-[420px] mt-3 bg-black" />}
+                        <div className="flex gap-2 px-5 py-3 border-t border-line mt-3">
+                          <button
+                            onClick={() => togglePostLike(post.id)}
+                            className={`flex items-center gap-1.5 text-[13px] px-3 py-1.5 rounded-full ${like?.likedByMe ? 'text-white font-semibold' : 'text-ink-soft hover:bg-ivory'}`}
+                            style={like?.likedByMe ? { background: 'var(--coral)' } : {}}
+                          >
+                            <Icon.Heart size={13} filled={!!like?.likedByMe} /> {d.app.community.like}{like && like.count > 0 ? ` · ${like.count}` : ''}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )
+            ) : tab === 'streams' ? (
+              userStreams === null ? (
+                <div className="text-center py-16 text-muted">{d.app.loading}</div>
+              ) : userStreams.length === 0 ? (
+                <div className="text-center py-16 text-ink-soft">{P.noStreams}</div>
+              ) : (
+                <div className="flex flex-col gap-3 max-w-[560px]">
+                  {userStreams.map((s) => (
+                    <div key={s.id} className="bg-white border border-line rounded-2xl p-5 flex items-center gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-display font-semibold text-[16px] truncate">{s.title}</div>
+                        <div className="text-[12px] text-muted">{formatTime(s.createdAt, d.app.time)}</div>
+                      </div>
+                      {s.status === 'live' ? (
+                        <a href={`/app/live?id=${s.id}`} className="btn btn-sm text-white flex-shrink-0" style={{ background: '#E0245E' }}>
+                          {d.app.live.liveBadge} · {P.watchLive}
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-muted flex-shrink-0">{d.app.live.ended}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : (
             <div className="grid md:grid-cols-[1.1fr_1fr] gap-8">
               <div>
                 <div className="rounded-[20px] overflow-hidden h-[480px] relative max-md:h-[400px]" style={{ background: mainPhoto ? `url(${mainPhoto}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
@@ -255,10 +394,41 @@ export default function ProfileView() {
                   </div>
                 )}
                 {followCounts && (
-                  <div className="text-[13px] text-muted mb-5">
+                  <div className="text-[13px] text-muted mb-3">
                     {P.followers(followCounts.followers)} · {P.followingCount(followCounts.following)}
                   </div>
                 )}
+                <div className="mb-5 px-4 py-3 rounded-2xl border border-line bg-white">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="text-[13px]">
+                      <span className="font-semibold">🎁 {P.giftsReceived(giftInfo?.count ?? 0)}</span>
+                      {giftInfo && giftInfo.recent.length > 0 && (
+                        <span className="ml-2 text-[15px]">{giftInfo.recent.slice(0, 6).map((t, i) => <span key={i}>{ALL_GIFT_EMOJI[t] ?? '🎁'}</span>)}</span>
+                      )}
+                    </div>
+                    {!isMyProfile && (
+                      <button onClick={() => setGiftPickerOpen((o) => !o)} disabled={giftBusy} className="btn btn-primary btn-sm disabled:opacity-60">
+                        {d.app.community.sendGift}
+                      </button>
+                    )}
+                  </div>
+                  {giftPickerOpen && !isMyProfile && (
+                    <div className="flex gap-1 flex-wrap mt-2.5 pt-2.5 border-t border-line">
+                      {paidMode
+                        ? PAID_GIFTS.map((g) => (
+                            <button key={g.type} onClick={() => sendGiftTo(g.type)} className="flex flex-col items-center px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
+                              <span className="text-[20px] leading-none">{g.emoji}</span>
+                              <span className="text-[9px] text-muted">{g.coins}🪙</span>
+                            </button>
+                          ))
+                        : GIFT_TYPES.map((g) => (
+                            <button key={g} onClick={() => sendGiftTo(g)} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
+                              {GIFT_EMOJI[g]}
+                            </button>
+                          ))}
+                    </div>
+                  )}
+                </div>
                 {p.bio && <p className="text-[15px] leading-[1.6] text-ink-soft mb-6">{p.bio}</p>}
                 {(p.interests?.length || p.lookingFor) ? (
                   <div className="py-5 border-y border-line flex flex-col gap-4">
@@ -313,6 +483,8 @@ export default function ProfileView() {
                 )}
               </div>
             </div>
+            )}
+            </>
           )}
         </div>
       </main>

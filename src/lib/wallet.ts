@@ -62,3 +62,8 @@ export async function requestPayoutFn(gcash: string): Promise<void> {
   const fn = httpsCallable(functions, 'requestPayout');
   await fn({ gcash });
 }
+
+export async function sendProfileGiftPaid(targetId: string, giftType: string): Promise<void> {
+  const { functions } = firebase();
+  await httpsCallable(functions, 'sendProfileGift')({ targetId, giftType });
+}

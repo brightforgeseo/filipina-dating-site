@@ -10,7 +10,7 @@ import { markOnline } from '../../lib/presence';
 import { GIFT_TYPES, GIFT_EMOJI, type GiftType } from '../../lib/social';
 import { isPaidGiftsEnabled, subscribeWallet, PAID_GIFTS, type Wallet } from '../../lib/wallet';
 import {
-  startStream, endStream, subscribeStream, joinAsViewer, leaveAsViewer,
+  startStream, endStream, subscribeStream, subscribeLiveStreams, joinAsViewer, leaveAsViewer,
   subscribeViewerCount, subscribeStreamMessages, sendStreamMessage,
   sendStreamGiftFree, sendStreamGiftPaid, broadcast, watchStream, cleanupConnections,
   type Stream, type StreamMessage,
@@ -52,6 +52,13 @@ export default function Live() {
 
   // Viewer
   const [viewState, setViewState] = React.useState<'connecting' | 'playing' | 'full' | 'failed'>('connecting');
+
+  // Hub (no ?id= and not broadcasting): show everyone who's live.
+  const [liveStreams, setLiveStreams] = React.useState<Stream[]>([]);
+  React.useEffect(() => {
+    if (streamId || myStreamId || !user || loading) return;
+    return subscribeLiveStreams(setLiveStreams);
+  }, [streamId, myStreamId, user, loading]);
 
   const activeId = streamId ?? myStreamId;
   const isHost = !!myStreamId || (!!stream && !!user && stream.hostId === user.uid);
@@ -194,7 +201,7 @@ export default function Live() {
 
   return (
     <div className="grid grid-cols-[240px_1fr] min-h-screen bg-ivory max-md:grid-cols-1">
-      <Sidebar route="community" user={user} me={me} />
+      <Sidebar route="live" user={user} me={me} />
       <main className="p-10 max-md:p-4">
         {toast && (
           <div className="mb-4 px-5 py-3 rounded-2xl text-white font-semibold shadow-lg max-w-[960px] mx-auto" style={{ background: 'linear-gradient(135deg, var(--forest), var(--coral))' }}>
@@ -203,17 +210,41 @@ export default function Live() {
         )}
 
         {setupMode ? (
-          <div className="max-w-[480px] mx-auto bg-white border border-line rounded-2xl p-8">
-            <h1 className="font-display font-bold text-[26px] m-0 mb-5">{L.startTitle}</h1>
-            <div className="field mb-4">
-              <label>{L.titleLabel}</label>
-              <input maxLength={80} placeholder={L.titlePh} value={title} onChange={(e) => setTitle(e.target.value)} />
+          <div className="max-w-[640px] mx-auto flex flex-col gap-5">
+            <div>
+              <div className="text-[11px] tracking-[0.1em] uppercase text-muted font-semibold mb-2">{L.liveNow}</div>
+              {liveStreams.length === 0 ? (
+                <div className="bg-white border border-line rounded-2xl p-6 text-center text-ink-soft text-sm">{L.nobodyLive}</div>
+              ) : (
+                <div className="grid grid-cols-3 gap-3 max-md:grid-cols-2">
+                  {liveStreams.map((s) => (
+                    <a
+                      key={s.id}
+                      href={`/app/live?id=${s.id}`}
+                      className="rounded-2xl overflow-hidden relative aspect-[3/4] bg-cover bg-center flex flex-col justify-end p-3"
+                      style={s.hostPhoto ? { backgroundImage: `url(${s.hostPhoto})` } : { background: 'linear-gradient(135deg, var(--blush), var(--coral))' }}
+                    >
+                      <span className="absolute top-2.5 left-2.5 px-1.5 py-0.5 rounded text-[10px] font-bold text-white animate-pulse" style={{ background: '#E0245E' }}>
+                        {L.liveBadge}
+                      </span>
+                      <span className="text-white text-[14px] font-semibold truncate" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.7)' }}>{s.hostName}</span>
+                      <span className="text-white text-[11px] truncate opacity-90" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.7)' }}>{s.title}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
-            {hostError && <div className="text-sm px-3 py-2 rounded-lg mb-4" style={{ background: 'rgba(255,20,147,0.08)', color: 'var(--coral)' }}>{hostError}</div>}
-            <button onClick={goLive} disabled={starting} className="btn btn-primary w-full justify-center disabled:opacity-60">
-              <Icon.Camera size={16} /> {starting ? L.starting : L.start}
-            </button>
-            <a href="/app/community" className="btn btn-ghost w-full justify-center mt-2">{L.backToCommunity}</a>
+            <div className="bg-white border border-line rounded-2xl p-8">
+              <h1 className="font-display font-bold text-[26px] m-0 mb-5">{L.startTitle}</h1>
+              <div className="field mb-4">
+                <label>{L.titleLabel}</label>
+                <input maxLength={80} placeholder={L.titlePh} value={title} onChange={(e) => setTitle(e.target.value)} />
+              </div>
+              {hostError && <div className="text-sm px-3 py-2 rounded-lg mb-4" style={{ background: 'rgba(255,20,147,0.08)', color: 'var(--coral)' }}>{hostError}</div>}
+              <button onClick={goLive} disabled={starting} className="btn btn-primary w-full justify-center disabled:opacity-60">
+                <Icon.Camera size={16} /> {starting ? L.starting : L.start}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="max-w-[960px] mx-auto grid md:grid-cols-[1.4fr_1fr] gap-5 items-start">

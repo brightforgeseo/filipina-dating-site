@@ -11,6 +11,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  where,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { firebase } from './firebase';
@@ -23,6 +24,8 @@ export type Post = {
   text?: string;
   imageUrl?: string;
   videoUrl?: string;
+  groupId?: string | null;
+  groupName?: string;
   createdAt: any;
 };
 
@@ -52,13 +55,20 @@ export async function uploadPostMedia(userId: string, file: File): Promise<{ ima
   return isVideo ? { videoUrl: url } : { imageUrl: url };
 }
 
-export async function createPost(author: { id: string; name: string; photo?: string }, content: { text?: string; imageUrl?: string; videoUrl?: string }): Promise<Post> {
+export async function createPost(
+  author: { id: string; name: string; photo?: string },
+  content: { text?: string; imageUrl?: string; videoUrl?: string },
+  group?: { id: string; name: string }
+): Promise<Post> {
   const { db } = firebase();
   const payload: Record<string, any> = {
     authorId: author.id,
     authorName: author.name,
+    // null (not missing) so equality queries can target the main feed.
+    groupId: group?.id ?? null,
     createdAt: serverTimestamp(),
   };
+  if (group) payload.groupName = group.name;
   if (author.photo) payload.authorPhoto = author.photo;
   if (content.text?.trim()) payload.text = content.text.trim();
   if (content.imageUrl) payload.imageUrl = content.imageUrl;
@@ -67,9 +77,24 @@ export async function createPost(author: { id: string; name: string; photo?: str
   return { id: refDoc.id, ...payload, createdAt: { seconds: Math.floor(Date.now() / 1000) } } as Post;
 }
 
+// Main feed: every non-group post (older posts predate the groupId field,
+// so filter client-side rather than querying on it).
 export async function listPosts(max = 30): Promise<Post[]> {
   const { db } = firebase();
-  const snap = await getDocs(query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(max)));
+  const snap = await getDocs(query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(max * 2)));
+  const out: Post[] = [];
+  snap.forEach((d) => {
+    const p = { id: d.id, ...(d.data() as any) } as Post;
+    if (!p.groupId) out.push(p);
+  });
+  return out.slice(0, max);
+}
+
+export async function listGroupPosts(groupId: string, max = 30): Promise<Post[]> {
+  const { db } = firebase();
+  const snap = await getDocs(
+    query(collection(db, 'posts'), where('groupId', '==', groupId), orderBy('createdAt', 'desc'), limit(max))
+  );
   const out: Post[] = [];
   snap.forEach((d) => out.push({ id: d.id, ...(d.data() as any) }));
   return out;

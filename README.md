@@ -77,7 +77,10 @@ src/
 - `matches/{matchId}/messages/{messageId}` — `senderId`, `text` | `imageUrl`, `type`, `timestamp`, `isRead`
 - `blocks/{blockId}` — `blockerId`, `blockedId`
 - `reports/{reportId}` — `reporterId`, `targetId`, `reason`, `details?`, `messageText?`, `status`
-- `posts/{postId}` — `authorId`, `authorName`, `authorPhoto?`, `text?`, `imageUrl?`, `videoUrl?` (+ `likes/{uid}`, `comments/{id}` subcollections)
+- `posts/{postId}` — `authorId`, `authorName`, `authorPhoto?`, `text?`, `imageUrl?`, `videoUrl?`, `groupId` (null for the main feed), `groupName?` (+ `likes/{uid}`, `comments/{id}`, `gifts/{id}` subcollections)
+- `follows/{followerId_followedId}` — `followerId`, `followedId`
+- `groups/{groupId}` — `name`, `description`, `ownerId`, `ownerName`
+- `groupMembers/{groupId_userId}` — `groupId`, `userId`, `name`
 
 Security rules and indexes live in this repo: `firestore.rules`, `storage.rules`, `firestore.indexes.json` (deployed by `.github/workflows/deploy-rules.yml`).
 

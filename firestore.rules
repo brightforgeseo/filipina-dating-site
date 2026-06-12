@@ -91,6 +91,34 @@ service cloud.firestore {
         allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
       }
+
+      // Free gifts (no money) — senders must identify themselves.
+      match /gifts/{giftId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // Follows — doc id is `${followerId}_${followedId}`; the follower owns it.
+    match /follows/{followId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.followerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.followerId == request.auth.uid;
+    }
+
+    // Community groups — anyone can create; only the owner can edit/delete.
+    match /groups/{groupId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // Group memberships — doc id is `${groupId}_${userId}`; members manage
+    // their own membership.
+    match /groupMembers/{memberId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
   }
 }

@@ -15,6 +15,7 @@ import {
   MAX_PHOTOS, SUPPORT_EMAIL,
 } from '../../lib/constants';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
+import { follow, unfollow, isFollowing, getFollowCounts } from '../../lib/social';
 import { useLang } from '../../i18n/react';
 import type { Dict } from '../../i18n';
 
@@ -41,6 +42,9 @@ export default function ProfileView() {
   const [editing, setEditing] = React.useState(false);
   const [photoIdx, setPhotoIdx] = React.useState(0);
   const [report, setReport] = React.useState<ReportTarget | null>(null);
+  const [followCounts, setFollowCounts] = React.useState<{ followers: number; following: number } | null>(null);
+  const [iFollow, setIFollow] = React.useState<boolean | null>(null);
+  const [followBusy, setFollowBusy] = React.useState(false);
 
   const targetId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
@@ -68,6 +72,35 @@ export default function ProfileView() {
       }
     })();
   }, [user, loading, targetId]);
+
+  // Follow graph loads separately so a failure (e.g. rules not yet
+  // published) never blocks the profile itself.
+  React.useEffect(() => {
+    if (!user || !target) return;
+    getFollowCounts(target.id).then(setFollowCounts).catch(() => {});
+    if (target.id !== user.uid) {
+      isFollowing(user.uid, target.id).then(setIFollow).catch(() => {});
+    }
+  }, [user, target?.id]);
+
+  const toggleFollow = async () => {
+    if (!user || !target || iFollow === null || followBusy) return;
+    const next = !iFollow;
+    setFollowBusy(true);
+    setIFollow(next);
+    setFollowCounts((c) => (c ? { ...c, followers: c.followers + (next ? 1 : -1) } : c));
+    try {
+      if (next) await follow(user.uid, target.id);
+      else await unfollow(user.uid, target.id);
+    } catch {
+      setIFollow(!next);
+      setFollowCounts((c) => (c ? { ...c, followers: c.followers + (next ? -1 : 1) } : c));
+      setToast(P.followFail);
+      setTimeout(() => setToast(null), 2200);
+    } finally {
+      setFollowBusy(false);
+    }
+  };
 
   const like = async () => {
     if (!user || !target) return;
@@ -199,16 +232,31 @@ export default function ProfileView() {
                 )}
               </div>
               <div>
-                <div className="flex gap-2 mb-3">
+                <div className="flex gap-2 mb-3 items-center flex-wrap">
                   {p.verified && <span className="chip chip-verified"><Icon.Shield size={11} />{P.verified}</span>}
                   {p.online && <span className="chip" style={{ background: 'rgba(76,175,80,0.1)', color: 'var(--ok)', borderColor: 'rgba(76,175,80,0.25)' }}>{P.onlineNow}</span>}
+                  {!isMyProfile && iFollow !== null && (
+                    <button
+                      onClick={toggleFollow}
+                      disabled={followBusy}
+                      className={`chip cursor-pointer disabled:opacity-60 ${iFollow ? '' : 'font-semibold'}`}
+                      style={iFollow ? {} : { background: 'var(--coral)', color: '#fff', borderColor: 'var(--coral)' }}
+                    >
+                      {iFollow ? P.followingBtn : `+ ${P.follow}`}
+                    </button>
+                  )}
                 </div>
                 <h2 className="font-display font-bold text-5xl tracking-[-0.02em] m-0 mb-2">
                   {p.name}{p.age ? <span className="text-muted font-normal">, {p.age}</span> : null}
                 </h2>
                 {(p.city || p.country) && (
-                  <div className="text-[15px] text-ink-soft flex gap-1.5 items-center mb-5">
+                  <div className="text-[15px] text-ink-soft flex gap-1.5 items-center mb-2">
                     <Icon.Pin size={13} /> {[p.city, p.country ? (d.options.countries[p.country] || p.country) : ''].filter(Boolean).join(', ')}
+                  </div>
+                )}
+                {followCounts && (
+                  <div className="text-[13px] text-muted mb-5">
+                    {P.followers(followCounts.followers)} · {P.followingCount(followCounts.following)}
                   </div>
                 )}
                 {p.bio && <p className="text-[15px] leading-[1.6] text-ink-soft mb-6">{p.bio}</p>}

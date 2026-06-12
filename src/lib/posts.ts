@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { firebase } from './firebase';
+import { compressImage } from './storage';
 
 export type Post = {
   id: string;
@@ -47,12 +48,17 @@ export async function uploadPostMedia(userId: string, file: File): Promise<{ ima
   if (isImage && file.size > MAX_IMAGE_BYTES) throw new Error('too-large');
   if (isVideo && file.size > MAX_VIDEO_BYTES) throw new Error('too-large');
   const { storage } = firebase();
+  if (isImage) {
+    const img = await compressImage(file);
+    const r = ref(storage, `post_media/${userId}/${Date.now()}.${img.ext}`);
+    await uploadBytes(r, img.data, { contentType: img.contentType });
+    return { imageUrl: await getDownloadURL(r) };
+  }
   const rawExt = file.name.split('.').pop()?.toLowerCase() ?? '';
-  const ext = /^[a-z0-9]{1,8}$/.test(rawExt) ? rawExt : isVideo ? 'mp4' : 'jpg';
+  const ext = /^[a-z0-9]{1,8}$/.test(rawExt) ? rawExt : 'mp4';
   const r = ref(storage, `post_media/${userId}/${Date.now()}.${ext}`);
   await uploadBytes(r, file, { contentType: file.type });
-  const url = await getDownloadURL(r);
-  return isVideo ? { videoUrl: url } : { imageUrl: url };
+  return { videoUrl: await getDownloadURL(r) };
 }
 
 export async function createPost(

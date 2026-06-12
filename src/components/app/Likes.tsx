@@ -58,7 +58,6 @@ export default function Likes() {
       const res = await recordSwipe(user.uid, liker.profile.id, direction);
       if (res.matched) {
         setMatch({ name: liker.profile.name, photo: liker.profile.images?.[0], myPhoto: me?.images?.[0] });
-        setMatches((ms) => ms); // refreshed on next visit; modal links to Messages
       }
     } catch {
       setLikers((ls) => (ls ? [liker, ...ls] : ls));

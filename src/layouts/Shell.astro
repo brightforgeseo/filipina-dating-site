@@ -12,6 +12,10 @@ const { title = 'FilWest' } = Astro.props;
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
   <meta name="theme-color" content="#FF1493"/>
+  <!-- Every app page talks to these immediately after hydration. -->
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin/>
 </head>
 <body>
   <slot />

@@ -121,9 +121,10 @@ export default function Community() {
     markOnline(user.uid);
     (async () => {
       try {
+        // 20 posts × 3 aggregation reads each keeps initial load snappy.
         const [mine, all, blocked, following, allGroups, myGids] = await Promise.all([
           getProfile(user.uid),
-          listPosts(30),
+          listPosts(20),
           getBlockedIds(user.uid),
           getFollowingIds(user.uid).catch(() => new Set<string>()),
           listGroups(50).catch(() => [] as Group[]),

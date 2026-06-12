@@ -85,9 +85,13 @@ service cloud.firestore {
     }
 
     // Community feed — any member can read; authors own their posts.
+    // Posting into a group requires actual membership.
     match /posts/{postId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid
+        && (request.resource.data.groupId == null
+            || exists(/databases/$(database)/documents/groupMembers/$(request.resource.data.groupId + '_' + request.auth.uid)));
       allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
 
       // Like doc id == the liker's uid, one like per member.

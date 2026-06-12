@@ -10,6 +10,7 @@ import {
   updateDoc,
   where,
   writeBatch,
+  limitToLast,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { firebase } from './firebase';
@@ -69,7 +70,9 @@ export async function markMessagesRead(matchId: string, otherId: string) {
 
 export function subscribeMessages(matchId: string, cb: (msgs: ChatMessage[]) => void): Unsubscribe {
   const { db } = firebase();
-  const q = query(collection(db, 'matches', matchId, 'messages'), orderBy('timestamp', 'asc'));
+  // Newest 300 — long-running conversations otherwise grow unbounded in
+  // both reads and render cost.
+  const q = query(collection(db, 'matches', matchId, 'messages'), orderBy('timestamp', 'asc'), limitToLast(300));
   return onSnapshot(q, (snap) => {
     const out: ChatMessage[] = [];
     snap.forEach((d) => out.push({ id: d.id, ...(d.data() as any) }));

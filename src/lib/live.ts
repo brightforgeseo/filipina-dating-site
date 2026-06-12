@@ -5,6 +5,7 @@ import {
   doc,
   getDocs,
   limit,
+  limitToLast,
   onSnapshot,
   orderBy,
   query,
@@ -106,7 +107,9 @@ export function subscribeViewerCount(streamId: string, cb: (n: number) => void):
 
 export function subscribeStreamMessages(streamId: string, cb: (msgs: StreamMessage[]) => void): Unsubscribe {
   const { db } = firebase();
-  const q = query(collection(db, 'streams', streamId, 'messages'), orderBy('createdAt', 'asc'), limit(200));
+  // limitToLast keeps the NEWEST 200 — a plain limit would freeze the chat
+  // at the first 200 messages of a busy stream.
+  const q = query(collection(db, 'streams', streamId, 'messages'), orderBy('createdAt', 'asc'), limitToLast(200));
   return onSnapshot(q, (snap) => {
     const out: StreamMessage[] = [];
     snap.forEach((d) => out.push({ id: d.id, ...(d.data() as any) }));

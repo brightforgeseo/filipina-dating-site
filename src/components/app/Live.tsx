@@ -156,6 +156,17 @@ export default function Live() {
     window.location.href = '/app/community';
   };
 
+  // The host's <video> element only mounts after myStreamId is set (the
+  // setup screen has no video tag), so attach the self-preview here rather
+  // than inside goLive, where videoRef.current is still null.
+  React.useEffect(() => {
+    if (myStreamId && videoRef.current && mediaRef.current) {
+      videoRef.current.srcObject = mediaRef.current;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [myStreamId]);
+
   // Best effort: end the stream if the host closes the tab.
   React.useEffect(() => {
     if (!myStreamId) return;

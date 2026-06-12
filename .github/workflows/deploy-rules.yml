@@ -1,0 +1,40 @@
+name: Deploy Firebase rules
+
+# Publishes Firestore/Storage security rules and indexes whenever they change
+# on main. Requires the FIREBASE_SERVICE_ACCOUNT repository secret (a service
+# account JSON key from Firebase Console → Project settings → Service
+# accounts → Generate new private key). Until that secret is set, the job
+# explains what to do and exits cleanly — rules can still be pasted into the
+# Firebase console manually.
+on:
+  push:
+    branches: [main]
+    paths:
+      - firestore.rules
+      - storage.rules
+      - firestore.indexes.json
+      - firebase.json
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Deploy rules and indexes
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::warning::FIREBASE_SERVICE_ACCOUNT secret is not set — skipping automatic deploy."
+            echo "Add it under GitHub repo → Settings → Secrets and variables → Actions,"
+            echo "with the JSON key from Firebase Console → Project settings → Service accounts."
+            echo "Until then, paste firestore.rules and storage.rules into the Firebase console manually."
+            exit 0
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx firebase-tools@13 deploy --only firestore,storage --project filwest --non-interactive

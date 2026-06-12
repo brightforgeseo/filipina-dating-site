@@ -3,8 +3,8 @@
 Marketing site + web app for FilWest. Shares the same Firebase backend (`filwest`) as the mobile app, so profiles, matches, and messages sync across web and mobile.
 
 ## Stack
-- **Astro 4** (static output, file-based routing)
-- **React 18** islands for interactive views (auth, discover, profile, chat)
+- **Astro 4** (static output, file-based routing) — marketing pages in English, Tagalog (`/tl/`), and Cebuano (`/ceb/`)
+- **React 18** islands for interactive views (auth, discover, likes, community, profile, chat)
 - **Tailwind CSS** + design tokens in `src/styles/globals.css`
 - **Firebase** (Auth, Firestore, Storage) — same project as the mobile app
 
@@ -17,57 +17,69 @@ npm run build               # static build → dist/
 npm run preview
 ```
 
-## Netlify deploy
-1. Connect this repo on Netlify (build command, publish dir, and security headers are in `netlify.toml`).
-2. Under **Site settings → Environment variables**, add the six `PUBLIC_FIREBASE_*` keys (see `.env.example`). These mirror the values the mobile app uses.
-3. Optionally set `PUBLIC_APP_STORE_URL` / `PUBLIC_PLAY_STORE_URL` — the homepage download buttons stay hidden until these exist.
-4. Add the production domain to **Firebase Console → Authentication → Settings → Authorized domains**, or Google sign-in will fail.
-5. Deploy.
+## Going live — operations checklist
+1. **Netlify**: connect this repo, branch `main` (build settings come from `netlify.toml`). Add the six `PUBLIC_FIREBASE_*` env vars (see `.env.example`) and trigger a deploy. `src/lib/firebase.ts` also carries the `filwest` web config as a fallback.
+2. **Firebase Auth**: enable Email/Password (and Google) sign-in; add `filipinawest.com`, `www.filipinawest.com`, and the `*.netlify.app` domain to Authorized domains.
+3. **Security rules** — two options:
+   - *Automatic (recommended)*: add a `FIREBASE_SERVICE_ACCOUNT` secret to GitHub (repo → Settings → Secrets and variables → Actions) containing a service-account JSON key from Firebase Console → Project settings → Service accounts. The `deploy-rules.yml` workflow then publishes `firestore.rules`, `storage.rules`, and `firestore.indexes.json` automatically whenever they change (or on manual dispatch).
+   - *Manual*: paste `firestore.rules` into Firestore → Rules and `storage.rules` into Storage → Rules in the Firebase console, and republish whenever they change in this repo.
+4. **Support email**: `support@filipinawest.com` — set up forwarding at the domain registrar.
+5. **Reports queue**: member reports land in the Firestore `reports` collection (`status: open`). Review them in the console until a moderation dashboard exists.
+6. **Smoke test**: two opposite-gender accounts → verify email → complete profiles with photos → swipe deck → match modal → chat (text + photo + Seen receipt) → Likes page → Community post with media → like/comment → block/report flows.
 
 ## Structure
 ```
 src/
+  i18n/                 # en/tl/ceb dictionaries + helpers (marketing & app strings)
   layouts/
-    Site.astro          # marketing pages (nav + footer)
+    Site.astro          # marketing pages (nav + footer, hreflang)
     Shell.astro         # logged-in app pages (no chrome)
+    Legal.astro         # terms/privacy/community rules
+    Article.astro       # /guides articles
   components/
-    Nav, Footer, LogoMark
-    marketing/          # Hero, FeatureBar, HowItWorks, Safety,
-                        # Testimonials, Pricing, AppShowcase
+    Nav, Footer, LogoMark      # Nav includes the EN/TL/CEB switcher
+    marketing/          # Hero, FeatureBar, HowItWorks, Safety, Testimonials,
+                        # Different, Pricing, AppShowcase
+    pages/              # shared page bodies rendered per language
     auth/               # LoginForm, SignupWizard (Firebase-backed React islands)
-    app/                # Sidebar, Browse, ProfileView, Chat (Firebase-backed)
+    app/                # Sidebar, Browse (deck+grid), Likes, Community, Chat,
+                        # ProfileView, VerifyEmail, MatchModal, ReportDialog
   lib/
-    firebase.ts         # web SDK init
-    auth.ts             # email + Google auth, password reset, account deletion
-    profiles.ts         # read/write/delete profiles/{uid}
-    matching.ts         # swipes + match creation
-    chat.ts             # messages subscriptions, send, read receipts
-    storage.ts          # profile photo upload (Firebase Storage)
-    useAuth.ts          # React hook
+    firebase.ts         # web SDK init (env vars with filwest fallback)
+    auth.ts             # email + Google auth, verification, deletion
+    profiles.ts         # profiles/{uid} CRUD + extended fields
+    matching.ts         # swipes, matches, likers, Super Like quota
+    chat.ts             # realtime messages, read receipts, image messages
+    posts.ts            # community feed: posts, likes, comments
+    blocking.ts         # block/unmatch
+    reports.ts          # in-app reports → reports collection
+    safety.ts           # scam-signal detection for chat warnings
+    storage.ts          # profile/chat/post media uploads
+    presence.ts         # online/lastActive
   pages/
-    index.astro         # /
-    login.astro         # /login (incl. forgot-password)
-    signup.astro        # /signup
-    safety.astro        # /safety
-    pricing.astro       # /pricing
-    terms.astro         # /terms
-    privacy.astro       # /privacy
-    community.astro     # /community
-    404.astro           # not-found page
+    index|pricing|safety|login|signup .astro     # English
+    [lang]/…                                     # /tl/… and /ceb/… variants
+    guides/…                                     # dating guides (English)
+    terms|privacy|community|404 .astro
     app/
-      index.astro       # /app              → Discover
-      messages.astro    # /app/messages     → Chat
-      profile.astro     # /app/profile?id=  → Profile detail / edit own
+      index.astro       # /app            → Discover (card deck / grid)
+      likes.astro       # /app/likes      → Liked you + Matches
+      community.astro   # /app/community  → feed (posts, likes, comments)
+      messages.astro    # /app/messages   → Chat
+      profile.astro     # /app/profile?id=→ Profile view / edit own
   styles/globals.css
 ```
 
 ## Firestore schema (shared with the mobile app)
-- `profiles/{userId}` — `name`, `age`, `gender`, `city`, `country`, `bio`, `images[]`, `interests[]`, `verified`, `online`
+- `profiles/{userId}` — `name`, `age`, `gender`, `city`, `country`, `bio`, `images[]`, `interests[]`, `lookingFor`, `occupation`, `education`, `height`, `religion`, `drinking`, `smoking`, `verified`, `online`, `lastActive`, `preferences{}`
 - `swipes/{swipeId}` — `fromUserId`, `toUserId`, `direction` (`left` | `right` | `up`)
-- `matches/{matchId}` — `user1Id`, `user2Id`, `user1Name`, `user2Name`, `user1Photo`, `user2Photo`, `lastMessage`, `lastMessageTime`
-- `matches/{matchId}/messages/{messageId}` — `senderId`, `text` | `imageUrl` | `videoUrl`, `type`, `timestamp`, `isRead`
+- `matches/{matchId}` — `user1Id`, `user2Id`, names/photos, `lastMessage`, `lastMessageTime`
+- `matches/{matchId}/messages/{messageId}` — `senderId`, `text` | `imageUrl`, `type`, `timestamp`, `isRead`
+- `blocks/{blockId}` — `blockerId`, `blockedId`
+- `reports/{reportId}` — `reporterId`, `targetId`, `reason`, `details?`, `messageText?`, `status`
+- `posts/{postId}` — `authorId`, `authorName`, `authorPhoto?`, `text?`, `imageUrl?`, `videoUrl?` (+ `likes/{uid}`, `comments/{id}` subcollections)
 
-Security rules live with the mobile app in `firebase/firestore.rules`.
+Security rules and indexes live in this repo: `firestore.rules`, `storage.rules`, `firestore.indexes.json` (deployed by `.github/workflows/deploy-rules.yml`).
 
 ## Branding
 - Colors and fonts live in `src/styles/globals.css` (CSS custom properties) and `tailwind.config.mjs`.

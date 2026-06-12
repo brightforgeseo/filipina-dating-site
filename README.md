@@ -27,6 +27,17 @@ npm run preview
 5. **Reports queue**: member reports land in the Firestore `reports` collection (`status: open`). Review them in the console until a moderation dashboard exists.
 6. **Smoke test**: two opposite-gender accounts → verify email → complete profiles with photos → swipe deck → match modal → chat (text + photo + Seen receipt) → Likes page → Community post with media → like/comment → block/report flows.
 
+## Paid gifts (Phase 2) — enabling coins & payouts
+Paid gifting ships dark. Free emoji gifts work until you flip it on. To go live with real money:
+1. Upgrade the Firebase project to the **Blaze** plan (Cloud Functions requirement).
+2. Create a **Stripe** account; from the dashboard copy the secret key, then set the function secrets:
+   `npx firebase-tools functions:secrets:set STRIPE_SECRET_KEY` and `…:set STRIPE_WEBHOOK_SECRET` (webhook secret comes from step 4).
+3. Deploy: `npx firebase-tools deploy --only functions --project filwest`.
+4. In Stripe → Developers → Webhooks, add an endpoint pointing at the deployed `stripeWebhook` function URL, listening to `checkout.session.completed`; copy its signing secret into the `STRIPE_WEBHOOK_SECRET` secret and redeploy.
+5. Flip the switch: in Firestore create doc `config/app` with `paidGiftsEnabled: true`. The gift picker now shows coin prices, the wallet chip appears, and free gift writes are blocked by rules.
+6. **Payouts are manual**: requests land in `payoutRequests` (`status: pending`) with the member's GCash number and the USD amount (rate and 1,000-coin minimum are constants in `functions/src/index.ts`). Send the GCash transfer, then set `status: paid`.
+- Economics knobs: coin packages and gift prices in `functions/src/index.ts` (mirror them in `src/lib/wallet.ts`), payout rate `PAYOUT_USD_PER_COIN`.
+
 ## Structure
 ```
 src/

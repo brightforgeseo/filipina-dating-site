@@ -2,6 +2,7 @@ import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import { getFunctions, type Functions } from 'firebase/functions';
 
 const fallbackConfig = {
   apiKey: 'AIzaSyC9xZNXi3i1bHEObdOEd4S5E1GPfMj6Slg',
@@ -25,6 +26,7 @@ let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
 let _db: Firestore | null = null;
 let _storage: FirebaseStorage | null = null;
+let _functions: Functions | null = null;
 
 export function firebase() {
   if (!_app) {
@@ -42,6 +44,7 @@ export function firebase() {
     _auth = getAuth(_app);
     _db = getFirestore(_app);
     _storage = getStorage(_app);
+    _functions = getFunctions(_app);
   }
-  return { app: _app!, auth: _auth!, db: _db!, storage: _storage! };
+  return { app: _app!, auth: _auth!, db: _db!, storage: _storage!, functions: _functions! };
 }

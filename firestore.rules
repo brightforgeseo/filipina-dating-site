@@ -92,11 +92,42 @@ service cloud.firestore {
         allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
       }
 
-      // Free gifts (no money) — senders must identify themselves.
+      // Gifts. While paid gifting is off (config/app.paidGiftsEnabled != true)
+      // clients may write free gifts directly; once it's on, only the
+      // sendPaidGift Cloud Function (admin SDK) writes gifts.
       match /gifts/{giftId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+        allow create: if isSignedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && !(exists(/databases/$(database)/documents/config/app)
+               && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true);
       }
+    }
+
+    // App-level feature flags — set by the team in the console.
+    match /config/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Coin wallets — written only by Cloud Functions (admin SDK).
+    match /wallets/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    match /purchases/{purchaseId} {
+      allow read: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /payoutRequests/{requestId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /stripeEvents/{eventId} {
+      allow read, write: if false;
     }
 
     // Follows — doc id is `${followerId}_${followedId}`; the follower owns it.

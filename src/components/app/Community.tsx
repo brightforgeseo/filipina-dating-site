@@ -16,6 +16,10 @@ import {
 } from '../../lib/posts';
 import { getFollowingIds, sendGift, getGiftCount, GIFT_TYPES, GIFT_EMOJI, type GiftType } from '../../lib/social';
 import {
+  isPaidGiftsEnabled, subscribeWallet, startCoinCheckout, sendPaidGiftFn, requestPayoutFn,
+  COIN_PACKAGES, PAID_GIFTS, PAYOUT_USD_PER_COIN, MIN_PAYOUT_COINS, type Wallet,
+} from '../../lib/wallet';
+import {
   listGroups, createGroup, getGroup, joinGroup, leaveGroup, getMyGroupIds, getMemberCount,
   type Group,
 } from '../../lib/groups';
@@ -31,6 +35,23 @@ export default function Community() {
   const [me, setMe] = React.useState<Profile | null>(null);
   const [error, setError] = React.useState<'rules' | 'network' | null>(null);
   const [report, setReport] = React.useState<ReportTarget | null>(null);
+  const [toast, setToast] = React.useState<string | null>(null);
+
+  // Paid gifting (Phase 2) — off until config/app.paidGiftsEnabled is true.
+  const [paidMode, setPaidMode] = React.useState(false);
+  const [wallet, setWallet] = React.useState<Wallet | null>(null);
+  const [showBuy, setShowBuy] = React.useState(false);
+  const [buyBusy, setBuyBusy] = React.useState<string | null>(null);
+  const [showPayout, setShowPayout] = React.useState(false);
+  const [gcash, setGcash] = React.useState('');
+  const [payoutBusy, setPayoutBusy] = React.useState(false);
+  const [payoutDone, setPayoutDone] = React.useState(false);
+  const [payoutErr, setPayoutErr] = React.useState<string | null>(null);
+
+  const flash = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3500);
+  };
 
   // Feed
   const [posts, setPosts] = React.useState<Post[] | null>(null);
@@ -113,16 +134,31 @@ export default function Community() {
           } catch {}
         });
         // Deep link: /app/community?group=<id>
-        const gid = new URLSearchParams(window.location.search).get('group');
+        const params = new URLSearchParams(window.location.search);
+        const gid = params.get('group');
         if (gid) {
           const g = allGroups.find((x) => x.id === gid) ?? (await getGroup(gid).catch(() => null));
           if (g) openGroup(g, user.uid);
+        }
+        if (params.get('coins') === 'success') {
+          flash(d.app.wallet.purchaseSuccess);
+          try { window.history.replaceState(null, '', window.location.pathname); } catch {}
         }
       } catch (ex: any) {
         setError(ex?.code === 'permission-denied' ? 'rules' : 'network');
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
+
+  React.useEffect(() => {
+    if (!user || loading || needsEmailVerification(user)) return;
+    let unsub: (() => void) | undefined;
+    isPaidGiftsEnabled().then((on) => {
+      setPaidMode(on);
+      if (on) unsub = subscribeWallet(user.uid, setWallet);
+    });
+    return () => unsub?.();
   }, [user, loading]);
 
   const openGroup = async (g: Group, uid?: string) => {
@@ -258,6 +294,58 @@ export default function Community() {
       await sendGift(postId, { id: user.uid, name: me?.name || user.displayName || 'Member' }, type);
     } catch {
       setGiftCounts((s) => ({ ...s, [postId]: Math.max(0, (s[postId] ?? 1) - 1) }));
+    }
+  };
+
+  const givePaidGift = async (postId: string, type: string, price: number) => {
+    if (!user) return;
+    if ((wallet?.coins ?? 0) < price) {
+      setGiftPicker(null);
+      flash(d.app.wallet.insufficient);
+      setShowBuy(true);
+      return;
+    }
+    setGiftPicker(null);
+    setGiftCounts((s) => ({ ...s, [postId]: (s[postId] ?? 0) + 1 }));
+    try {
+      await sendPaidGiftFn(postId, type);
+    } catch (ex: any) {
+      setGiftCounts((s) => ({ ...s, [postId]: Math.max(0, (s[postId] ?? 1) - 1) }));
+      const msg = String(ex?.message ?? '');
+      if (msg.includes('insufficient-coins')) {
+        flash(d.app.wallet.insufficient);
+        setShowBuy(true);
+      } else {
+        flash(d.app.wallet.giftFail);
+      }
+    }
+  };
+
+  const buyPackage = async (packageId: string) => {
+    setBuyBusy(packageId);
+    try {
+      await startCoinCheckout(packageId);
+    } catch {
+      flash(d.app.wallet.errBuy);
+      setBuyBusy(null);
+    }
+  };
+
+  const submitPayout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (payoutBusy) return;
+    setPayoutErr(null);
+    setPayoutBusy(true);
+    try {
+      await requestPayoutFn(gcash);
+      setPayoutDone(true);
+    } catch (ex: any) {
+      const msg = String(ex?.message ?? '');
+      if (msg.includes('below-minimum')) setPayoutErr(d.app.wallet.payoutBelowMin);
+      else if (msg.includes('invalid-gcash')) setPayoutErr(d.app.wallet.payoutInvalidGcash);
+      else setPayoutErr(d.app.wallet.payoutFail);
+    } finally {
+      setPayoutBusy(false);
     }
   };
 
@@ -399,13 +487,29 @@ export default function Community() {
             🎁 {gifts ? ` ${gifts}` : ''}
           </button>
           {giftPicker === p.id && (
-            <div className="flex gap-1">
-              {GIFT_TYPES.map((g) => (
-                <button key={g} onClick={() => giveGift(p.id, g)} aria-label={`${C.sendGift}: ${g}`} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
-                  {GIFT_EMOJI[g]}
-                </button>
-              ))}
-            </div>
+            paidMode ? (
+              <div className="flex gap-1 flex-wrap">
+                {PAID_GIFTS.map((g) => (
+                  <button
+                    key={g.type}
+                    onClick={() => givePaidGift(p.id, g.type, g.coins)}
+                    aria-label={`${C.sendGift}: ${g.type}`}
+                    className="flex flex-col items-center px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform"
+                  >
+                    <span className="text-[20px] leading-none">{g.emoji}</span>
+                    <span className="text-[9px] text-muted">{g.coins}🪙</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex gap-1">
+                {GIFT_TYPES.map((g) => (
+                  <button key={g} onClick={() => giveGift(p.id, g)} aria-label={`${C.sendGift}: ${g}`} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
+                    {GIFT_EMOJI[g]}
+                  </button>
+                ))}
+              </div>
+            )
           )}
         </div>
         {comments && (
@@ -470,7 +574,28 @@ export default function Community() {
               <h1 className="font-display font-bold text-[30px] m-0 tracking-[-0.015em]">{C.title}</h1>
               <div className="text-[13px] text-muted mt-1">{C.sub}</div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center flex-wrap">
+              {paidMode && (
+                <>
+                  <button
+                    onClick={() => setShowBuy(true)}
+                    title={d.app.wallet.buyCoins}
+                    className="px-3 py-2 rounded-xl text-sm font-semibold bg-white border border-line hover:border-coral"
+                  >
+                    🪙 {wallet?.coins ?? 0}
+                  </button>
+                  {(wallet?.earned ?? 0) > 0 && (
+                    <button
+                      onClick={() => { setPayoutDone(false); setPayoutErr(null); setShowPayout(true); }}
+                      title={d.app.wallet.earnings}
+                      className="px-3 py-2 rounded-xl text-sm font-semibold bg-white border border-line hover:border-coral"
+                      style={{ color: 'var(--ok)' }}
+                    >
+                      💰 {wallet?.earned ?? 0}
+                    </button>
+                  )}
+                </>
+              )}
               <button
                 onClick={() => { closeGroup(); setView('feed'); }}
                 className={`px-4 py-2 rounded-xl text-sm font-medium ${view === 'feed' ? 'text-white' : 'bg-white text-ink-soft border border-line hover:bg-ivory'}`}
@@ -490,6 +615,11 @@ export default function Community() {
         </div>
 
         <div className="p-10 max-md:p-5 max-w-[640px] mx-auto flex flex-col gap-5">
+          {toast && (
+            <div className="px-5 py-3.5 rounded-2xl text-white font-semibold shadow-lg" style={{ background: 'linear-gradient(135deg, var(--forest), var(--coral))' }}>
+              {toast}
+            </div>
+          )}
           {error ? (
             <div className="text-center py-16">
               <div className="font-display font-semibold text-2xl mb-2">{d.app.browse.loadFailTitle}</div>
@@ -601,6 +731,67 @@ export default function Community() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+      {showBuy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: 'rgba(31,20,25,0.7)' }} onClick={() => !buyBusy && setShowBuy(false)}>
+          <div className="bg-white rounded-[24px] p-8 max-w-[420px] w-full shadow-2xl" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={d.app.wallet.buyCoins}>
+            <h2 className="font-display font-bold text-[22px] m-0 mb-1">{d.app.wallet.buyCoins}</h2>
+            <div className="text-[13px] text-muted mb-5">🪙 {wallet?.coins ?? 0}</div>
+            <div className="flex flex-col gap-2.5">
+              {COIN_PACKAGES.map((pkg) => (
+                <button
+                  key={pkg.id}
+                  onClick={() => buyPackage(pkg.id)}
+                  disabled={!!buyBusy}
+                  className="flex justify-between items-center px-4 py-3.5 rounded-xl border border-line hover:border-coral text-sm font-medium disabled:opacity-60"
+                >
+                  <span>🪙 {d.app.wallet.packageLabel(pkg.coins, pkg.usd.toFixed(2))}</span>
+                  <span className="btn btn-primary btn-sm pointer-events-none">
+                    {buyBusy === pkg.id ? d.app.wallet.processing : d.app.wallet.buy}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setShowBuy(false)} disabled={!!buyBusy} className="btn btn-ghost w-full justify-center mt-4">{d.app.report.cancel}</button>
+          </div>
+        </div>
+      )}
+      {showPayout && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: 'rgba(31,20,25,0.7)' }} onClick={() => !payoutBusy && setShowPayout(false)}>
+          <div className="bg-white rounded-[24px] p-8 max-w-[420px] w-full shadow-2xl" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={d.app.wallet.payoutTitle}>
+            <h2 className="font-display font-bold text-[22px] m-0 mb-1">{d.app.wallet.payoutTitle}</h2>
+            <div className="text-[13px] text-muted mb-4">
+              {d.app.wallet.earnedCoins(wallet?.earned ?? 0)} · {d.app.wallet.payoutEstimate(((wallet?.earned ?? 0) * PAYOUT_USD_PER_COIN).toFixed(2))}
+            </div>
+            {payoutDone ? (
+              <>
+                <div className="text-sm px-4 py-3 rounded-xl mb-5" style={{ background: 'rgba(76,175,80,0.1)', color: 'var(--ok)' }}>
+                  {d.app.wallet.payoutSent}
+                </div>
+                <button onClick={() => setShowPayout(false)} className="btn btn-primary w-full justify-center">{d.app.report.close}</button>
+              </>
+            ) : (
+              <form onSubmit={submitPayout}>
+                <div className="field mb-3">
+                  <label>{d.app.wallet.gcashLabel}</label>
+                  <input required inputMode="tel" placeholder="09XX XXX XXXX" value={gcash} onChange={(e) => setGcash(e.target.value)} />
+                </div>
+                <div className="text-xs text-muted mb-4">{d.app.wallet.payoutNote}</div>
+                {payoutErr && <div className="text-sm px-3 py-2 rounded-lg mb-3" style={{ background: 'rgba(255,20,147,0.08)', color: 'var(--coral)' }}>{payoutErr}</div>}
+                <div className="flex gap-2.5">
+                  <button type="button" onClick={() => setShowPayout(false)} className="btn btn-ghost" disabled={payoutBusy}>{d.app.report.cancel}</button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary flex-1 justify-center disabled:opacity-60"
+                    disabled={payoutBusy || (wallet?.earned ?? 0) < MIN_PAYOUT_COINS}
+                  >
+                    {payoutBusy ? d.app.wallet.processing : d.app.wallet.requestPayout}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       )}
       {report && <ReportDialog reporterId={user.uid} target={report} d={d} onClose={() => setReport(null)} />}

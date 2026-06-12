@@ -20,7 +20,7 @@ npm run preview
 ## Going live — operations checklist
 1. **Netlify**: connect this repo, branch `main` (build settings come from `netlify.toml`). Add the six `PUBLIC_FIREBASE_*` env vars (see `.env.example`) and trigger a deploy. `src/lib/firebase.ts` also carries the `filwest` web config as a fallback.
 2. **Firebase Auth**: enable Email/Password (and Google) sign-in; add `filipinawest.com`, `www.filipinawest.com`, and the `*.netlify.app` domain to Authorized domains.
-3. **Security rules** — two options:
+3. **Security rules** — ⚠️ the CANONICAL merged ruleset (covering this site AND the mobile app: pushTokens, subscriptions, presence, calls, verifications, boosts, credits, etc.) lives in `filwest-dating-app/firebase/`. This repo's `firestore.rules` / `storage.rules` must be byte-identical mirrors of those files. Never edit rules here independently — a deploy from a stale copy breaks the mobile app's collections in production. Two deploy options:
    - *Automatic (recommended)*: add a `FIREBASE_SERVICE_ACCOUNT` secret to GitHub (repo → Settings → Secrets and variables → Actions) containing a service-account JSON key from Firebase Console → Project settings → Service accounts. The `deploy-rules.yml` workflow then publishes `firestore.rules`, `storage.rules`, and `firestore.indexes.json` automatically whenever they change (or on manual dispatch).
    - *Manual*: paste `firestore.rules` into Firestore → Rules and `storage.rules` into Storage → Rules in the Firebase console, and republish whenever they change in this repo.
 4. **Support email**: `support@filipinawest.com` — set up forwarding at the domain registrar.
@@ -32,7 +32,8 @@ Paid gifting ships dark. Free emoji gifts work until you flip it on. To go live 
 1. Upgrade the Firebase project to the **Blaze** plan (Cloud Functions requirement).
 2. Create a **Stripe** account; from the dashboard copy the secret key, then set the function secrets:
    `npx firebase-tools functions:secrets:set STRIPE_SECRET_KEY` and `…:set STRIPE_WEBHOOK_SECRET` (webhook secret comes from step 4).
-3. Deploy: `npx firebase-tools deploy --only functions --project filwest`.
+3. Deploy: `npx firebase-tools deploy --only functions:default --project filwest`.
+   ⚠️ The mobile app repo deploys its own functions under codebase `app`; this repo owns codebase `default` only. Always scope deploys to `functions:default` and never pass `--force` to a functions deploy — that's what can delete functions belonging to the other codebase if prompts are skipped.
 4. In Stripe → Developers → Webhooks, add an endpoint pointing at the deployed `stripeWebhook` function URL, listening to `checkout.session.completed`; copy its signing secret into the `STRIPE_WEBHOOK_SECRET` secret and redeploy.
 5. Flip the switch: in Firestore create doc `config/app` with `paidGiftsEnabled: true`. The gift picker now shows coin prices, the wallet chip appears, and free gift writes are blocked by rules.
 6. **Payouts are manual**: requests land in `payoutRequests` (`status: pending`) with the member's GCash number and the USD amount (rate and 1,000-coin minimum are constants in `functions/src/index.ts`). Send the GCash transfer, then set `status: paid`.

@@ -19,6 +19,7 @@ import {
   isPaidGiftsEnabled, subscribeWallet, startCoinCheckout, sendPaidGiftFn, requestPayoutFn,
   COIN_PACKAGES, PAID_GIFTS, PAYOUT_USD_PER_COIN, MIN_PAYOUT_COINS, type Wallet,
 } from '../../lib/wallet';
+import { subscribeLiveStreams, type Stream } from '../../lib/live';
 import {
   listGroups, createGroup, getGroup, joinGroup, leaveGroup, getMyGroupIds, getMemberCount,
   type Group,
@@ -52,6 +53,15 @@ export default function Community() {
     setToast(msg);
     setTimeout(() => setToast(null), 3500);
   };
+
+  // Live streams rail.
+  const [liveStreams, setLiveStreams] = React.useState<Stream[]>([]);
+  React.useEffect(() => {
+    if (!user || loading || needsEmailVerification(user)) return;
+    return subscribeLiveStreams((all) => {
+      setLiveStreams(all.filter((s) => !blockedRef.current.has(s.hostId)));
+    });
+  }, [user, loading]);
 
   // Feed
   const [posts, setPosts] = React.useState<Post[] | null>(null);
@@ -575,6 +585,9 @@ export default function Community() {
               <div className="text-[13px] text-muted mt-1">{C.sub}</div>
             </div>
             <div className="flex gap-2 items-center flex-wrap">
+              <a href="/app/live" className="btn btn-primary btn-sm">
+                <Icon.Camera size={14} /> {d.app.live.goLive}
+              </a>
               {paidMode && (
                 <>
                   <button
@@ -628,6 +641,26 @@ export default function Community() {
             </div>
           ) : view === 'feed' ? (
             <>
+              {liveStreams.length > 0 && (
+                <div>
+                  <div className="text-[11px] tracking-[0.1em] uppercase text-muted font-semibold mb-2">{d.app.live.liveNow}</div>
+                  <div className="flex gap-3 overflow-x-auto pb-1">
+                    {liveStreams.map((s) => (
+                      <a
+                        key={s.id}
+                        href={`/app/live?id=${s.id}`}
+                        className="flex-shrink-0 w-[110px] rounded-2xl overflow-hidden relative aspect-[3/4] bg-cover bg-center flex flex-col justify-end p-2"
+                        style={s.hostPhoto ? { backgroundImage: `url(${s.hostPhoto})` } : { background: 'linear-gradient(135deg, var(--blush), var(--coral))' }}
+                      >
+                        <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9px] font-bold text-white animate-pulse" style={{ background: '#E0245E' }}>
+                          {d.app.live.liveBadge}
+                        </span>
+                        <span className="text-white text-[12px] font-semibold truncate" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.7)' }}>{s.hostName}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
               {composer}
               <div className="flex gap-2">
                 {(['all', 'following'] as const).map((f) => (

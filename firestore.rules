@@ -130,6 +130,37 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Live streams — host owns the stream doc; viewers manage their own
+    // presence; WebRTC signaling docs are ephemeral and open to members.
+    match /streams/{streamId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
+
+      match /connections/{connId}/{document=**} {
+        allow read, write: if isSignedIn();
+      }
+
+      match /viewers/{viewerId} {
+        allow read: if isSignedIn();
+        allow create, delete: if isSignedIn() && request.auth.uid == viewerId;
+      }
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      }
+
+      // Same paid/free gating as post gifts.
+      match /gifts/{giftId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && !(exists(/databases/$(database)/documents/config/app)
+               && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true);
+      }
+    }
+
     // Follows — doc id is `${followerId}_${followedId}`; the follower owns it.
     match /follows/{followId} {
       allow read: if isSignedIn();

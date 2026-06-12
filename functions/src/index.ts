@@ -159,6 +159,64 @@ export const sendPaidGift = onCall(async (req) => {
   return { ok: true };
 });
 
+// ---- Send a paid gift inside a live stream ----
+export const sendStreamGift = onCall(async (req) => {
+  const uid = requireAuth(req.auth?.uid);
+  const streamId = String(req.data?.streamId ?? '');
+  const giftType = String(req.data?.giftType ?? '');
+  const price = GIFT_PRICES[giftType];
+  if (!streamId || !price) throw new HttpsError('invalid-argument', 'Unknown gift.');
+
+  const streamRef = db.collection('streams').doc(streamId);
+  const walletRef = db.collection('wallets').doc(uid);
+  const senderRef = db.collection('profiles').doc(uid);
+
+  await db.runTransaction(async (tx) => {
+    const [stream, wallet, sender] = await Promise.all([
+      tx.get(streamRef),
+      tx.get(walletRef),
+      tx.get(senderRef),
+    ]);
+    if (!stream.exists || stream.data()!.status !== 'live') {
+      throw new HttpsError('failed-precondition', 'stream-ended');
+    }
+    const hostId = stream.data()!.hostId as string;
+    if (hostId === uid) throw new HttpsError('failed-precondition', 'self-gift');
+    const coins = (wallet.data()?.coins as number | undefined) ?? 0;
+    if (coins < price) throw new HttpsError('failed-precondition', 'insufficient-coins');
+    const senderName = (sender.data()?.name as string | undefined) ?? 'Member';
+
+    tx.update(walletRef, {
+      coins: admin.firestore.FieldValue.increment(-price),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    tx.set(
+      db.collection('wallets').doc(hostId),
+      {
+        earned: admin.firestore.FieldValue.increment(price),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    tx.set(streamRef.collection('gifts').doc(), {
+      senderId: uid,
+      senderName,
+      type: giftType,
+      coins: price,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    // Gift also lands in the stream chat so everyone sees the moment.
+    tx.set(streamRef.collection('messages').doc(), {
+      type: 'gift',
+      senderId: uid,
+      senderName,
+      giftType,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  });
+  return { ok: true };
+});
+
 // ---- Request a payout of earned coins (fulfilled manually via GCash) ----
 export const requestPayout = onCall(async (req) => {
   const uid = requireAuth(req.auth?.uid);

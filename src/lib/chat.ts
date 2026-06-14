@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -67,6 +68,23 @@ export async function markMessagesRead(matchId: string, otherId: string) {
   const batch = writeBatch(db);
   snap.forEach((d) => batch.update(d.ref, { isRead: true }));
   await batch.commit();
+}
+
+// Typing presence lives in its own subcollection so it never disturbs the
+// message or conversation listeners.
+export function setTyping(matchId: string, userId: string, typing: boolean): Promise<void> {
+  const { db } = firebase();
+  return setDoc(doc(db, 'matches', matchId, 'typing', userId), { typing, updatedAt: serverTimestamp() });
+}
+
+export function subscribeTyping(matchId: string, otherId: string, cb: (typing: boolean) => void): Unsubscribe {
+  const { db } = firebase();
+  return onSnapshot(doc(db, 'matches', matchId, 'typing', otherId), (snap) => {
+    const d = snap.data() as any;
+    // Guard against a stale `true` left by a tab that closed mid-type.
+    const fresh = d?.updatedAt?.seconds ? Date.now() - d.updatedAt.seconds * 1000 < 8000 : true;
+    cb(!!d?.typing && fresh);
+  });
 }
 
 export function subscribeMessages(matchId: string, cb: (msgs: ChatMessage[]) => void): Unsubscribe {

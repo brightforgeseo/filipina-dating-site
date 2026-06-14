@@ -77,6 +77,12 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
         allow delete: if isSignedIn() && isMatchParticipant(matchId);
       }
+
+      // Typing presence: each participant writes only their own doc; both can read.
+      match /typing/{userId} {
+        allow read: if isSignedIn() && isMatchParticipant(matchId);
+        allow write: if isSignedIn() && isMatchParticipant(matchId) && request.auth.uid == userId;
+      }
     }
 
     // Reports: write-only from the client, reviewed by the team in Firebase.

@@ -13,6 +13,8 @@ import {
   sendMessage,
   sendImageMessage,
   sendVideoMessage,
+  setTyping,
+  subscribeTyping,
   markMessagesRead,
   formatTime,
   type Conversation,
@@ -47,9 +49,12 @@ export default function Chat() {
   const [incoming, setIncoming] = React.useState<CallDoc | null>(null);
   const [activeCall, setActiveCall] = React.useState<{ id: string; otherName: string; role: 'caller' | 'callee' } | null>(null);
   const callable = !!AGORA_APP_ID;
+  const [otherTyping, setOtherTyping] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const autoSelected = React.useRef(false);
   const blockedRef = React.useRef<Set<string>>(new Set());
+  const typingSentRef = React.useRef(0);
+  const typingIdleRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
     if (loading) return;
@@ -96,6 +101,36 @@ export default function Chat() {
     });
     return () => unsub();
   }, [openId, user]);
+
+  // Show the other member's typing state for the open conversation.
+  React.useEffect(() => {
+    setOtherTyping(false);
+    if (!openId || !user) return;
+    const conv = conversations?.find((c) => c.matchId === openId);
+    if (!conv) return;
+    const unsub = subscribeTyping(openId, conv.otherId, setOtherTyping);
+    return () => unsub();
+  }, [openId, user, conversations]);
+
+  const handleTyping = () => {
+    if (!openId || !user) return;
+    const now = Date.now();
+    if (now - typingSentRef.current > 2500) {
+      typingSentRef.current = now;
+      setTyping(openId, user.uid, true).catch(() => {});
+    }
+    if (typingIdleRef.current) clearTimeout(typingIdleRef.current);
+    typingIdleRef.current = setTimeout(() => stopTyping(), 4000);
+  };
+
+  const stopTyping = () => {
+    if (typingIdleRef.current) {
+      clearTimeout(typingIdleRef.current);
+      typingIdleRef.current = null;
+    }
+    typingSentRef.current = 0;
+    if (openId && user) setTyping(openId, user.uid, false).catch(() => {});
+  };
 
   React.useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -145,6 +180,7 @@ export default function Chat() {
     setSending(true);
     const toSend = text.trim();
     setText('');
+    stopTyping();
     try {
       await sendMessage(openId, user.uid, toSend);
     } catch {
@@ -277,7 +313,11 @@ export default function Chat() {
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-[20px] m-0">{active.otherName}</h3>
-                    {active.unreadCount > 0 && <div className="text-xs text-coral">{C.newCount(active.unreadCount)}</div>}
+                    {otherTyping ? (
+                      <div className="text-xs text-coral">{C.typing}</div>
+                    ) : active.unreadCount > 0 ? (
+                      <div className="text-xs text-coral">{C.newCount(active.unreadCount)}</div>
+                    ) : null}
                   </div>
                   <div className="ml-auto flex gap-2">
                     {callable && (
@@ -364,7 +404,7 @@ export default function Chat() {
                   </label>
                   <input
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
+                    onChange={(e) => { setText(e.target.value); handleTyping(); }}
                     onKeyDown={(e) => e.key === 'Enter' && !sending && send()}
                     placeholder={C.typeMessage}
                     className="flex-1 px-4 py-3 border border-line rounded-full bg-ivory text-sm outline-none focus:border-coral"

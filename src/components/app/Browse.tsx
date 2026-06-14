@@ -205,9 +205,14 @@ export default function Browse() {
   const deckCard = (p: Profile, isTop: boolean) => (
     <div
       key={p.id}
-      className="absolute inset-0 rounded-[24px] overflow-hidden shadow-xl bg-cover bg-center"
+      className="absolute inset-0 rounded-[24px] overflow-hidden shadow-xl"
       style={{
-        background: p.images?.[0] ? `url(${p.images[0]}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))',
+        // Solid opaque base so a missing/broken photo can never let the card
+        // behind it show through.
+        backgroundColor: 'var(--blush)',
+        backgroundImage: p.images?.[0] ? `url(${p.images[0]})` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         ...(isTop ? animStyle : { transform: 'scale(0.95) translateY(14px)', filter: 'brightness(0.9)' }),
         zIndex: isTop ? 2 : 1,
       }}
@@ -215,23 +220,29 @@ export default function Browse() {
       {!p.images?.[0] && (
         <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[140px] text-white/50">{p.name?.[0] || '?'}</div>
       )}
-      <div className="absolute top-4 left-4 flex gap-1.5 flex-wrap">
-        {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 9px', fontSize: 10 }}><Icon.Shield size={10} />{B.verified}</span>}
-        {p.online ? (
-          <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 9px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>
-        ) : isRecentlyActive(p) ? (
-          <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--muted)', border: 'none', padding: '3px 9px', fontSize: 10 }}>{B.activeRecently}</span>
-        ) : null}
-      </div>
-      <a href={`/app/profile?id=${p.id}`} className="absolute inset-x-0 bottom-0 p-6 text-white block" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
-        <div className="font-display font-bold text-[34px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
-        {(p.city || p.country) && (
-          <div className="text-[13px] mt-1.5 flex items-center gap-1 opacity-90">
-            <Icon.Pin size={11} /> {[p.city, p.country ? (d.options.countries[p.country] || p.country) : ''].filter(Boolean).join(', ')}
+      {/* Only the front card shows chips + details — the card behind is just a
+          decorative peek, so its text can't overlap the front card. */}
+      {isTop && (
+        <>
+          <div className="absolute top-4 left-4 flex gap-1.5 flex-wrap">
+            {p.verified && <span className="chip" style={{ background: 'rgba(76,175,80,0.95)', color: '#fff', border: 'none', padding: '3px 9px', fontSize: 10 }}><Icon.Shield size={10} />{B.verified}</span>}
+            {p.online ? (
+              <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--ok)', border: 'none', padding: '3px 9px', fontSize: 10 }}><span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: 'var(--ok)' }} />{B.online}</span>
+            ) : isRecentlyActive(p) ? (
+              <span className="chip" style={{ background: 'rgba(255,255,255,0.92)', color: 'var(--muted)', border: 'none', padding: '3px 9px', fontSize: 10 }}>{B.activeRecently}</span>
+            ) : null}
           </div>
-        )}
-        {p.bio && <div className="text-[13px] mt-2 leading-snug opacity-90" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.bio}</div>}
-      </a>
+          <a href={`/app/profile?id=${p.id}`} className="absolute inset-x-0 bottom-0 p-6 text-white block" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
+            <div className="font-display font-bold text-[34px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
+            {(p.city || p.country) && (
+              <div className="text-[13px] mt-1.5 flex items-center gap-1 opacity-90">
+                <Icon.Pin size={11} /> {[p.city, p.country ? (d.options.countries[p.country] || p.country) : ''].filter(Boolean).join(', ')}
+              </div>
+            )}
+            {p.bio && <div className="text-[13px] mt-2 leading-snug opacity-90" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.bio}</div>}
+          </a>
+        </>
+      )}
     </div>
   );
 
@@ -350,7 +361,7 @@ export default function Browse() {
             <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-5 max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
               {visible.map((p) => (
                 <div key={p.id} className="bg-white border border-line rounded-2xl overflow-hidden flex flex-col transition hover:-translate-y-1 hover:shadow">
-                  <a href={`/app/profile?id=${p.id}`} className="aspect-[4/5] relative block" style={{ background: p.images?.[0] ? `url(${p.images[0]}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
+                  <a href={`/app/profile?id=${p.id}`} className="aspect-[4/5] relative block" style={{ backgroundColor: 'var(--blush)', backgroundImage: p.images?.[0] ? `url(${p.images[0]})` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))', backgroundSize: 'cover', backgroundPosition: 'center' }}>
                     {!p.images?.[0] && (
                       <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{p.name?.[0] || '?'}</div>
                     )}

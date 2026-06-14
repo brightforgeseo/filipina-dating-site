@@ -2,34 +2,72 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Profile photos — any signed-in user can view;
-    // only the owner can upload; images only; max 5 MB.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isVideo() {
+      return request.resource.contentType.matches('video/.*');
+    }
+
+    // Web profile photos: profile_images/{uid}/...
     match /profile_images/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.contentType.matches('image/.*')
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId)
+        && isImage()
         && request.resource.size <= 5 * 1024 * 1024;
     }
 
-    // Photos sent in chat — uploaded under the sender's uid.
+    // Mobile profile photos: profile-images/{uid}/...
+    match /profile-images/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isOwner(userId)
+        && isImage()
+        && request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // Photos sent in chat by web clients.
     match /chat_images/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.contentType.matches('image/.*')
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId)
+        && isImage()
         && request.resource.size <= 5 * 1024 * 1024;
     }
 
-    // Community feed media — photos up to 5 MB, short videos up to 25 MB.
+    // Mobile chat media: chat-media/{matchId}/...
+    match /chat-media/{matchId}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && (isImage() || isVideo())
+        && request.resource.size <= 50 * 1024 * 1024;
+    }
+
+    // Community feed media: photos up to 5 MB, short videos up to 25 MB.
     match /post_media/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-        && request.auth.uid == userId
-        && ((request.resource.contentType.matches('image/.*')
-              && request.resource.size <= 5 * 1024 * 1024)
-            || (request.resource.contentType.matches('video/.*')
-              && request.resource.size <= 25 * 1024 * 1024));
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId)
+        && ((isImage() && request.resource.size <= 5 * 1024 * 1024)
+            || (isVideo() && request.resource.size <= 25 * 1024 * 1024));
+    }
+
+    // Verification evidence, if enabled by the app: verification/{uid}/...
+    match /verification/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && (isImage() || request.resource.contentType == 'application/pdf')
+        && request.resource.size <= 10 * 1024 * 1024;
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
     }
   }
 }

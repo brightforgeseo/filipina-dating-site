@@ -8,50 +8,58 @@ service cloud.firestore {
     }
 
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isParticipant(userId1, userId2) {
+      return isSignedIn() && (request.auth.uid == userId1 || request.auth.uid == userId2);
+    }
+
+    function paidGiftsEnabled() {
+      return exists(/databases/$(database)/documents/config/app)
+        && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true;
     }
 
     function isMatchParticipant(matchId) {
       let m = get(/databases/$(database)/documents/matches/$(matchId)).data;
-      return request.auth.uid == m.user1Id || request.auth.uid == m.user2Id;
+      return isParticipant(m.user1Id, m.user2Id);
     }
 
-    // Profiles — any signed-in user can browse; only the owner can write their own doc.
+    // Profiles: signed-in users can browse; only the owner can write their own profile.
     match /profiles/{userId} {
       allow read: if isSignedIn();
       allow write: if isOwner(userId);
 
-      // Gifts sent directly to a member — same paid/free gating as posts.
+      // Gifts sent directly to a member, same paid/free gating as posts.
       match /gifts/{giftId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn()
           && request.resource.data.senderId == request.auth.uid
           && userId != request.auth.uid
-          && !(exists(/databases/$(database)/documents/config/app)
-               && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true);
+          && !paidGiftsEnabled();
       }
     }
 
-    // Swipes — the swiper can read their own; the recipient can read likes
-    // aimed at them (powers the "Likes you" page).
+    // Swipes: the swiper can manage their own; the recipient can read likes aimed at them.
     match /swipes/{swipeId} {
       allow read: if isSignedIn()
         && (resource.data.fromUserId == request.auth.uid
             || resource.data.toUserId == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.fromUserId == request.auth.uid;
+      allow update: if false;
+      allow delete: if isSignedIn()
+        && resource.data.fromUserId == request.auth.uid;
     }
 
-    // Matches — participants can read, update (lastMessage etc.) and delete (unmatch).
-    // Creates are allowed when the caller is user1 (set by recordSwipe on the client).
+    // Matches: both participants can read, update and delete. Creates must involve the signed-in user.
     match /matches/{matchId} {
-      allow read, update, delete: if isSignedIn()
-        && (resource.data.user1Id == request.auth.uid
-            || resource.data.user2Id == request.auth.uid);
+      allow read, update, delete: if isParticipant(resource.data.user1Id, resource.data.user2Id);
       allow create: if isSignedIn()
-        && request.resource.data.user1Id == request.auth.uid;
+        && (request.resource.data.user1Id == request.auth.uid
+            || request.resource.data.user2Id == request.auth.uid);
 
-      // Messages subcollection — participants only; senders must identify themselves;
-      // only the isRead field may be updated (for read-receipts).
+      // Messages subcollection: match participants only; senders must identify themselves on create.
       match /messages/{messageId} {
         allow read: if isSignedIn() && isMatchParticipant(matchId);
         allow create: if isSignedIn()
@@ -64,28 +72,27 @@ service cloud.firestore {
       }
     }
 
-    // Blocks — blockerId can create and delete; either party can read records
-    // that involve them (needed to filter blocked users from Discover).
+    // Reports: write-only from the client, reviewed by the team in Firebase.
+    match /reports/{reportId} {
+      allow read: if false;
+      allow create: if isSignedIn()
+        && request.resource.data.reporterId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Blocks: support both web field name (blockedId) and mobile field name (blockedUserId).
     match /blocks/{blockId} {
       allow read: if isSignedIn()
         && (resource.data.blockerId == request.auth.uid
-            || resource.data.blockedId == request.auth.uid);
+            || resource.data.blockedId == request.auth.uid
+            || resource.data.blockedUserId == request.auth.uid);
       allow create: if isSignedIn()
         && request.resource.data.blockerId == request.auth.uid;
       allow delete: if isSignedIn()
         && resource.data.blockerId == request.auth.uid;
     }
 
-    // Reports — write-only from the client (reporter must identify
-    // themselves); reviewed by the team in the Firebase console.
-    match /reports/{reportId} {
-      allow create: if isSignedIn()
-        && request.resource.data.reporterId == request.auth.uid;
-      allow read, update, delete: if false;
-    }
-
-    // Community feed — any member can read; authors own their posts.
-    // Posting into a group requires actual membership.
+    // Community feed: any member can read; authors own their posts.
     match /posts/{postId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn()
@@ -94,7 +101,6 @@ service cloud.firestore {
             || exists(/databases/$(database)/documents/groupMembers/$(request.resource.data.groupId + '_' + request.auth.uid)));
       allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
 
-      // Like doc id == the liker's uid, one like per member.
       match /likes/{userId} {
         allow read: if isSignedIn();
         allow create, delete: if isSignedIn() && request.auth.uid == userId;
@@ -106,27 +112,23 @@ service cloud.firestore {
         allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
       }
 
-      // Gifts. While paid gifting is off (config/app.paidGiftsEnabled != true)
-      // clients may write free gifts directly; once it's on, only the
-      // sendPaidGift Cloud Function (admin SDK) writes gifts.
       match /gifts/{giftId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn()
           && request.resource.data.senderId == request.auth.uid
-          && !(exists(/databases/$(database)/documents/config/app)
-               && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true);
+          && !paidGiftsEnabled();
       }
     }
 
-    // App-level feature flags — set by the team in the console.
+    // App-level feature flags, set by the team in the console.
     match /config/{docId} {
       allow read: if isSignedIn();
       allow write: if false;
     }
 
-    // Coin wallets — written only by Cloud Functions (admin SDK).
+    // Coin wallets and commercial ledgers, written only by Cloud Functions/admin SDK.
     match /wallets/{userId} {
-      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow read: if isOwner(userId);
       allow write: if false;
     }
 
@@ -144,8 +146,7 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Live streams — host owns the stream doc; viewers manage their own
-    // presence; WebRTC signaling docs are ephemeral and open to members.
+    // Live streams: host owns stream doc; viewers manage their own presence; WebRTC signaling is open to members.
     match /streams/{streamId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
@@ -165,36 +166,82 @@ service cloud.firestore {
         allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
       }
 
-      // Same paid/free gating as post gifts.
       match /gifts/{giftId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn()
           && request.resource.data.senderId == request.auth.uid
-          && !(exists(/databases/$(database)/documents/config/app)
-               && get(/databases/$(database)/documents/config/app).data.paidGiftsEnabled == true);
+          && !paidGiftsEnabled();
       }
     }
 
-    // Follows — doc id is `${followerId}_${followedId}`; the follower owns it.
+    // Follows: doc id is `${followerId}_${followedId}`; the follower owns it.
     match /follows/{followId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.followerId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.followerId == request.auth.uid;
     }
 
-    // Community groups — anyone can create; only the owner can edit/delete.
+    // Community groups: anyone can create; only the owner can edit/delete.
     match /groups/{groupId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
 
-    // Group memberships — doc id is `${groupId}_${userId}`; members manage
-    // their own membership.
+    // Group memberships: doc id is `${groupId}_${userId}`; members manage their own membership.
     match /groupMembers/{memberId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Presence document collection used by the mobile app.
+    match /presence/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // Push tokens and commercial/account records are user-owned.
+    match /pushTokens/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /subscriptions/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /boosts/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /credits/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Verification requests are user-readable and owner-created. Only server/admin should approve verified=true.
+    match /verifications/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId)
+        && (!('verified' in request.resource.data) || request.resource.data.verified == false);
+      allow update: if isOwner(userId)
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified']));
+      allow delete: if false;
+    }
+
+    // Calls: caller or callee can read/update/delete; caller creates.
+    match /calls/{callId} {
+      allow read: if isSignedIn()
+        && (resource.data.callerId == request.auth.uid
+            || resource.data.calleeId == request.auth.uid);
+      allow create: if isSignedIn()
+        && request.resource.data.callerId == request.auth.uid;
+      allow update, delete: if isSignedIn()
+        && (resource.data.callerId == request.auth.uid
+            || resource.data.calleeId == request.auth.uid);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

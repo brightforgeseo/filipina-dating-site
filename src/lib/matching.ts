@@ -6,10 +6,12 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   where,
 } from 'firebase/firestore';
 import { firebase } from './firebase';
 import type { Profile } from './profiles';
+import { deterministicMatchId, deterministicMatchParticipants } from './matchIds';
 
 export type SwipeDirection = 'left' | 'right' | 'up';
 
@@ -61,26 +63,32 @@ export async function recordSwipe(
     return { matched: true, matchedName: existing.user1Id === fromUserId ? existing.user2Name : existing.user1Name };
   }
 
-  const [u1, u2] = await Promise.all([
+  const [fromUserProfile, toUserProfile] = await Promise.all([
     getDoc(doc(db, 'profiles', fromUserId)),
     getDoc(doc(db, 'profiles', toUserId)),
   ]);
-  const u1d = u1.data() || {};
-  const u2d = u2.data() || {};
+  const profileById: Record<string, any> = {
+    [fromUserId]: fromUserProfile.data() || {},
+    [toUserId]: toUserProfile.data() || {},
+  };
+  const { user1Id, user2Id } = deterministicMatchParticipants(fromUserId, toUserId);
+  const user1Data = profileById[user1Id] || {};
+  const user2Data = profileById[user2Id] || {};
+  const matchId = deterministicMatchId(fromUserId, toUserId);
 
-  const matchRef = await addDoc(collection(db, 'matches'), {
-    user1Id: fromUserId,
-    user2Id: toUserId,
-    user1Name: u1d.name || 'User',
-    user2Name: u2d.name || 'User',
-    user1Photo: u1d.images?.[0] || DEFAULT_AVATAR,
-    user2Photo: u2d.images?.[0] || DEFAULT_AVATAR,
+  await setDoc(doc(db, 'matches', matchId), {
+    user1Id,
+    user2Id,
+    user1Name: user1Data.name || 'User',
+    user2Name: user2Data.name || 'User',
+    user1Photo: user1Data.images?.[0] || DEFAULT_AVATAR,
+    user2Photo: user2Data.images?.[0] || DEFAULT_AVATAR,
     createdAt: serverTimestamp(),
     lastMessage: null,
     lastMessageTime: null,
   });
 
-  return { matched: true, matchedName: u2d.name };
+  return { matched: true, matchedName: profileById[toUserId]?.name };
 }
 
 export async function getSwipedIds(userId: string): Promise<Set<string>> {
@@ -93,6 +101,11 @@ export async function getSwipedIds(userId: string): Promise<Set<string>> {
 
 async function findExistingMatch(a: string, b: string): Promise<Match | null> {
   const { db } = firebase();
+  const deterministic = await getDoc(doc(db, 'matches', deterministicMatchId(a, b)));
+  if (deterministic.exists()) {
+    return { id: deterministic.id, ...(deterministic.data() as any) } as Match;
+  }
+
   const [s1, s2] = await Promise.all([
     getDocs(query(collection(db, 'matches'), where('user1Id', '==', a), where('user2Id', '==', b))),
     getDocs(query(collection(db, 'matches'), where('user1Id', '==', b), where('user2Id', '==', a))),

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from '../icons';
+import { GiftButton, giftCatalogItem } from './GiftButton';
 import Sidebar from './Sidebar';
 import VerifyEmail from './VerifyEmail';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
@@ -17,7 +18,7 @@ import {
 } from '../../lib/live';
 import { useLang } from '../../i18n/react';
 
-const ALL_EMOJI: Record<string, string> = { ...GIFT_EMOJI, diamond: '💎', castle: '🏰' };
+const ALL_EMOJI: Record<string, string> = { ...GIFT_EMOJI, diamond: giftCatalogItem('diamond').emoji, castle: giftCatalogItem('castle').emoji };
 
 export default function Live() {
   const { d } = useLang();
@@ -322,19 +323,17 @@ export default function Live() {
               {stream?.status === 'live' && (
                 <div className="p-3 border-t border-line flex flex-col gap-2">
                   {showGifts && !isHost && (
-                    <div className="flex gap-1 flex-wrap">
-                      {paidMode
-                        ? PAID_GIFTS.map((g) => (
-                            <button key={g.type} onClick={() => giveGift(g.type, g.coins)} className="flex flex-col items-center px-1.5 py-0.5 rounded-lg hover:bg-ivory">
-                              <span className="text-[20px] leading-none">{g.emoji}</span>
-                              <span className="text-[9px] text-muted">{g.coins}🪙</span>
-                            </button>
-                          ))
-                        : GIFT_TYPES.map((g: GiftType) => (
-                            <button key={g} onClick={() => giveGift(g)} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory">
-                              {GIFT_EMOJI[g]}
-                            </button>
-                          ))}
+                    <div className="rounded-[24px] border border-line bg-white/95 p-3 shadow-[0_18px_45px_rgba(255,107,157,0.16)]">
+                      <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Gift shop</div>
+                      <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                        {paidMode
+                          ? PAID_GIFTS.map((g) => (
+                              <GiftButton key={g.type} type={g.type} coins={g.coins} onClick={() => giveGift(g.type, g.coins)} compact />
+                            ))
+                          : GIFT_TYPES.map((g: GiftType) => (
+                              <GiftButton key={g} type={g} onClick={() => giveGift(g)} compact />
+                            ))}
+                      </div>
                     </div>
                   )}
                   <div className="flex gap-2 items-center">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from '../icons';
+import { GiftButton } from './GiftButton';
 import Sidebar from './Sidebar';
 import VerifyEmail from './VerifyEmail';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
@@ -14,7 +15,7 @@ import {
   getLikeInfo, setLiked, getCommentCount, listComments, addComment,
   type Post, type PostComment,
 } from '../../lib/posts';
-import { getFollowingIds, sendGift, getGiftCount, GIFT_TYPES, GIFT_EMOJI, type GiftType } from '../../lib/social';
+import { getFollowingIds, sendGift, getGiftCount, GIFT_TYPES, type GiftType } from '../../lib/social';
 import {
   isPaidGiftsEnabled, subscribeWallet, startCoinCheckout, sendPaidGiftFn, requestPayoutFn,
   COIN_PACKAGES, PAID_GIFTS, PAYOUT_USD_PER_COIN, MIN_PAYOUT_COINS, type Wallet,
@@ -499,29 +500,29 @@ export default function Community() {
             🎁 {gifts ? ` ${gifts}` : ''}
           </button>
           {giftPicker === p.id && (
-            paidMode ? (
-              <div className="flex gap-1 flex-wrap">
-                {PAID_GIFTS.map((g) => (
-                  <button
-                    key={g.type}
-                    onClick={() => givePaidGift(p.id, g.type, g.coins)}
-                    aria-label={`${C.sendGift}: ${g.type}`}
-                    className="flex flex-col items-center px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform"
-                  >
-                    <span className="text-[20px] leading-none">{g.emoji}</span>
-                    <span className="text-[9px] text-muted">{g.coins}🪙</span>
-                  </button>
-                ))}
+            <div className="w-full rounded-[24px] border border-line bg-white/95 p-3 shadow-[0_18px_45px_rgba(255,107,157,0.14)]">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Gift shop</div>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                {paidMode
+                  ? PAID_GIFTS.map((g) => (
+                      <GiftButton
+                        key={g.type}
+                        type={g.type}
+                        coins={g.coins}
+                        onClick={() => givePaidGift(p.id, g.type, g.coins)}
+                        ariaLabel={`${C.sendGift}: ${g.type}`}
+                      />
+                    ))
+                  : GIFT_TYPES.map((g) => (
+                      <GiftButton
+                        key={g}
+                        type={g}
+                        onClick={() => giveGift(p.id, g)}
+                        ariaLabel={`${C.sendGift}: ${g}`}
+                      />
+                    ))}
               </div>
-            ) : (
-              <div className="flex gap-1">
-                {GIFT_TYPES.map((g) => (
-                  <button key={g} onClick={() => giveGift(p.id, g)} aria-label={`${C.sendGift}: ${g}`} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
-                    {GIFT_EMOJI[g]}
-                  </button>
-                ))}
-              </div>
-            )
+            </div>
           )}
         </div>
         {comments && (

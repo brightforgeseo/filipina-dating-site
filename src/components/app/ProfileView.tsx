@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from '../icons';
+import { GiftButton, GiftInline } from './GiftButton';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../lib/useAuth';
 import { getProfile, saveProfile, deleteProfile, type Profile } from '../../lib/profiles';
@@ -17,7 +18,7 @@ import {
 import ReportDialog, { type ReportTarget } from './ReportDialog';
 import {
   follow, unfollow, isFollowing, getFollowCounts,
-  getProfileGiftInfo, sendProfileGiftFree, GIFT_TYPES, GIFT_EMOJI,
+  getProfileGiftInfo, sendProfileGiftFree, GIFT_TYPES,
 } from '../../lib/social';
 import { isPaidGiftsEnabled, sendProfileGiftPaid, PAID_GIFTS } from '../../lib/wallet';
 import { listUserPosts, getLikeInfo, setLiked, type Post } from '../../lib/posts';
@@ -26,7 +27,6 @@ import { formatTime } from '../../lib/chat';
 import { useLang } from '../../i18n/react';
 import type { Dict } from '../../i18n';
 
-const ALL_GIFT_EMOJI: Record<string, string> = { ...GIFT_EMOJI, diamond: '💎', castle: '🏰' };
 
 // Fields counted toward profile completion — photos and bio matter most for
 // getting matches, so they're weighted double.
@@ -408,7 +408,7 @@ export default function ProfileView() {
                     <div className="text-[13px]">
                       <span className="font-semibold">🎁 {P.giftsReceived(giftInfo?.count ?? 0)}</span>
                       {giftInfo && giftInfo.recent.length > 0 && (
-                        <span className="ml-2 text-[15px]">{giftInfo.recent.slice(0, 6).map((t, i) => <span key={i}>{ALL_GIFT_EMOJI[t] ?? '🎁'}</span>)}</span>
+                        <span className="ml-2 inline-flex gap-1">{giftInfo.recent.slice(0, 6).map((t, i) => <GiftInline key={i} type={t} />)}</span>
                       )}
                     </div>
                     {!isMyProfile && (
@@ -418,19 +418,17 @@ export default function ProfileView() {
                     )}
                   </div>
                   {giftPickerOpen && !isMyProfile && (
-                    <div className="flex gap-1 flex-wrap mt-2.5 pt-2.5 border-t border-line">
-                      {paidMode
-                        ? PAID_GIFTS.map((g) => (
-                            <button key={g.type} onClick={() => sendGiftTo(g.type)} className="flex flex-col items-center px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
-                              <span className="text-[20px] leading-none">{g.emoji}</span>
-                              <span className="text-[9px] text-muted">{g.coins}🪙</span>
-                            </button>
-                          ))
-                        : GIFT_TYPES.map((g) => (
-                            <button key={g} onClick={() => sendGiftTo(g)} className="text-[20px] px-1.5 py-0.5 rounded-lg hover:bg-ivory hover:scale-110 transition-transform">
-                              {GIFT_EMOJI[g]}
-                            </button>
-                          ))}
+                    <div className="mt-3 rounded-[24px] border border-line bg-white p-3 shadow-[0_18px_45px_rgba(255,107,157,0.14)]">
+                      <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Gift shop</div>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {paidMode
+                          ? PAID_GIFTS.map((g) => (
+                              <GiftButton key={g.type} type={g.type} coins={g.coins} onClick={() => sendGiftTo(g.type)} disabled={giftBusy} />
+                            ))
+                          : GIFT_TYPES.map((g) => (
+                              <GiftButton key={g} type={g} onClick={() => sendGiftTo(g)} disabled={giftBusy} />
+                            ))}
+                      </div>
                     </div>
                   )}
                 </div>

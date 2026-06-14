@@ -36,22 +36,32 @@ export type Profile = {
   createdAt?: any;
 };
 
+function profileFromDoc(id: string, data: Record<string, any>): Profile {
+  // The Firestore document ID is the user's real profile ID. Never allow a
+  // persisted `id` field inside the document body to override it, or two
+  // different profiles can render/link/swipe as the same person.
+  const { id: _ignoredId, ...profileData } = data;
+  return { ...(profileData as any), id };
+}
+
 export async function getProfile(userId: string): Promise<Profile | null> {
   const { db } = firebase();
   const snap = await getDoc(doc(db, 'profiles', userId));
   if (!snap.exists()) return null;
-  return { id: snap.id, ...(snap.data() as any) };
+  return profileFromDoc(snap.id, snap.data() as Record<string, any>);
 }
 
 export async function saveProfile(userId: string, data: Partial<Profile>) {
   const { db } = firebase();
   const ref = doc(db, 'profiles', userId);
   // Firestore rejects undefined field values, and createdAt must only be
-  // written once or edits would reset the original signup date.
+  // written once or edits would reset the original signup date. `id` is route
+  // state, not profile data; storing it can corrupt later client-side identity.
   const payload: Record<string, any> = Object.fromEntries(
-    Object.entries(data).filter(([, v]) => v !== undefined)
+    Object.entries(data).filter(([k, v]) => k !== 'id' && v !== undefined)
   );
   payload.lastActive = serverTimestamp();
+
   if (!payload.createdAt) {
     const existing = await getDoc(ref);
     if (!existing.exists()) payload.createdAt = serverTimestamp();
@@ -71,7 +81,7 @@ export async function listProfiles(opts: { excludeId?: string; max?: number } = 
   const out: Profile[] = [];
   snap.forEach((d) => {
     if (opts.excludeId && d.id === opts.excludeId) return;
-    out.push({ id: d.id, ...(d.data() as any) });
+    out.push(profileFromDoc(d.id, d.data() as Record<string, any>));
   });
   return out.slice(0, max);
 }

@@ -256,7 +256,7 @@ export default function Community() {
       if (ex?.message === 'not-media') setComposerErr(C.errNotMedia);
       else if (ex?.message === 'too-large') setComposerErr(C.errMediaTooLarge);
       else if (ex?.code === 'storage/unauthorized' || ex?.code === 'storage/unknown') setComposerErr(d.app.profile.edit.errStorageRules);
-      else setComposerErr(C.errPost);
+      else setComposerErr(ex?.code ? `Upload failed (${ex.code})` : C.errPost);
     } finally {
       setUploading(false);
     }

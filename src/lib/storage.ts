@@ -50,8 +50,15 @@ async function uploadImageTo(path: string, file: File): Promise<string> {
   const img = await compressImage(file);
   if (img.data.size > MAX_IMAGE_BYTES) throw new Error('too-large');
   const r = ref(storage, `${path}/${Date.now()}.${img.ext}`);
-  await uploadBytes(r, img.data, { contentType: img.contentType });
-  return getDownloadURL(r);
+  try {
+    await uploadBytes(r, img.data, { contentType: img.contentType });
+    return await getDownloadURL(r);
+  } catch (e: any) {
+    // Surface the real Firebase Storage code (e.g. storage/unauthorized,
+    // storage/quota-exceeded, storage/unauthenticated) instead of swallowing it.
+    console.error('[storage] image upload failed:', e?.code, e?.message, e);
+    throw e;
+  }
 }
 
 export function uploadProfileImage(userId: string, file: File): Promise<string> {
@@ -73,6 +80,11 @@ export async function uploadChatVideo(matchId: string, file: File): Promise<stri
   const rawExt = file.name.split('.').pop()?.toLowerCase() ?? '';
   const ext = /^[a-z0-9]{1,8}$/.test(rawExt) ? rawExt : 'mp4';
   const r = ref(storage, `chat-media/${matchId}/${Date.now()}.${ext}`);
-  await uploadBytes(r, file, { contentType: file.type });
-  return getDownloadURL(r);
+  try {
+    await uploadBytes(r, file, { contentType: file.type });
+    return await getDownloadURL(r);
+  } catch (e: any) {
+    console.error('[storage] video upload failed:', e?.code, e?.message, e);
+    throw e;
+  }
 }

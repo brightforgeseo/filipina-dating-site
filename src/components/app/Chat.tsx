@@ -235,8 +235,8 @@ export default function Chat() {
     try {
       const url = await uploadChatImage(user.uid, file);
       await sendImageMessage(openId, user.uid, url);
-    } catch {
-      window.alert(C.photoFail);
+    } catch (ex: any) {
+      window.alert(ex?.code ? `${C.photoFail} (${ex.code})` : C.photoFail);
     } finally {
       setSending(false);
     }
@@ -250,8 +250,8 @@ export default function Chat() {
     try {
       const url = await uploadChatVideo(openId, file);
       await sendVideoMessage(openId, user.uid, url);
-    } catch {
-      window.alert(C.photoFail);
+    } catch (ex: any) {
+      window.alert(ex?.code ? `${C.photoFail} (${ex.code})` : C.photoFail);
     } finally {
       setSending(false);
     }

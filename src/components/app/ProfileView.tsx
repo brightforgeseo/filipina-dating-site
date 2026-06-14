@@ -535,7 +535,7 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
       if (ex?.message === 'not-an-image') setErr(E.errNotImage);
       else if (ex?.message === 'too-large') setErr(E.errTooLarge);
       else if (ex?.code === 'storage/unauthorized' || ex?.code === 'storage/unknown') setErr(E.errStorageRules);
-      else setErr(E.errUpload);
+      else setErr(ex?.code ? `${E.errUpload} (${ex.code})` : E.errUpload);
     } finally {
       setUploading(false);
     }

@@ -12,12 +12,13 @@ import {
   subscribeMessages,
   sendMessage,
   sendImageMessage,
+  sendVideoMessage,
   markMessagesRead,
   formatTime,
   type Conversation,
   type ChatMessage,
 } from '../../lib/chat';
-import { uploadChatImage } from '../../lib/storage';
+import { uploadChatImage, uploadChatVideo } from '../../lib/storage';
 import { hasScamSignals } from '../../lib/safety';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
 import { useLang } from '../../i18n/react';
@@ -110,6 +111,21 @@ export default function Chat() {
     try {
       const url = await uploadChatImage(user.uid, file);
       await sendImageMessage(openId, user.uid, url);
+    } catch {
+      window.alert(C.photoFail);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const sendVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !openId || !user || sending) return;
+    setSending(true);
+    try {
+      const url = await uploadChatVideo(openId, file);
+      await sendVideoMessage(openId, user.uid, url);
     } catch {
       window.alert(C.photoFail);
     } finally {
@@ -244,12 +260,19 @@ export default function Chat() {
                                 <a href={m.imageUrl} target="_blank" rel="noopener noreferrer" className={`block rounded-2xl overflow-hidden border ${mine ? 'border-transparent rounded-br-sm' : 'border-line rounded-bl-sm'}`}>
                                   <img src={m.imageUrl} alt={C.photo} className="block max-w-[220px] max-h-[280px] object-cover" loading="lazy" />
                                 </a>
+                              ) : m.videoUrl ? (
+                                <video
+                                  src={m.videoUrl}
+                                  controls
+                                  playsInline
+                                  className={`block max-w-[220px] max-h-[280px] rounded-2xl border ${mine ? 'border-transparent rounded-br-sm' : 'border-line rounded-bl-sm'}`}
+                                />
                               ) : (
                                 <div
                                   className={`px-4 py-2.5 rounded-2xl text-sm leading-[1.45] ${mine ? 'text-white rounded-br-sm' : 'bg-white border border-line rounded-bl-sm'}`}
                                   style={mine ? { background: 'var(--coral)' } : {}}
                                 >
-                                  {m.text || (m.videoUrl ? C.video : '')}
+                                  {m.text || ''}
                                 </div>
                               )}
                               <div className={`text-[10px] text-muted mt-1 ${mine ? 'text-right' : 'text-left'}`}>
@@ -278,6 +301,10 @@ export default function Chat() {
                   <label className="icon-btn cursor-pointer flex-shrink-0" title={C.sendPhoto} aria-label={C.sendPhoto}>
                     <Icon.Camera size={16} />
                     <input type="file" accept="image/*" onChange={sendPhoto} disabled={sending} className="hidden" />
+                  </label>
+                  <label className="icon-btn cursor-pointer flex-shrink-0 text-base leading-none" title={C.video} aria-label={C.video}>
+                    🎥
+                    <input type="file" accept="video/*" onChange={sendVideo} disabled={sending} className="hidden" />
                   </label>
                   <input
                     value={text}

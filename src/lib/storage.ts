@@ -61,3 +61,18 @@ export function uploadProfileImage(userId: string, file: File): Promise<string> 
 export function uploadChatImage(userId: string, file: File): Promise<string> {
   return uploadImageTo(`chat_images/${userId}`, file);
 }
+
+export const MAX_CHAT_VIDEO_BYTES = 25 * 1024 * 1024;
+
+// Chat videos go to the shared chat-media/{matchId} path the mobile app uses,
+// so a video sent from the web plays in the app and vice-versa.
+export async function uploadChatVideo(matchId: string, file: File): Promise<string> {
+  if (!file.type.startsWith('video/')) throw new Error('not-a-video');
+  if (file.size > MAX_CHAT_VIDEO_BYTES) throw new Error('too-large');
+  const { storage } = firebase();
+  const rawExt = file.name.split('.').pop()?.toLowerCase() ?? '';
+  const ext = /^[a-z0-9]{1,8}$/.test(rawExt) ? rawExt : 'mp4';
+  const r = ref(storage, `chat-media/${matchId}/${Date.now()}.${ext}`);
+  await uploadBytes(r, file, { contentType: file.type });
+  return getDownloadURL(r);
+}

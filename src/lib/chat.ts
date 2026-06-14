@@ -188,3 +188,19 @@ export async function sendImageMessage(matchId: string, senderId: string, imageU
     lastMessageTime: serverTimestamp(),
   });
 }
+
+export async function sendVideoMessage(matchId: string, senderId: string, videoUrl: string) {
+  const { db } = firebase();
+  await addDoc(collection(db, 'matches', matchId, 'messages'), {
+    matchId,
+    senderId,
+    videoUrl,
+    type: 'video',
+    timestamp: serverTimestamp(),
+    isRead: false,
+  });
+  await updateDoc(doc(db, 'matches', matchId), {
+    lastMessage: '🎥',
+    lastMessageTime: serverTimestamp(),
+  });
+}

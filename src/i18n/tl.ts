@@ -488,6 +488,8 @@ export const tl: Dict = {
       video: '🎥 Video',
       seen: 'Nabasa',
       typing: 'nagta-type…',
+      translate: 'Isalin',
+      showOriginal: 'Orihinal',
       sendPhoto: 'Magpadala ng photo',
       photoFail: 'Hindi naipadala ang photo. Pakisubukan ulit.',
       scamWarning: 'Mag-ingat: huwag kailanman magpadala ng pera, gift card, o detalye ng bayad — at mag-ingat sa paglipat sa ibang app. Hindi kailanman nanghihingi ng bayad ang FilWest sa chat.',

@@ -2,6 +2,7 @@ import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
+import { Translate } from '@google-cloud/translate/build/src/v2';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -342,4 +343,22 @@ export const activateBoost = onCall(async (req) => {
   });
 
   return { boostedUntil: until.toMillis() };
+});
+
+// ---- Translate chat text (Google Cloud Translation) ----
+// Uses Application Default Credentials — no API key in code. Requires the
+// "Cloud Translation API" to be enabled on the project (see the deploy runbook).
+const translate = new Translate();
+
+export const translateText = onCall(async (req) => {
+  requireAuth(req.auth?.uid);
+  const text = String(req.data?.text ?? '').slice(0, 2000);
+  const target = String(req.data?.target ?? 'en');
+  if (!text.trim()) return { text: '' };
+  try {
+    const [out] = await translate.translate(text, target);
+    return { text: out };
+  } catch (e) {
+    throw new HttpsError('internal', 'translate-failed');
+  }
 });

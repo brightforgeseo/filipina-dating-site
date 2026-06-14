@@ -486,6 +486,8 @@ export const en = {
       video: '🎥 Video',
       seen: 'Seen',
       typing: 'typing…',
+      translate: 'Translate',
+      showOriginal: 'Show original',
       sendPhoto: 'Send a photo',
       photoFail: 'Could not send the photo. Please try again.',
       scamWarning: 'Be careful: never send money, gift cards, or payment details — and be wary of moving to another app. FilWest never asks for payments in chat.',

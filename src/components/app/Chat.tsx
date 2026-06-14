@@ -22,6 +22,7 @@ import {
 } from '../../lib/chat';
 import { uploadChatImage, uploadChatVideo } from '../../lib/storage';
 import { hasScamSignals } from '../../lib/safety';
+import { translateText } from '../../lib/translate';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
 import CallOverlay from './CallOverlay';
 import {
@@ -35,7 +36,7 @@ import {
 import { useLang } from '../../i18n/react';
 
 export default function Chat() {
-  const { d } = useLang();
+  const { d, lang } = useLang();
   const C = d.app.chat;
   const time = d.app.time;
   const { user, loading } = useAuth();
@@ -50,6 +51,7 @@ export default function Chat() {
   const [activeCall, setActiveCall] = React.useState<{ id: string; otherName: string; role: 'caller' | 'callee' } | null>(null);
   const callable = !!AGORA_APP_ID;
   const [otherTyping, setOtherTyping] = React.useState(false);
+  const [translated, setTranslated] = React.useState<Record<string, string>>({});
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const autoSelected = React.useRef(false);
   const blockedRef = React.useRef<Set<string>>(new Set());
@@ -130,6 +132,20 @@ export default function Chat() {
     }
     typingSentRef.current = 0;
     if (openId && user) setTyping(openId, user.uid, false).catch(() => {});
+  };
+
+  const doTranslate = async (m: ChatMessage) => {
+    if (translated[m.id]) {
+      setTranslated((t) => {
+        const n = { ...t };
+        delete n[m.id];
+        return n;
+      });
+      return;
+    }
+    if (!m.text) return;
+    const out = await translateText(m.text, lang).catch(() => null);
+    if (out && out !== m.text) setTranslated((t) => ({ ...t, [m.id]: out }));
   };
 
   React.useEffect(() => {
@@ -368,12 +384,20 @@ export default function Chat() {
                                   className={`px-4 py-2.5 rounded-2xl text-sm leading-[1.45] ${mine ? 'text-white rounded-br-sm' : 'bg-white border border-line rounded-bl-sm'}`}
                                   style={mine ? { background: 'var(--coral)' } : {}}
                                 >
-                                  {m.text || ''}
+                                  {translated[m.id] || m.text || ''}
                                 </div>
                               )}
                               <div className={`text-[10px] text-muted mt-1 ${mine ? 'text-right' : 'text-left'}`}>
                                 {formatTime(m.timestamp, time)}
                                 {mine && m.id === lastMine?.id && m.isRead ? ` · ${C.seen}` : ''}
+                                {!mine && m.text && (
+                                  <>
+                                    {' · '}
+                                    <button onClick={() => doTranslate(m)} className="text-coral hover:underline">
+                                      {translated[m.id] ? C.showOriginal : C.translate}
+                                    </button>
+                                  </>
+                                )}
                               </div>
                               {!mine && hasScamSignals(m.text) && active && (
                                 <div className="mt-1 px-3 py-2 rounded-xl text-[11px] leading-snug max-w-[260px]" style={{ background: 'rgba(255,180,0,0.12)', color: '#8a6100', border: '1px solid rgba(255,180,0,0.3)' }}>

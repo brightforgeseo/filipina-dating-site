@@ -488,6 +488,8 @@ export const ceb: Dict = {
       video: '🎥 Video',
       seen: 'Nabasa',
       typing: 'nagtype…',
+      translate: 'Hubara',
+      showOriginal: 'Orihinal',
       sendPhoto: 'Pagpadala og photo',
       photoFail: 'Wala mapadala ang photo. Palihug suwayi pag-usab.',
       scamWarning: 'Pag-amping: ayaw gyud pagpadala og kwarta, gift card, o detalye sa bayad — ug pagbantay sa pagbalhin sa laing app. Dili gyud mangayo og bayad ang FilWest sa chat.',

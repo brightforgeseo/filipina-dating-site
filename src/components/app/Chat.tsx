@@ -21,6 +21,15 @@ import {
 import { uploadChatImage, uploadChatVideo } from '../../lib/storage';
 import { hasScamSignals } from '../../lib/safety';
 import ReportDialog, { type ReportTarget } from './ReportDialog';
+import CallOverlay from './CallOverlay';
+import {
+  AGORA_APP_ID,
+  acceptCall,
+  createCall,
+  declineCall,
+  subscribeIncomingCalls,
+  type CallDoc,
+} from '../../lib/calls';
 import { useLang } from '../../i18n/react';
 
 export default function Chat() {
@@ -35,6 +44,9 @@ export default function Chat() {
   const [text, setText] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const [report, setReport] = React.useState<ReportTarget | null>(null);
+  const [incoming, setIncoming] = React.useState<CallDoc | null>(null);
+  const [activeCall, setActiveCall] = React.useState<{ id: string; otherName: string; role: 'caller' | 'callee' } | null>(null);
+  const callable = !!AGORA_APP_ID;
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const autoSelected = React.useRef(false);
   const blockedRef = React.useRef<Set<string>>(new Set());
@@ -88,6 +100,45 @@ export default function Chat() {
   React.useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages.length]);
+
+  // Listen for incoming calls to me (ignored while already in a call).
+  React.useEffect(() => {
+    if (!user || !callable) return;
+    const unsub = subscribeIncomingCalls(user.uid, (call) => {
+      setActiveCall((cur) => {
+        if (!cur) setIncoming(call);
+        return cur;
+      });
+    });
+    return () => unsub();
+  }, [user, callable]);
+
+  const startCall = async () => {
+    if (!active || !user || !me || !callable) return;
+    try {
+      const id = await createCall(
+        { id: user.uid, name: me.name || 'Member', photo: me.images?.find(Boolean) },
+        { calleeId: active.otherId, matchId: active.matchId, calleeName: active.otherName, calleePhoto: active.otherPhoto },
+      );
+      setActiveCall({ id, otherName: active.otherName, role: 'caller' });
+    } catch {
+      window.alert('Could not start the call.');
+    }
+  };
+
+  const acceptIncoming = async () => {
+    if (!incoming) return;
+    const call = incoming;
+    setIncoming(null);
+    await acceptCall(call.id).catch(() => {});
+    setActiveCall({ id: call.id, otherName: call.callerName, role: 'callee' });
+  };
+
+  const declineIncoming = async () => {
+    if (!incoming) return;
+    await declineCall(incoming.id).catch(() => {});
+    setIncoming(null);
+  };
 
   const send = async () => {
     if (!text.trim() || !openId || !user || sending) return;
@@ -229,6 +280,11 @@ export default function Chat() {
                     {active.unreadCount > 0 && <div className="text-xs text-coral">{C.newCount(active.unreadCount)}</div>}
                   </div>
                   <div className="ml-auto flex gap-2">
+                    {callable && (
+                      <button onClick={startCall} className="icon-btn text-base leading-none" title="Video call" aria-label="Video call">
+                        📹
+                      </button>
+                    )}
                     <button onClick={doUnmatch} className="icon-btn" title={C.unmatch} aria-label={C.unmatch}>
                       <Icon.X size={14} />
                     </button>
@@ -327,6 +383,29 @@ export default function Chat() {
         </div>
       </main>
       {report && <ReportDialog reporterId={user.uid} target={report} d={d} onClose={() => setReport(null)} />}
+
+      {incoming && !activeCall && (
+        <div className="fixed inset-0 z-[55] bg-black/60 flex items-center justify-center p-6">
+          <div className="card p-6 text-center max-w-xs w-full">
+            <div className="text-4xl mb-2">📹</div>
+            <div className="font-display font-bold text-xl">{incoming.callerName}</div>
+            <div className="text-sm text-ink-soft mb-5">is calling you…</div>
+            <div className="flex gap-3 justify-center">
+              <button onClick={declineIncoming} className="btn btn-ghost flex-1 justify-center">Decline</button>
+              <button onClick={acceptIncoming} className="btn btn-primary flex-1 justify-center">Accept</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeCall && (
+        <CallOverlay
+          callId={activeCall.id}
+          otherName={activeCall.otherName}
+          role={activeCall.role}
+          onClose={() => setActiveCall(null)}
+        />
+      )}
     </div>
   );
 }

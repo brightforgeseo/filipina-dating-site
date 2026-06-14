@@ -373,6 +373,11 @@ export default function ProfileView() {
               <div>
                 <div className="flex gap-2 mb-3 items-center flex-wrap">
                   {p.verified && <span className="chip chip-verified"><Icon.Shield size={11} />{P.verified}</span>}
+                  {isMyProfile && !p.verified && (
+                    <a href="/verify" className="chip cursor-pointer hover:border-coral" title="Get verified">
+                      <Icon.Shield size={11} /> Get verified
+                    </a>
+                  )}
                   {p.online && <span className="chip" style={{ background: 'rgba(76,175,80,0.1)', color: 'var(--ok)', borderColor: 'rgba(76,175,80,0.25)' }}>{P.onlineNow}</span>}
                   {!isMyProfile && iFollow !== null && (
                     <button

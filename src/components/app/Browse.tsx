@@ -9,6 +9,7 @@ import { getProfile, listProfiles, saveProfile, type Profile } from '../../lib/p
 import { recordSwipe, getSwipedIds, getTodaySuperLikeCount, FREE_SUPER_LIKES_PER_DAY, type SwipeDirection } from '../../lib/matching';
 import { getBlockedIds } from '../../lib/blocking';
 import { markOnline } from '../../lib/presence';
+import { activateBoost, BOOST_PACKAGES, boostMsLeft } from '../../lib/boost';
 import { useLang } from '../../i18n/react';
 import { COUNTRY_OPTIONS } from '../../lib/constants';
 
@@ -35,12 +36,14 @@ const VIEW_KEY = 'filwest.discover-view';
 const DAY_MS = 86400000;
 const lastActiveMs = (p: Profile): number => (p.lastActive?.seconds ? p.lastActive.seconds * 1000 : 0);
 const isRecentlyActive = (p: Profile): boolean => Date.now() - lastActiveMs(p) < 7 * DAY_MS;
+const isBoosted = (p: Profile): boolean => boostMsLeft((p as any).boostedUntil) > 0;
 
 // Keep the deck feeling alive: drop profiles idle for over 30 days (profiles
-// without a lastActive yet are kept), and show complete, active profiles first.
+// without a lastActive yet are kept), and show boosted, then complete/active
+// profiles first.
 function rankProfiles(list: Profile[]): Profile[] {
   const fresh = list.filter((p) => !lastActiveMs(p) || Date.now() - lastActiveMs(p) < 30 * DAY_MS);
-  const score = (p: Profile) => (p.images?.length ? 2 : 0) + (isRecentlyActive(p) ? 1 : 0);
+  const score = (p: Profile) => (isBoosted(p) ? 10 : 0) + (p.images?.length ? 2 : 0) + (isRecentlyActive(p) ? 1 : 0);
   return fresh.sort((a, b) => score(b) - score(a) || lastActiveMs(b) - lastActiveMs(a));
 }
 
@@ -58,6 +61,9 @@ export default function Browse() {
   const [view, setView] = React.useState<'deck' | 'grid'>('deck');
   const [superUsed, setSuperUsed] = React.useState(0);
   const [anim, setAnim] = React.useState<SwipeDirection | null>(null);
+  const [boostOpen, setBoostOpen] = React.useState(false);
+  const [boosting, setBoosting] = React.useState(false);
+  const [boostUntil, setBoostUntil] = React.useState(0);
 
   React.useEffect(() => {
     try {
@@ -89,6 +95,7 @@ export default function Browse() {
           getTodaySuperLikeCount(user.uid).catch(() => 0),
         ]);
         setMe(mine);
+        setBoostUntil((mine as any)?.boostedUntil?.seconds ? (mine as any).boostedUntil.seconds * 1000 : 0);
         setSuperUsed(superCount);
         const { ageMin, ageMax, country } = mine?.preferences ?? {};
         setPrefs({
@@ -131,6 +138,25 @@ export default function Browse() {
         return n;
       });
       if (direction === 'up') setSuperUsed((n) => Math.max(0, n - 1));
+    }
+  };
+
+  const boostActive = boostUntil > Date.now();
+  const boostMinsLeft = Math.ceil(Math.max(0, boostUntil - Date.now()) / 60000);
+
+  const doBoost = async (id: string) => {
+    setBoosting(true);
+    try {
+      const until = await activateBoost(id);
+      setBoostUntil(until);
+      setBoostOpen(false);
+      setToast('⚡ Your profile is boosted!');
+    } catch (e: any) {
+      setBoostOpen(false);
+      setToast(String(e?.message || '').includes('insufficient-coins') ? 'Not enough coins to boost.' : 'Could not boost. Try again.');
+    } finally {
+      setBoosting(false);
+      setTimeout(() => setToast(null), 3000);
     }
   };
 
@@ -220,6 +246,16 @@ export default function Browse() {
               <div className="text-[13px] text-muted mt-1">{B.sub}</div>
             </div>
             <div className="flex gap-2 items-center flex-wrap text-[13px]">
+              <button
+                onClick={() => setBoostOpen(true)}
+                className="px-3 py-2 rounded-xl border font-medium flex items-center gap-1.5"
+                style={boostActive
+                  ? { background: 'linear-gradient(135deg, var(--gold), var(--coral))', color: '#fff', borderColor: 'transparent' }
+                  : { background: '#fff', borderColor: 'var(--line)' }}
+                title="Boost your profile"
+              >
+                ⚡ {boostActive ? `Boosted · ${boostMinsLeft}m` : 'Boost'}
+              </button>
               <div className="flex rounded-xl border border-line overflow-hidden mr-1" role="group">
                 <button onClick={() => switchView('deck')} className={`px-3 py-2 text-[12px] font-medium ${view === 'deck' ? 'text-white' : 'bg-white text-ink-soft hover:bg-ivory'}`} style={view === 'deck' ? { background: 'var(--coral)' } : {}}>{B.viewCards}</button>
                 <button onClick={() => switchView('grid')} className={`px-3 py-2 text-[12px] font-medium ${view === 'grid' ? 'text-white' : 'bg-white text-ink-soft hover:bg-ivory'}`} style={view === 'grid' ? { background: 'var(--coral)' } : {}}>{B.viewGrid}</button>
@@ -347,6 +383,33 @@ export default function Browse() {
         </div>
       </main>
       {match && <MatchModal match={match} d={d} onClose={() => setMatch(null)} />}
+
+      {boostOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-6" onClick={() => !boosting && setBoostOpen(false)}>
+          <div className="card p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center mb-4">
+              <div className="text-3xl">⚡</div>
+              <div className="font-display font-bold text-xl mt-1">Boost your profile</div>
+              <div className="text-sm text-ink-soft">Jump to the top of the deck. Costs coins.</div>
+              {boostActive && <div className="text-xs text-coral mt-1 font-semibold">Active · {boostMinsLeft}m left (stacks)</div>}
+            </div>
+            <div className="flex flex-col gap-2">
+              {BOOST_PACKAGES.map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => doBoost(b.id)}
+                  disabled={boosting}
+                  className="flex items-center justify-between px-4 py-3 rounded-xl border border-line hover:border-coral disabled:opacity-50"
+                >
+                  <span className="font-semibold">{b.label}{'popular' in b && b.popular ? ' · popular' : ''}{'bestValue' in b && b.bestValue ? ' · best value' : ''}</span>
+                  <span className="text-coral font-bold">{b.coins} coins</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => !boosting && setBoostOpen(false)} className="btn btn-ghost w-full justify-center mt-3">Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

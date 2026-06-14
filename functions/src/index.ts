@@ -293,3 +293,53 @@ export const requestPayout = onCall(async (req) => {
   });
   return { coins: result };
 });
+
+// ---- Activate a profile boost: debit coins, stamp profiles.boostedUntil ----
+// Keep in sync with the client catalogs (src/lib/boost.ts and the app's
+// utils/boost.ts). profiles.boostedUntil is admin-only at the rules layer, so
+// a boost can only be granted here, after coins are actually spent.
+const BOOST_PACKAGES: Record<string, { coins: number; minutes: number }> = {
+  '30m': { coins: 50, minutes: 30 },
+  '1h': { coins: 90, minutes: 60 },
+  '3h': { coins: 200, minutes: 180 },
+  '24h': { coins: 600, minutes: 1440 },
+};
+
+export const activateBoost = onCall(async (req) => {
+  const uid = requireAuth(req.auth?.uid);
+  const pkg = BOOST_PACKAGES[String(req.data?.packageId)];
+  if (!pkg) throw new HttpsError('invalid-argument', 'Unknown boost package.');
+
+  const walletRef = db.collection('wallets').doc(uid);
+  const profileRef = db.collection('profiles').doc(uid);
+
+  const until = await db.runTransaction(async (tx) => {
+    const [wallet, profile] = await Promise.all([tx.get(walletRef), tx.get(profileRef)]);
+    const coins = (wallet.data()?.coins as number | undefined) ?? 0;
+    if (coins < pkg.coins) throw new HttpsError('failed-precondition', 'insufficient-coins');
+
+    // Stack on top of any remaining boost time.
+    const current = profile.data()?.boostedUntil as admin.firestore.Timestamp | undefined;
+    const baseMs = current && current.toMillis() > Date.now() ? current.toMillis() : Date.now();
+    const untilTs = admin.firestore.Timestamp.fromMillis(baseMs + pkg.minutes * 60_000);
+
+    tx.update(walletRef, {
+      coins: admin.firestore.FieldValue.increment(-pkg.coins),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    tx.set(profileRef, { boostedUntil: untilTs }, { merge: true });
+    tx.set(
+      db.collection('boosts').doc(uid),
+      {
+        userId: uid,
+        boostedUntil: untilTs,
+        lastTier: String(req.data?.packageId),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+    return untilTs;
+  });
+
+  return { boostedUntil: until.toMillis() };
+});

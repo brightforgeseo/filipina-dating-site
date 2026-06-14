@@ -34,7 +34,7 @@ service cloud.firestore {
       allow create: if isOwner(userId)
         && (!('verified' in request.resource.data) || request.resource.data.verified == false);
       allow update: if isOwner(userId)
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified']);
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'boostedUntil']);
       allow delete: if isOwner(userId);
 
       // Gifts sent directly to a member, same paid/free gating as posts.
@@ -217,8 +217,10 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
+    // Boosts: granted only by the activateBoost function (after coins are spent).
     match /boosts/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if isOwner(userId);
+      allow write: if false;
     }
 
     match /credits/{userId} {

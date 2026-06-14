@@ -431,6 +431,37 @@ export const scanMessage = onDocumentCreated('matches/{matchId}/messages/{messag
   await flagContent({ targetId: m.senderId, kind: 'message', snippet: m.text, matchId: event.params.matchId });
 });
 
+// ---- On ban: tear down the banned user's content + 1:1 matches ----
+async function deleteInBatches(refs: admin.firestore.DocumentReference[]): Promise<void> {
+  for (let i = 0; i < refs.length; i += 450) {
+    const batch = db.batch();
+    refs.slice(i, i + 450).forEach((r) => batch.delete(r));
+    await batch.commit();
+  }
+}
+
+export const onUserBanned = onDocumentCreated('bans/{userId}', async (event) => {
+  const userId = event.params.userId;
+  try {
+    // Remove their posts (syncPostIndex also drops them from search).
+    const posts = await db.collection('posts').where('authorId', '==', userId).get();
+    await deleteInBatches(posts.docs.map((d) => d.ref));
+
+    // Tear down their matches + messages so the other side isn't left stuck.
+    const [m1, m2] = await Promise.all([
+      db.collection('matches').where('user1Id', '==', userId).get(),
+      db.collection('matches').where('user2Id', '==', userId).get(),
+    ]);
+    for (const match of [...m1.docs, ...m2.docs]) {
+      const msgs = await match.ref.collection('messages').get();
+      await deleteInBatches(msgs.docs.map((d) => d.ref));
+      await match.ref.delete();
+    }
+  } catch (e) {
+    console.error('[moderation] onUserBanned cleanup failed', e);
+  }
+});
+
 // ---- Algolia search indexing: keep `profiles` and `posts` indexes in sync ----
 const toMillis = (ts: any): number =>
   ts && typeof ts.toMillis === 'function' ? ts.toMillis() : (ts?._seconds ?? ts?.seconds ?? 0) * 1000;

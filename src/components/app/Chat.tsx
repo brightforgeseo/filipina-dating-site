@@ -149,6 +149,12 @@ export default function Chat() {
     if (openId && user) setTyping(openId, user.uid, false).catch(() => {});
   };
 
+  // Cached translations are language-specific; drop them when the UI language
+  // changes so a stale prior-language translation isn't shown.
+  React.useEffect(() => {
+    setTranslated({});
+  }, [lang]);
+
   const doTranslate = async (m: ChatMessage) => {
     if (translated[m.id]) {
       setTranslated((t) => {

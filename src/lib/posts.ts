@@ -163,3 +163,17 @@ export async function listUserPosts(userId: string, max = 20): Promise<Post[]> {
   out.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
   return out;
 }
+
+// Video posts for the vertical "For You" feed. We over-fetch recent posts
+// and keep the ones with a video — no composite index needed, and the feed
+// only ever needs a few dozen at a time.
+export async function listVideoPosts(max = 30): Promise<Post[]> {
+  const { db } = firebase();
+  const snap = await getDocs(query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(max * 4)));
+  const out: Post[] = [];
+  snap.forEach((d) => {
+    const p = { id: d.id, ...(d.data() as any) } as Post;
+    if (p.videoUrl && !p.groupId) out.push(p);
+  });
+  return out.slice(0, max);
+}

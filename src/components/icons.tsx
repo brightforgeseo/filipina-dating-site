@@ -68,4 +68,7 @@ export const Icon = {
   Users: ({ size=16 }: IconProps) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 15.2c2.4.3 4.4 1.8 5.2 4.3"/></svg>
   ),
+  Play: ({ size=16 }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M6 4.5v15l13-7.5z"/></svg>
+  ),
 };

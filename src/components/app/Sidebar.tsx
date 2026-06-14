@@ -6,7 +6,7 @@ import { signOutUser } from '../../lib/auth';
 import { useLang } from '../../i18n/react';
 import { setClientLang, type Lang } from '../../i18n';
 
-type RouteKey = 'browse' | 'likes' | 'live' | 'community' | 'groups' | 'matches' | 'chat' | 'profile' | 'safety';
+type RouteKey = 'browse' | 'foryou' | 'likes' | 'live' | 'community' | 'groups' | 'matches' | 'chat' | 'profile' | 'safety';
 
 export default function Sidebar({ route, user, me }: { route: RouteKey; user: User | null; me: Profile | null }) {
   const { lang, d } = useLang();
@@ -17,6 +17,7 @@ export default function Sidebar({ route, user, me }: { route: RouteKey; user: Us
 
   const desktopItems: { k: RouteKey; href: string; t: string; icon: React.ReactNode }[] = [
     { k: 'browse', href: '/app', t: L.discover, icon: <Icon.Home size={16} /> },
+    { k: 'foryou', href: '/app/foryou', t: L.foryou, icon: <Icon.Play size={16} /> },
     { k: 'likes', href: '/app/likes', t: L.likes, icon: <Icon.Heart size={16} /> },
     { k: 'live', href: '/app/live', t: L.live, icon: <Icon.Camera size={16} /> },
     { k: 'community', href: '/app/community', t: L.community, icon: <Icon.Users size={16} /> },
@@ -26,11 +27,12 @@ export default function Sidebar({ route, user, me }: { route: RouteKey; user: Us
     { k: 'safety', href: '/safety', t: L.safety, icon: <Icon.Shield size={16} /> },
   ];
   // Groups shares the Users icon family; give it its own glyph.
-  desktopItems[4].icon = (
+  const groupsItem = desktopItems.find((i) => i.k === 'groups');
+  if (groupsItem) groupsItem.icon = (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
   );
 
-  const mobileItems = desktopItems.filter((i) => ['browse', 'likes', 'live', 'community', 'chat'].includes(i.k));
+  const mobileItems = desktopItems.filter((i) => ['browse', 'foryou', 'likes', 'community', 'chat'].includes(i.k));
 
   return (
     <>

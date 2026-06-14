@@ -4,6 +4,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  limit,
   query,
   serverTimestamp,
   where,
@@ -20,17 +21,21 @@ export async function blockUser(blockerId: string, blockedId: string) {
   });
 }
 
-// Both directions: people I blocked, and people who blocked me — neither
-// side should see the other anywhere in the app.
+// Ids to hide from this user's feeds everywhere: people I blocked, people who
+// blocked me, AND anyone an admin has banned. Folding bans in here means every
+// surface that already filters blocked users (Browse, Community, For-You, Live,
+// Chat) enforces bans too, with no per-feed changes.
 export async function getBlockedIds(userId: string): Promise<Set<string>> {
   const { db } = firebase();
-  const [mine, theirs] = await Promise.all([
+  const [mine, theirs, banned] = await Promise.all([
     getDocs(query(collection(db, 'blocks'), where('blockerId', '==', userId))),
     getDocs(query(collection(db, 'blocks'), where('blockedId', '==', userId))),
+    getDocs(query(collection(db, 'bans'), limit(1000))).catch(() => null),
   ]);
   const ids = new Set<string>();
   mine.forEach((d) => ids.add((d.data() as any).blockedId));
   theirs.forEach((d) => ids.add((d.data() as any).blockerId));
+  banned?.forEach((d) => ids.add(d.id));
   return ids;
 }
 

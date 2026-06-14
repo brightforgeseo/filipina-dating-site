@@ -8,7 +8,6 @@ import { needsEmailVerification } from '../../lib/auth';
 import { getProfile, listProfiles, saveProfile, type Profile } from '../../lib/profiles';
 import { recordSwipe, getSwipedIds, getTodaySuperLikeCount, FREE_SUPER_LIKES_PER_DAY, type SwipeDirection } from '../../lib/matching';
 import { getBlockedIds } from '../../lib/blocking';
-import { getBannedIds } from '../../lib/moderation';
 import { markOnline } from '../../lib/presence';
 import { activateBoost, BOOST_PACKAGES, boostMsLeft } from '../../lib/boost';
 import { useLang } from '../../i18n/react';
@@ -88,12 +87,11 @@ export default function Browse() {
     markOnline(user.uid);
     (async () => {
       try {
-        const [mine, list, alreadySwiped, blocked, banned, superCount] = await Promise.all([
+        const [mine, list, alreadySwiped, blocked, superCount] = await Promise.all([
           getProfile(user.uid),
           listProfiles({ excludeId: user.uid, max: 50 }),
           getSwipedIds(user.uid),
           getBlockedIds(user.uid),
-          getBannedIds().catch(() => new Set<string>()),
           getTodaySuperLikeCount(user.uid).catch(() => 0),
         ]);
         setMe(mine);
@@ -105,7 +103,7 @@ export default function Browse() {
           ageMax: ageMax ?? DEFAULT_PREFS.ageMax,
           country: country ?? DEFAULT_PREFS.country,
         });
-        setProfiles(rankProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id) && !banned.has(p.id))));
+        setProfiles(rankProfiles(list.filter((p) => !alreadySwiped.has(p.id) && !blocked.has(p.id))));
       } catch (ex: any) {
         setError(ex?.code === 'permission-denied' ? 'rules' : 'network');
       }

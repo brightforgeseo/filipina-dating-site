@@ -2,6 +2,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { firebase } from './firebase';
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+export const MAX_SOURCE_IMAGE_BYTES = 20 * 1024 * 1024;
 
 // Phone photos are 3–8 MB; nothing in the app renders larger than ~1300px.
 // Downscaling before upload makes uploads ~10x faster and every grid and
@@ -41,9 +42,13 @@ function extOf(file: File): string {
 
 async function uploadImageTo(path: string, file: File): Promise<string> {
   if (!file.type.startsWith('image/')) throw new Error('not-an-image');
-  if (file.size > MAX_IMAGE_BYTES) throw new Error('too-large');
+  // Modern phone photos are commonly 6-12 MB before compression. Rejecting
+  // before downscaling makes normal iPhone/Android uploads fail even though
+  // the stored JPEG would fit the Firebase Storage rule limit.
+  if (file.size > MAX_SOURCE_IMAGE_BYTES) throw new Error('too-large');
   const { storage } = firebase();
   const img = await compressImage(file);
+  if (img.data.size > MAX_IMAGE_BYTES) throw new Error('too-large');
   const r = ref(storage, `${path}/${Date.now()}.${img.ext}`);
   await uploadBytes(r, img.data, { contentType: img.contentType });
   return getDownloadURL(r);

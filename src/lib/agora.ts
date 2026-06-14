@@ -33,11 +33,13 @@ export async function joinCall(opts: {
     await client.subscribe(user, mediaType);
     if (mediaType === 'video') {
       user.videoTrack?.play(opts.remoteEl);
-      opts.onRemoteJoined?.();
     }
     if (mediaType === 'audio') {
       user.audioTrack?.play();
     }
+    // Flip "connected" as soon as the remote publishes anything, so an
+    // audio-first (or camera-off) peer doesn't leave us stuck on "Connecting…".
+    opts.onRemoteJoined?.();
   });
   client.on('user-left', () => opts.onRemoteLeft?.());
 

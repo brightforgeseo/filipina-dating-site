@@ -57,6 +57,7 @@ export default function Chat() {
   const blockedRef = React.useRef<Set<string>>(new Set());
   const typingSentRef = React.useRef(0);
   const typingIdleRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const typingClearRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
     if (loading) return;
@@ -104,15 +105,29 @@ export default function Chat() {
     return () => unsub();
   }, [openId, user]);
 
-  // Show the other member's typing state for the open conversation.
+  // Resolve the other member's id without re-subscribing on every conversations
+  // mutation (the list churns on each incoming message); only the id matters.
+  const openOtherId = React.useMemo(
+    () => conversations?.find((c) => c.matchId === openId)?.otherId ?? null,
+    [conversations, openId],
+  );
+
+  // Show the other member's typing state, with a client-side auto-clear so a
+  // stale `true` left by a crashed/closed peer (no further snapshot) goes away.
   React.useEffect(() => {
     setOtherTyping(false);
-    if (!openId || !user) return;
-    const conv = conversations?.find((c) => c.matchId === openId);
-    if (!conv) return;
-    const unsub = subscribeTyping(openId, conv.otherId, setOtherTyping);
-    return () => unsub();
-  }, [openId, user, conversations]);
+    if (!openId || !user || !openOtherId) return;
+    const onTyping = (t: boolean) => {
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+      setOtherTyping(t);
+      if (t) typingClearRef.current = setTimeout(() => setOtherTyping(false), 6000);
+    };
+    const unsub = subscribeTyping(openId, openOtherId, onTyping);
+    return () => {
+      unsub();
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+    };
+  }, [openId, user, openOtherId]);
 
   const handleTyping = () => {
     if (!openId || !user) return;

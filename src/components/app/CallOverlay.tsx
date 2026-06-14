@@ -62,7 +62,14 @@ export default function CallOverlay({
     return () => {
       cancelled = true;
       unsub();
-      sessionRef.current?.leave();
+      // If we unmount for any reason other than the hang-up button (route
+      // change, parent re-render), still leave Agora AND end the call doc so
+      // the other peer's overlay closes instead of ringing forever.
+      if (!closedRef.current) {
+        closedRef.current = true;
+        sessionRef.current?.leave();
+        endCall(callId).catch(() => {});
+      }
     };
   }, [callId, hangUp]);
 

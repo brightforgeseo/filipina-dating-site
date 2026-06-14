@@ -6,7 +6,7 @@ import { signOutUser } from '../../lib/auth';
 import { useLang } from '../../i18n/react';
 import { setClientLang, type Lang } from '../../i18n';
 
-type RouteKey = 'browse' | 'foryou' | 'likes' | 'live' | 'community' | 'groups' | 'matches' | 'chat' | 'profile' | 'safety';
+type RouteKey = 'browse' | 'search' | 'foryou' | 'likes' | 'live' | 'community' | 'groups' | 'matches' | 'chat' | 'profile' | 'safety';
 
 export default function Sidebar({ route, user, me }: { route: RouteKey; user: User | null; me: Profile | null }) {
   const { lang, d } = useLang();
@@ -17,6 +17,7 @@ export default function Sidebar({ route, user, me }: { route: RouteKey; user: Us
 
   const desktopItems: { k: RouteKey; href: string; t: string; icon: React.ReactNode }[] = [
     { k: 'browse', href: '/app', t: L.discover, icon: <Icon.Home size={16} /> },
+    { k: 'search', href: '/search', t: 'Search', icon: <Icon.Eye size={16} /> },
     { k: 'foryou', href: '/app/foryou', t: L.foryou, icon: <Icon.Play size={16} /> },
     { k: 'likes', href: '/app/likes', t: L.likes, icon: <Icon.Heart size={16} /> },
     { k: 'live', href: '/app/live', t: L.live, icon: <Icon.Camera size={16} /> },

@@ -1,15 +1,21 @@
 import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import { onDocumentCreated, onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
 import { Translate } from '@google-cloud/translate/build/src/v2';
+import { algoliasearch } from 'algoliasearch';
 
 admin.initializeApp();
 const db = admin.firestore();
 
 const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY');
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
+
+// Algolia search indexing. App id is a plain env var; the admin (write) key is
+// a secret. If unset, the sync triggers below no-op (search stays disabled).
+const ALGOLIA_ADMIN_KEY = defineSecret('ALGOLIA_ADMIN_KEY');
+const ALGOLIA_APP_ID = process.env.ALGOLIA_APP_ID || '';
 
 const SITE = 'https://filipinawest.com';
 
@@ -424,3 +430,70 @@ export const scanMessage = onDocumentCreated('matches/{matchId}/messages/{messag
   if (!m?.text || !scamHit(m.text)) return;
   await flagContent({ targetId: m.senderId, kind: 'message', snippet: m.text, matchId: event.params.matchId });
 });
+
+// ---- Algolia search indexing: keep `profiles` and `posts` indexes in sync ----
+const toMillis = (ts: any): number =>
+  ts && typeof ts.toMillis === 'function' ? ts.toMillis() : (ts?._seconds ?? ts?.seconds ?? 0) * 1000;
+
+export const syncProfileIndex = onDocumentWritten(
+  { document: 'profiles/{userId}', secrets: [ALGOLIA_ADMIN_KEY] },
+  async (event) => {
+    if (!ALGOLIA_APP_ID) return;
+    const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY.value());
+    const userId = event.params.userId;
+    const p = event.data?.after.data();
+    try {
+      if (!p) {
+        await client.deleteObject({ indexName: 'profiles', objectID: userId });
+        return;
+      }
+      await client.saveObject({
+        indexName: 'profiles',
+        body: {
+          objectID: userId,
+          name: p.name ?? '',
+          age: p.age ?? null,
+          city: p.city ?? p.location ?? '',
+          country: p.country ?? '',
+          gender: p.gender ?? '',
+          bio: p.bio ?? '',
+          interests: Array.isArray(p.interests) ? p.interests : [],
+          image: Array.isArray(p.images) ? (p.images[0] ?? '') : '',
+          verified: p.verified === true,
+        },
+      });
+    } catch (e) {
+      console.error('[algolia] profile sync failed', e);
+    }
+  },
+);
+
+export const syncPostIndex = onDocumentWritten(
+  { document: 'posts/{postId}', secrets: [ALGOLIA_ADMIN_KEY] },
+  async (event) => {
+    if (!ALGOLIA_APP_ID) return;
+    const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_KEY.value());
+    const postId = event.params.postId;
+    const p = event.data?.after.data();
+    try {
+      // Only index public (non-group) posts that have searchable text.
+      if (!p || p.groupId || !p.text) {
+        await client.deleteObject({ indexName: 'posts', objectID: postId });
+        return;
+      }
+      await client.saveObject({
+        indexName: 'posts',
+        body: {
+          objectID: postId,
+          text: p.text,
+          authorId: p.authorId ?? '',
+          authorName: p.authorName ?? '',
+          authorPhoto: p.authorPhoto ?? '',
+          createdAt: toMillis(p.createdAt),
+        },
+      });
+    } catch (e) {
+      console.error('[algolia] post sync failed', e);
+    }
+  },
+);

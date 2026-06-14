@@ -1,4 +1,5 @@
 import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
@@ -361,4 +362,65 @@ export const translateText = onCall(async (req) => {
   } catch (e) {
     throw new HttpsError('internal', 'translate-failed');
   }
+});
+
+// ---- Automated content scanning: flag scam/abuse into the reports queue ----
+// Server-side mirror of the web client's hasScamSignals patterns. On a hit, an
+// auto-report (reporterId 'system', reason 'auto') is added for admin review.
+const SCAM_PATTERNS: RegExp[] = [
+  /\bg[\s-]?cash\b/i,
+  /\bwestern\s*union\b/i,
+  /\bmoney\s*gram\b/i,
+  /\b(wire|bank)\s*transfer\b/i,
+  /\bsend\s+(me\s+)?(money|cash|funds|load)\b/i,
+  /\bpadala\b/i,
+  /\bremittance\b/i,
+  /\b(bitcoin|btc|crypto|usdt|binance)\b/i,
+  /\b(gift|steam|itunes|google\s*play)\s*card\b/i,
+  /\bpaypal\.me\b/i,
+  /\bhospital\s*(bill|fee)\b/i,
+  /\bemergency\b.*\b(money|cash|funds|help me pay)\b/i,
+  /\b(visa|travel|ticket|passport)\s*(fee|money|payment)\b/i,
+  /\b(whats\s*app|telegram|viber|signal)\b/i,
+];
+const scamHit = (text: string): boolean => SCAM_PATTERNS.some((re) => re.test(text));
+
+async function flagContent(opts: {
+  targetId: string;
+  kind: 'post' | 'comment' | 'message';
+  snippet: string;
+  matchId?: string;
+  postId?: string;
+}): Promise<void> {
+  if (!opts.targetId) return;
+  await db.collection('reports').add({
+    reporterId: 'system',
+    targetId: opts.targetId,
+    reason: 'auto',
+    status: 'open',
+    autoFlag: true,
+    kind: opts.kind,
+    snippet: opts.snippet.slice(0, 300),
+    ...(opts.matchId ? { matchId: opts.matchId } : {}),
+    ...(opts.postId ? { postId: opts.postId } : {}),
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+}
+
+export const scanPost = onDocumentCreated('posts/{postId}', async (event) => {
+  const p = event.data?.data();
+  if (!p?.text || !scamHit(p.text)) return;
+  await flagContent({ targetId: p.authorId, kind: 'post', snippet: p.text, postId: event.params.postId });
+});
+
+export const scanComment = onDocumentCreated('posts/{postId}/comments/{commentId}', async (event) => {
+  const c = event.data?.data();
+  if (!c?.text || !scamHit(c.text)) return;
+  await flagContent({ targetId: c.authorId, kind: 'comment', snippet: c.text, postId: event.params.postId });
+});
+
+export const scanMessage = onDocumentCreated('matches/{matchId}/messages/{messageId}', async (event) => {
+  const m = event.data?.data();
+  if (!m?.text || !scamHit(m.text)) return;
+  await flagContent({ targetId: m.senderId, kind: 'message', snippet: m.text, matchId: event.params.matchId });
 });

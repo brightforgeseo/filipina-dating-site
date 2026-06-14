@@ -11,6 +11,11 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Moderators/admins are allowlisted by an admins/{uid} doc (set in console).
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
     function isParticipant(userId1, userId2) {
       return isSignedIn() && (request.auth.uid == userId1 || request.auth.uid == userId2);
     }
@@ -75,7 +80,7 @@ service cloud.firestore {
         allow update: if isSignedIn()
           && isMatchParticipant(matchId)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
-        allow delete: if isSignedIn() && isMatchParticipant(matchId);
+        allow delete: if isSignedIn() && (isMatchParticipant(matchId) || isAdmin());
       }
 
       // Typing presence: each participant writes only their own doc; both can read.
@@ -85,12 +90,28 @@ service cloud.firestore {
       }
     }
 
-    // Reports: write-only from the client, reviewed by the team in Firebase.
+    // Reports: clients create their own; admins read the queue and resolve.
+    // Auto-flags (reporterId 'system') are written by Cloud Functions.
     match /reports/{reportId} {
-      allow read: if false;
+      allow read: if isAdmin();
       allow create: if isSignedIn()
         && request.resource.data.reporterId == request.auth.uid;
-      allow update, delete: if false;
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Admin allowlist: a user can see whether they're an admin; only the
+    // console/admin SDK grants it.
+    match /admins/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if false;
+    }
+
+    // Bans: any signed-in client reads them to exclude banned members from
+    // feeds; only admins write them (directly from the moderation dashboard).
+    match /bans/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     // Blocks: support both web field name (blockedId) and mobile field name (blockedUserId).
@@ -112,7 +133,7 @@ service cloud.firestore {
         && request.resource.data.authorId == request.auth.uid
         && (request.resource.data.groupId == null
             || exists(/databases/$(database)/documents/groupMembers/$(request.resource.data.groupId + '_' + request.auth.uid)));
-      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow delete: if isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
 
       match /likes/{userId} {
         allow read: if isSignedIn();
@@ -122,7 +143,7 @@ service cloud.firestore {
       match /comments/{commentId} {
         allow read: if isSignedIn();
         allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+        allow delete: if isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
       }
 
       match /gifts/{giftId} {
@@ -163,7 +184,7 @@ service cloud.firestore {
     match /streams/{streamId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.hostId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.hostId == request.auth.uid || isAdmin());
 
       match /connections/{connId}/{document=**} {
         allow read, write: if isSignedIn();

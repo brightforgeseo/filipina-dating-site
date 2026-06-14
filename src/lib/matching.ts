@@ -134,7 +134,9 @@ export async function getLikers(userId: string): Promise<Liker[]> {
   const docs = await Promise.all([...byUser.keys()].map((id) => getDoc(doc(db, 'profiles', id))));
   const out: Liker[] = [];
   docs.forEach((p) => {
-    if (p.exists()) out.push({ profile: { id: p.id, ...(p.data() as any) }, superLike: byUser.get(p.id) ?? false });
+    if (!p.exists()) return;
+    const { id: _ignoredId, ...profileData } = p.data() as any;
+    out.push({ profile: { ...profileData, id: p.id }, superLike: byUser.get(p.id) ?? false });
   });
   return out;
 }

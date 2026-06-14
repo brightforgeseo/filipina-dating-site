@@ -14,6 +14,7 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore';
 import { firebase } from './firebase';
+import { getProfile } from './profiles';
 
 export type ChatMessage = {
   id: string;
@@ -99,11 +100,21 @@ export async function getConversations(userId: string): Promise<Conversation[]> 
         where('isRead', '==', false)
       )
     );
+    const snapshotName = otherIsUser2 ? d.user2Name : d.user1Name;
+    const snapshotPhoto = otherIsUser2 ? d.user2Photo : d.user1Photo;
+    let liveProfile = null;
+    try {
+      liveProfile = await getProfile(otherId);
+    } catch {
+      // Keep the conversation usable if the profile read fails. Match snapshot
+      // data is a fallback only; live profile data is the render source.
+    }
+
     conversations.push({
       matchId: m.id,
       otherId,
-      otherName: otherIsUser2 ? d.user2Name : d.user1Name,
-      otherPhoto: otherIsUser2 ? d.user2Photo : d.user1Photo,
+      otherName: liveProfile?.name || snapshotName || 'Member',
+      otherPhoto: liveProfile?.images?.find(Boolean) || snapshotPhoto || '',
       lastMessage: d.lastMessage || '',
       lastMessageTime: d.lastMessageTime,
       unreadCount: unread.size,

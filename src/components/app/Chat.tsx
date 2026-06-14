@@ -180,8 +180,8 @@ export default function Chat() {
                   onClick={() => setOpenId(c.matchId)}
                   className={`flex gap-3 px-5 py-3.5 border-b border-line cursor-pointer items-center ${openId === c.matchId ? 'bg-ivory' : 'hover:bg-ivory/60'}`}
                 >
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-display font-semibold text-ink relative flex-shrink-0" style={{ background: c.otherPhoto ? `url(${c.otherPhoto}) center/cover` : 'var(--blush)' }}>
-                    {!c.otherPhoto && c.otherName?.[0]}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-display font-semibold text-ink relative flex-shrink-0 overflow-hidden" style={{ background: 'var(--blush)' }}>
+                    {c.otherPhoto ? <img src={c.otherPhoto} alt={c.otherName || ''} loading="lazy" className="absolute inset-0 w-full h-full object-cover" /> : c.otherName?.[0]}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
@@ -205,8 +205,8 @@ export default function Chat() {
                   <button onClick={() => setOpenId(null)} className="hidden max-md:inline-flex icon-btn" aria-label={C.back}>
                     <span className="rotate-180 inline-flex"><Icon.Arrow /></span>
                   </button>
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center font-display font-semibold text-ink" style={{ background: active.otherPhoto ? `url(${active.otherPhoto}) center/cover` : 'var(--blush)' }}>
-                    {!active.otherPhoto && active.otherName?.[0]}
+                  <div className="w-11 h-11 rounded-full flex items-center justify-center font-display font-semibold text-ink relative overflow-hidden flex-shrink-0" style={{ background: 'var(--blush)' }}>
+                    {active.otherPhoto ? <img src={active.otherPhoto} alt={active.otherName || ''} loading="lazy" className="absolute inset-0 w-full h-full object-cover" /> : active.otherName?.[0]}
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-[20px] m-0">{active.otherName}</h3>

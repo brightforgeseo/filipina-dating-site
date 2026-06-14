@@ -110,8 +110,10 @@ export default function Likes() {
               <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
                 {likers!.map((l) => (
                   <div key={l.profile.id} className="bg-white border border-line rounded-2xl overflow-hidden flex flex-col">
-                    <a href={`/app/profile?id=${l.profile.id}`} className="aspect-[4/5] relative block" style={{ background: l.profile.images?.[0] ? `url(${l.profile.images[0]}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
-                      {!l.profile.images?.[0] && (
+                    <a href={`/app/profile?id=${l.profile.id}`} className="aspect-[4/5] relative block overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
+                      {l.profile.images?.[0] ? (
+                        <img src={l.profile.images[0]} alt={l.profile.name || ''} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                      ) : (
                         <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{l.profile.name?.[0] || '?'}</div>
                       )}
                       {l.superLike && (
@@ -145,8 +147,10 @@ export default function Likes() {
             <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 max-md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
               {matches!.map((c) => (
                 <div key={c.matchId} className="bg-white border border-line rounded-2xl overflow-hidden flex flex-col">
-                  <a href={`/app/profile?id=${c.otherId}`} className="aspect-[4/5] relative block" style={{ background: c.otherPhoto ? `url(${c.otherPhoto}) center/cover` : 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
-                    {!c.otherPhoto && (
+                  <a href={`/app/profile?id=${c.otherId}`} className="aspect-[4/5] relative block overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--blush), var(--ivory-2))' }}>
+                    {c.otherPhoto ? (
+                      <img src={c.otherPhoto} alt={c.otherName || ''} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
                       <div className="absolute inset-0 flex items-center justify-center font-display font-bold text-[80px] text-white/50">{c.otherName?.[0] || '?'}</div>
                     )}
                     <div className="absolute bottom-3 left-3 right-3 text-white">

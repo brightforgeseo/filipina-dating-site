@@ -16,6 +16,12 @@ service cloud.firestore {
       return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Hard ban: a banned user (bans/{uid} doc) cannot create content or
+    // communicate. Always used AFTER isSignedIn() so request.auth is non-null.
+    function notBanned() {
+      return !exists(/databases/$(database)/documents/bans/$(request.auth.uid));
+    }
+
     function isParticipant(userId1, userId2) {
       return isSignedIn() && (request.auth.uid == userId1 || request.auth.uid == userId2);
     }
@@ -45,7 +51,7 @@ service cloud.firestore {
       // Gifts sent directly to a member, same paid/free gating as posts.
       match /gifts/{giftId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn()
+        allow create: if isSignedIn() && notBanned()
           && request.resource.data.senderId == request.auth.uid
           && userId != request.auth.uid
           && !paidGiftsEnabled();
@@ -74,7 +80,7 @@ service cloud.firestore {
       // Messages subcollection: match participants only; senders must identify themselves on create.
       match /messages/{messageId} {
         allow read: if isSignedIn() && isMatchParticipant(matchId);
-        allow create: if isSignedIn()
+        allow create: if isSignedIn() && notBanned()
           && isMatchParticipant(matchId)
           && request.resource.data.senderId == request.auth.uid;
         allow update: if isSignedIn()
@@ -129,7 +135,7 @@ service cloud.firestore {
     // Community feed: any member can read; authors own their posts.
     match /posts/{postId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn()
+      allow create: if isSignedIn() && notBanned()
         && request.resource.data.authorId == request.auth.uid
         && (request.resource.data.groupId == null
             || exists(/databases/$(database)/documents/groupMembers/$(request.resource.data.groupId + '_' + request.auth.uid)));
@@ -142,13 +148,13 @@ service cloud.firestore {
 
       match /comments/{commentId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+        allow create: if isSignedIn() && notBanned() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
       }
 
       match /gifts/{giftId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn()
+        allow create: if isSignedIn() && notBanned()
           && request.resource.data.senderId == request.auth.uid
           && !paidGiftsEnabled();
       }
@@ -183,7 +189,7 @@ service cloud.firestore {
     // Live streams: host owns stream doc; viewers manage their own presence; WebRTC signaling is open to members.
     match /streams/{streamId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.hostId == request.auth.uid;
+      allow create: if isSignedIn() && notBanned() && request.resource.data.hostId == request.auth.uid;
       allow update, delete: if isSignedIn() && (resource.data.hostId == request.auth.uid || isAdmin());
 
       match /connections/{connId}/{document=**} {
@@ -197,12 +203,12 @@ service cloud.firestore {
 
       match /messages/{messageId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+        allow create: if isSignedIn() && notBanned() && request.resource.data.senderId == request.auth.uid;
       }
 
       match /gifts/{giftId} {
         allow read: if isSignedIn();
-        allow create: if isSignedIn()
+        allow create: if isSignedIn() && notBanned()
           && request.resource.data.senderId == request.auth.uid
           && !paidGiftsEnabled();
       }
@@ -211,21 +217,21 @@ service cloud.firestore {
     // Follows: doc id is `${followerId}_${followedId}`; the follower owns it.
     match /follows/{followId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.followerId == request.auth.uid;
+      allow create: if isSignedIn() && notBanned() && request.resource.data.followerId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.followerId == request.auth.uid;
     }
 
     // Community groups: anyone can create; only the owner can edit/delete.
     match /groups/{groupId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && notBanned() && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
 
     // Group memberships: doc id is `${groupId}_${userId}`; members manage their own membership.
     match /groupMembers/{memberId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && notBanned() && request.resource.data.userId == request.auth.uid;
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 

@@ -25,10 +25,17 @@ service cloud.firestore {
       return isParticipant(m.user1Id, m.user2Id);
     }
 
-    // Profiles: signed-in users can browse; only the owner can write their own profile.
+    // Profiles: signed-in users can browse; the owner can write their own
+    // profile, EXCEPT the `verified` badge — that is set only by the admin SDK /
+    // Cloud Functions after a verification request is approved, so it can't be
+    // self-asserted.
     match /profiles/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && (!('verified' in request.resource.data) || request.resource.data.verified == false);
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified']);
+      allow delete: if isOwner(userId);
 
       // Gifts sent directly to a member, same paid/free gating as posts.
       match /gifts/{giftId} {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon, BrandMark } from '../icons';
 import { signUpEmail, signInGoogle, sendVerification } from '../../lib/auth';
 import { saveProfile } from '../../lib/profiles';
+import { uploadProfileImage } from '../../lib/storage';
 import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS } from '../../lib/constants';
 import { t, localizePath, type Lang, type Dict } from '../../i18n';
 
@@ -30,6 +31,16 @@ export default function SignupWizard({ lang = 'en' }: { lang?: Lang }) {
   const [interests, setInterests] = React.useState<string[]>([]);
   const toggle = (t: string) =>
     setInterests((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
+  const [photo, setPhoto] = React.useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = React.useState<string | null>(null);
+  const pickPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
+    setPhoto(f);
+    setPhotoPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return f ? URL.createObjectURL(f) : null;
+    });
+  };
 
   const submit1 = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +72,13 @@ export default function SignupWizard({ lang = 'en' }: { lang?: Lang }) {
       const { currentUser } = await import('../../lib/auth');
       const u = currentUser();
       if (!u) throw new Error('not-signed-in');
+      // Photo upload is best-effort — never lose the signup over it.
+      let images: string[] | undefined;
+      if (photo) {
+        try {
+          images = [await uploadProfileImage(u.uid, photo)];
+        } catch {}
+      }
       await saveProfile(u.uid, {
         name: firstName.trim(),
         age: Number(age) || undefined,
@@ -70,6 +88,15 @@ export default function SignupWizard({ lang = 'en' }: { lang?: Lang }) {
         bio: bio.trim(),
         lookingFor,
         interests,
+        ...(images ? { images } : {}),
+        // Fields the mobile app expects on every profile: a single location
+        // string, the matching target gender, and the completion flag it
+        // gates login/discovery on.
+        location: [city.trim(), country].filter(Boolean).join(', '),
+        ...(gender === 'male' || gender === 'female'
+          ? { targetGender: gender === 'male' ? 'female' : 'male' }
+          : {}),
+        profileCompleted: true,
       });
       window.location.href = '/app';
     } catch {
@@ -169,6 +196,15 @@ export default function SignupWizard({ lang = 'en' }: { lang?: Lang }) {
             <div className="field">
               <label>{S.bioLabel}</label>
               <textarea rows={3} value={bio} onChange={(e) => setBio(e.target.value)} placeholder={S.bioPh} />
+            </div>
+            <div className="field">
+              <label>{S.photoLabel}</label>
+              <div className="flex items-center gap-3 mt-1">
+                {photoPreview && (
+                  <img src={photoPreview} alt="" className="w-14 h-14 rounded-full object-cover border border-line" />
+                )}
+                <input type="file" accept="image/*" onChange={pickPhoto} className="text-sm" />
+              </div>
             </div>
             <div className="field">
               <label>{S.interests}</label>

@@ -3,7 +3,7 @@ import { Icon } from '../icons';
 import { GiftButton, GiftInline } from './GiftButton';
 import Sidebar from './Sidebar';
 import { useAuth } from '../../lib/useAuth';
-import { getProfile, saveProfile, deleteProfile, type Profile } from '../../lib/profiles';
+import { getProfile, saveProfile, deleteProfile, profileLocation, type Profile } from '../../lib/profiles';
 import { recordSwipe } from '../../lib/matching';
 import { signOutUser, deleteAccount, needsEmailVerification } from '../../lib/auth';
 import { uploadProfileImage } from '../../lib/storage';
@@ -393,9 +393,9 @@ export default function ProfileView() {
                 <h2 className="font-display font-bold text-5xl tracking-[-0.02em] m-0 mb-2">
                   {p.name}{p.age ? <span className="text-muted font-normal">, {p.age}</span> : null}
                 </h2>
-                {(p.city || p.country) && (
+                {!!profileLocation(p, (c) => d.options.countries[c] || c) && (
                   <div className="text-[15px] text-ink-soft flex gap-1.5 items-center mb-2">
-                    <Icon.Pin size={13} /> {[p.city, p.country ? (d.options.countries[p.country] || p.country) : ''].filter(Boolean).join(', ')}
+                    <Icon.Pin size={13} /> {profileLocation(p, (c) => d.options.countries[c] || c)}
                   </div>
                 )}
                 {followCounts && (
@@ -562,6 +562,10 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
         religion,
         drinking,
         smoking,
+        // Keep the mobile app's single location string in sync, and mark the
+        // profile complete for its login/discovery gates.
+        location: [city.trim(), country].filter(Boolean).join(', '),
+        profileCompleted: true,
       };
       await saveProfile(profile.id, data);
       onSaved({ ...profile, ...data, images });

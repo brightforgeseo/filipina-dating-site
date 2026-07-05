@@ -1,5 +1,4 @@
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -7,6 +6,7 @@ import {
   limit,
   query,
   serverTimestamp,
+  setDoc,
   where,
   writeBatch,
 } from 'firebase/firestore';
@@ -14,10 +14,15 @@ import { firebase } from './firebase';
 
 export async function blockUser(blockerId: string, blockedId: string) {
   const { db } = firebase();
-  await addDoc(collection(db, 'blocks'), {
+  // Deterministic doc id and both field spellings (blockedId here,
+  // blockedUserId on mobile) so a block made on either platform is found by
+  // the other's lookups.
+  await setDoc(doc(db, 'blocks', `${blockerId}_${blockedId}`), {
     blockerId,
     blockedId,
+    blockedUserId: blockedId,
     createdAt: serverTimestamp(),
+    timestamp: serverTimestamp(),
   });
 }
 
@@ -27,14 +32,21 @@ export async function blockUser(blockerId: string, blockedId: string) {
 // Chat) enforces bans too, with no per-feed changes.
 export async function getBlockedIds(userId: string): Promise<Set<string>> {
   const { db } = firebase();
-  const [mine, theirs, banned] = await Promise.all([
+  const [mine, theirs, theirsMobile, banned] = await Promise.all([
     getDocs(query(collection(db, 'blocks'), where('blockerId', '==', userId))),
     getDocs(query(collection(db, 'blocks'), where('blockedId', '==', userId))),
+    // Mobile-created blocks use blockedUserId — query both spellings.
+    getDocs(query(collection(db, 'blocks'), where('blockedUserId', '==', userId))),
     getDocs(query(collection(db, 'bans'), limit(1000))).catch(() => null),
   ]);
   const ids = new Set<string>();
-  mine.forEach((d) => ids.add((d.data() as any).blockedId));
+  mine.forEach((d) => {
+    const data = d.data() as any;
+    const target = data.blockedId || data.blockedUserId;
+    if (target) ids.add(target);
+  });
   theirs.forEach((d) => ids.add((d.data() as any).blockerId));
+  theirsMobile.forEach((d) => ids.add((d.data() as any).blockerId));
   banned?.forEach((d) => ids.add(d.id));
   return ids;
 }

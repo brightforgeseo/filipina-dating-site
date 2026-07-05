@@ -243,6 +243,7 @@ export const en = {
       lookingFor: 'Looking for',
       bioLabel: 'A line about you',
       bioPh: 'Teacher by day, coffee person always. Family means everything.',
+      photoLabel: 'Profile photo (optional)',
       interests: 'Interests',
       back: 'Back',
       cta2: 'Enter FilWest',

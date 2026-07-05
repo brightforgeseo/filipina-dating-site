@@ -123,7 +123,7 @@ export default function Likes() {
                       )}
                       <div className="absolute bottom-3 left-3 right-3 text-white">
                         <div className="font-display font-bold text-[22px] leading-none">{l.profile.name}{l.profile.age ? `, ${l.profile.age}` : ''}</div>
-                        {l.profile.city && <div className="text-[11px] mt-1 flex items-center gap-1 opacity-90"><Icon.Pin size={10} /> {l.profile.city}</div>}
+                        {(l.profile.city || l.profile.location) && <div className="text-[11px] mt-1 flex items-center gap-1 opacity-90"><Icon.Pin size={10} /> {l.profile.city || l.profile.location}</div>}
                       </div>
                     </a>
                     <div className="flex gap-2 px-4 py-4">

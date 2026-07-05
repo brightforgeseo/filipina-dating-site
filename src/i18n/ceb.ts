@@ -245,6 +245,7 @@ export const ceb: Dict = {
       lookingFor: 'Gipangita',
       bioLabel: 'Usa ka linya bahin nimo',
       bioPh: 'Maestra sa buntag, hilig og kape kanunay. Pamilya ang tanan.',
+      photoLabel: 'Litrato sa profile (opsyonal)',
       interests: 'Mga interes',
       back: 'Balik',
       cta2: 'Sulod sa FilWest',

@@ -5,7 +5,7 @@ import VerifyEmail from './VerifyEmail';
 import MatchModal, { type MatchInfo } from './MatchModal';
 import { useAuth } from '../../lib/useAuth';
 import { needsEmailVerification } from '../../lib/auth';
-import { getProfile, listProfiles, saveProfile, type Profile } from '../../lib/profiles';
+import { getProfile, listProfiles, saveProfile, profileLocation, type Profile } from '../../lib/profiles';
 import { recordSwipe, getSwipedIds, getTodaySuperLikeCount, FREE_SUPER_LIKES_PER_DAY, type SwipeDirection } from '../../lib/matching';
 import { getBlockedIds } from '../../lib/blocking';
 import { markOnline } from '../../lib/presence';
@@ -26,7 +26,9 @@ function wantedGenderFor(me: Profile | null): 'female' | 'male' | null {
 
 function matchesPrefs(p: Profile, prefs: Prefs, wanted: 'female' | 'male' | null): boolean {
   if (wanted && p.gender !== wanted) return false;
-  if (prefs.country !== 'all' && p.country !== prefs.country) return false;
+  // Only exclude on a country mismatch when the profile actually has one —
+  // older mobile signups stored a single location string instead.
+  if (prefs.country !== 'all' && p.country && p.country !== prefs.country) return false;
   if (p.age && (p.age < prefs.ageMin || p.age > prefs.ageMax)) return false;
   return true;
 }
@@ -234,9 +236,9 @@ export default function Browse() {
           </div>
           <a href={`/app/profile?id=${p.id}`} className="absolute inset-x-0 bottom-0 p-6 text-white block" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.65))' }}>
             <div className="font-display font-bold text-[34px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
-            {(p.city || p.country) && (
+            {!!profileLocation(p, (c) => d.options.countries[c] || c) && (
               <div className="text-[13px] mt-1.5 flex items-center gap-1 opacity-90">
-                <Icon.Pin size={11} /> {[p.city, p.country ? (d.options.countries[p.country] || p.country) : ''].filter(Boolean).join(', ')}
+                <Icon.Pin size={11} /> {profileLocation(p, (c) => d.options.countries[c] || c)}
               </div>
             )}
             {p.bio && <div className="text-[13px] mt-2 leading-snug opacity-90" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.bio}</div>}
@@ -375,7 +377,7 @@ export default function Browse() {
                     </div>
                     <div className="absolute bottom-3 left-3 right-3 text-white">
                       <div className="font-display font-bold text-[24px] leading-none">{p.name}{p.age ? `, ${p.age}` : ''}</div>
-                      {p.city && <div className="text-[11px] mt-1 flex items-center gap-1 opacity-90"><Icon.Pin size={10} /> {p.city}</div>}
+                      {(p.city || p.location) && <div className="text-[11px] mt-1 flex items-center gap-1 opacity-90"><Icon.Pin size={10} /> {p.city || p.location}</div>}
                     </div>
                   </a>
                   {p.bio && <div className="px-4 py-3 text-[13px] text-ink-soft line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.bio}</div>}

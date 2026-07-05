@@ -245,6 +245,7 @@ export const tl: Dict = {
       lookingFor: 'Hinahanap',
       bioLabel: 'Isang linya tungkol sa\'yo',
       bioPh: 'Titser sa umaga, mahilig sa kape palagi. Pamilya ang lahat.',
+      photoLabel: 'Litrato ng profile (opsyonal)',
       interests: 'Mga interes',
       back: 'Bumalik',
       cta2: 'Pumasok sa FilWest',

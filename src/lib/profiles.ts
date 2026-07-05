@@ -34,7 +34,23 @@ export type Profile = {
   preferences?: { gender?: 'female' | 'male' | 'all'; ageMin?: number; ageMax?: number; country?: string };
   lastActive?: any;
   createdAt?: any;
+  // Fields shared with the mobile app (single Firestore project): mobile
+  // stores location as one string and gates login/discovery on
+  // profileCompleted. Both apps now write both location shapes.
+  location?: string;
+  profileCompleted?: boolean;
+  targetGender?: 'female' | 'male';
+  relationshipIntent?: string;
 };
+
+// Location for display: prefer the web city/country pair, fall back to the
+// mobile app's single location string.
+export function profileLocation(p: Partial<Profile> | null | undefined, countryLabel?: (c: string) => string): string {
+  if (!p) return '';
+  const parts = [p.city, p.country && countryLabel ? countryLabel(p.country) : p.country].filter(Boolean);
+  if (parts.length) return parts.join(', ');
+  return p.location || '';
+}
 
 function profileFromDoc(id: string, data: Record<string, any>): Profile {
   // The Firestore document ID is the user's real profile ID. Never allow a

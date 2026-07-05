@@ -24,7 +24,7 @@ npm run preview
    - *Automatic (recommended)*: add a `FIREBASE_SERVICE_ACCOUNT` secret to GitHub (repo → Settings → Secrets and variables → Actions) containing a service-account JSON key from Firebase Console → Project settings → Service accounts. The `deploy-rules.yml` workflow then publishes `firestore.rules`, `storage.rules`, and `firestore.indexes.json` automatically whenever they change (or on manual dispatch).
    - *Manual*: paste `firestore.rules` into Firestore → Rules and `storage.rules` into Storage → Rules in the Firebase console, and republish whenever they change in this repo.
 4. **Support email**: `support@filipinawest.com` — set up forwarding at the domain registrar.
-5. **Reports queue**: member reports land in the Firestore `reports` collection (`status: open`). Review them in the console until a moderation dashboard exists.
+5. **Reports queue**: member reports land in the Firestore `reports` collection (`status: open`) from both the web and mobile apps. Review them at `/admin` (moderation dashboard; access is granted by creating an `admins/{uid}` doc in Firestore) or in the console.
 6. **Smoke test**: two opposite-gender accounts → verify email → complete profiles with photos → swipe deck → match modal → chat (text + photo + Seen receipt) → Likes page → Community post with media → like/comment → block/report flows.
 
 ## Paid gifts (Phase 2) — enabling coins & payouts

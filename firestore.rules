@@ -128,6 +128,11 @@ service cloud.firestore {
             || resource.data.blockedUserId == request.auth.uid);
       allow create: if isSignedIn()
         && request.resource.data.blockerId == request.auth.uid;
+      // Blocks use deterministic doc ids ({blocker}_{blocked}); re-blocking
+      // the same member overwrites the doc, which counts as an update.
+      allow update: if isSignedIn()
+        && resource.data.blockerId == request.auth.uid
+        && request.resource.data.blockerId == request.auth.uid;
       allow delete: if isSignedIn()
         && resource.data.blockerId == request.auth.uid;
     }

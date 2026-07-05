@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon, BrandMark } from '../icons';
 import { signUpEmail, signInGoogle, sendVerification } from '../../lib/auth';
-import { saveProfile } from '../../lib/profiles';
+import { saveProfile, getProfile } from '../../lib/profiles';
 import { uploadProfileImage } from '../../lib/storage';
 import { INTEREST_OPTIONS, COUNTRY_OPTIONS, LOOKING_FOR_OPTIONS } from '../../lib/constants';
 import { t, localizePath, type Lang, type Dict } from '../../i18n';
@@ -111,10 +111,15 @@ export default function SignupWizard({ lang = 'en' }: { lang?: Lang }) {
     setBusy(true);
     try {
       const user = await signInGoogle();
-      await saveProfile(user.uid, {
-        name: user.displayName?.split(' ')[0] || 'New member',
-        verified: false,
-      });
+      // Returning members (e.g. mobile signups) already have a profile —
+      // rewriting `verified` on an existing doc is rejected by the rules.
+      const existing = await getProfile(user.uid);
+      if (!existing) {
+        await saveProfile(user.uid, {
+          name: user.displayName?.split(' ')[0] || 'New member',
+          verified: false,
+        });
+      }
       setStep(2);
     } catch (e: any) {
       setErr(humanizeAuthError(e, d));

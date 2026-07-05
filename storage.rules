@@ -24,6 +24,7 @@ service firebase.storage {
       allow write: if isOwner(userId)
         && isImage()
         && request.resource.size <= 5 * 1024 * 1024;
+      allow delete: if isOwner(userId);
     }
 
     // Mobile profile photos: profile-images/{uid}/...
@@ -32,6 +33,7 @@ service firebase.storage {
       allow write: if isOwner(userId)
         && isImage()
         && request.resource.size <= 5 * 1024 * 1024;
+      allow delete: if isOwner(userId);
     }
 
     // Photos sent in chat by web clients.
@@ -40,6 +42,7 @@ service firebase.storage {
       allow write: if isOwner(userId)
         && isImage()
         && request.resource.size <= 5 * 1024 * 1024;
+      allow delete: if isOwner(userId);
     }
 
     // Mobile chat media: chat-media/{matchId}/...
@@ -56,6 +59,7 @@ service firebase.storage {
       allow write: if isOwner(userId)
         && ((isImage() && request.resource.size <= 5 * 1024 * 1024)
             || (isVideo() && request.resource.size <= 25 * 1024 * 1024));
+      allow delete: if isOwner(userId);
     }
 
     // Verification evidence, if enabled by the app: verification/{uid}/...
@@ -64,6 +68,7 @@ service firebase.storage {
       allow write: if isOwner(userId)
         && (isImage() || request.resource.contentType == 'application/pdf')
         && request.resource.size <= 10 * 1024 * 1024;
+      allow delete: if isOwner(userId);
     }
 
     match /{path=**} {

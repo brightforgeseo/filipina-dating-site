@@ -2,6 +2,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   limit,
   query,
@@ -51,11 +52,36 @@ export async function getBlockedIds(userId: string): Promise<Set<string>> {
   return ids;
 }
 
+// Unmatch: delete the conversation, my swipes toward the other member (so a
+// stale reciprocal like can't silently recreate the match), and the match doc.
 export async function unmatch(matchId: string) {
-  const { db } = firebase();
-  const msgs = await getDocs(collection(db, 'matches', matchId, 'messages'));
-  // Firestore batches cap at 500 writes — chunk the message deletions.
-  const refs = msgs.docs.map((d) => d.ref);
+  const { db, auth } = firebase();
+  const uid = auth.currentUser?.uid;
+
+  // Read participants before deleting anything.
+  const matchSnap = await getDoc(doc(db, 'matches', matchId));
+  const match = matchSnap.exists() ? (matchSnap.data() as any) : null;
+  const otherId = match && uid ? (match.user1Id === uid ? match.user2Id : match.user1Id) : null;
+
+  const [msgs, typing, mySwipes] = await Promise.all([
+    getDocs(collection(db, 'matches', matchId, 'messages')),
+    getDocs(collection(db, 'matches', matchId, 'typing')),
+    otherId
+      ? getDocs(query(
+          collection(db, 'swipes'),
+          where('fromUserId', '==', uid),
+          where('toUserId', '==', otherId)
+        ))
+      : Promise.resolve(null),
+  ]);
+
+  // Firestore batches cap at 500 writes — chunk the deletions. Rules only
+  // allow deleting your own typing doc.
+  const refs = [
+    ...msgs.docs.map((d) => d.ref),
+    ...typing.docs.filter((d) => d.id === uid).map((d) => d.ref),
+    ...(mySwipes ? mySwipes.docs.map((d) => d.ref) : []),
+  ];
   for (let i = 0; i < refs.length; i += 450) {
     const batch = writeBatch(db);
     refs.slice(i, i + 450).forEach((r) => batch.delete(r));

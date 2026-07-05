@@ -8,6 +8,7 @@ import { recordSwipe } from '../../lib/matching';
 import { signOutUser, deleteAccount, needsEmailVerification } from '../../lib/auth';
 import { uploadProfileImage } from '../../lib/storage';
 import { blockUser } from '../../lib/blocking';
+import { needsReauthForDeletion, purgeAccountData } from '../../lib/account';
 import { markOnline } from '../../lib/presence';
 import VerifyEmail from './VerifyEmail';
 import {
@@ -577,11 +578,22 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
   };
 
   const removeAccount = async () => {
+    // Check the reauth requirement before touching any data.
+    if (needsReauthForDeletion()) {
+      setErr(E.errRecentLogin);
+      await signOutUser().catch(() => {});
+      return;
+    }
     if (!window.confirm(E.deleteConfirm)) return;
     setErr(null);
     setDeleting(true);
-    const { id: _id, ...backup } = profile;
+    // verified/boostedUntil are server-managed; a restore write containing
+    // them would be rejected by the rules.
+    const { id: _id, verified: _v, boostedUntil: _b, ...backup } = profile as any;
     try {
+      // Best-effort purge of matches, swipes, tokens and photos while the
+      // auth session still exists.
+      await purgeAccountData(profile.id).catch(() => {});
       await deleteProfile(profile.id);
       await deleteAccount();
       window.location.href = '/';

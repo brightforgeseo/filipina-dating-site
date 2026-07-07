@@ -518,6 +518,14 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
   const [deleting, setDeleting] = React.useState(false);
   const [err, setErr] = React.useState<string | null>(null);
 
+  // Identity fields lock once set (anti-scam, same policy as the mobile
+  // app). They stay editable only while empty — e.g. Google signups that
+  // skipped a step — so nobody gets stuck with a blank profile.
+  const nameLocked = !!profile.name;
+  const ageLocked = !!profile.age;
+  const cityLocked = !!profile.city;
+  const countryLocked = !!profile.country;
+
   const toggle = (t: string) =>
     setInterests((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
 
@@ -548,11 +556,17 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
     setErr(null);
     setBusy(true);
     try {
+      // Locked identity fields keep their stored values; only fields still
+      // empty at signup can be filled in here.
+      const finalName = nameLocked ? profile.name : name.trim();
+      const finalAge = ageLocked ? profile.age : Number(age) || undefined;
+      const finalCity = cityLocked ? (profile.city || '') : city.trim();
+      const finalCountry = countryLocked ? (profile.country || '') : country;
       const data: Partial<Profile> = {
-        name: name.trim(),
-        age: Number(age) || undefined,
-        city: city.trim(),
-        country,
+        name: finalName,
+        age: finalAge,
+        city: finalCity,
+        country: finalCountry,
         bio: bio.trim(),
         lookingFor,
         interests,
@@ -565,7 +579,7 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
         smoking,
         // Keep the mobile app's single location string in sync, and mark the
         // profile complete for its login/discovery gates.
-        location: [city.trim(), country].filter(Boolean).join(', '),
+        location: [finalCity, finalCountry].filter(Boolean).join(', '),
         profileCompleted: true,
       };
       await saveProfile(profile.id, data);
@@ -663,26 +677,29 @@ function EditProfile({ profile, d, onSaved, onCancel }: { profile: Profile; d: D
       <div className="flex flex-col gap-3.5">
         <div className="grid grid-cols-2 gap-3">
           <div className="field">
-            <label>{E.firstName}</label>
-            <input required value={name} onChange={(e) => setName(e.target.value)} />
+            <label>{E.firstName} {nameLocked && <Icon.Lock size={11} />}</label>
+            <input required value={name} onChange={(e) => setName(e.target.value)} disabled={nameLocked} />
           </div>
           <div className="field">
-            <label>{E.age}</label>
-            <input required type="number" min={18} max={100} value={age} onChange={(e) => setAge(e.target.value)} />
+            <label>{E.age} {ageLocked && <Icon.Lock size={11} />}</label>
+            <input required type="number" min={18} max={100} value={age} onChange={(e) => setAge(e.target.value)} disabled={ageLocked} />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="field">
-            <label>{E.city}</label>
-            <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={E.cityPh} />
+            <label>{E.city} {cityLocked && <Icon.Lock size={11} />}</label>
+            <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={E.cityPh} disabled={cityLocked} />
           </div>
           <div className="field">
-            <label>{E.country}</label>
-            <select value={country} onChange={(e) => setCountry(e.target.value)}>
+            <label>{E.country} {countryLocked && <Icon.Lock size={11} />}</label>
+            <select value={country} onChange={(e) => setCountry(e.target.value)} disabled={countryLocked}>
               {COUNTRY_OPTIONS.map((c) => <option key={c} value={c}>{d.options.countries[c] || c}</option>)}
             </select>
           </div>
         </div>
+        {(nameLocked || ageLocked || cityLocked || countryLocked) && (
+          <div className="text-xs text-muted -mt-1">{E.lockedNote}</div>
+        )}
         <div className="field">
           <label>{E.lookingFor}</label>
           <select value={lookingFor} onChange={(e) => setLookingFor(e.target.value)}>

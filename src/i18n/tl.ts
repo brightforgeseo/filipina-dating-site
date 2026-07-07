@@ -558,6 +558,7 @@ export const tl: Dict = {
         uploading: 'Ina-upload…',
         uploadLabel: 'Mag-upload ng profile photo',
         photoHint: 'JPG o PNG, hanggang 5 MB bawat isa, hanggang 6 na photo. Ang unang photo ang main photo mo.',
+        lockedNote: 'Naka-lock ang pangalan, edad at lokasyon pagkatapos mag-sign up para sa kaligtasan ng komunidad. Makipag-ugnayan sa support para baguhin.',
         photos: 'Mga photo',
         removePhoto: 'Tanggalin ang photo',
         makeMain: 'Gawing main photo',

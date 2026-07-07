@@ -558,6 +558,7 @@ export const ceb: Dict = {
         uploading: 'Gi-upload…',
         uploadLabel: 'Pag-upload og profile photo',
         photoHint: 'JPG o PNG, hangtod sa 5 MB matag usa, hangtod sa 6 ka photo. Ang unang photo mao ang imong main photo.',
+        lockedNote: 'Naka-lock ang ngalan, edad ug lokasyon human sa pag-sign up alang sa kaluwasan sa komunidad. Kontaka ang support aron usbon.',
         photos: 'Mga photo',
         removePhoto: 'Tangtanga ang photo',
         makeMain: 'Himoa nga main photo',

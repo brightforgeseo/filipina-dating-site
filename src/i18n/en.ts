@@ -556,6 +556,7 @@ export const en = {
         uploading: 'Uploading…',
         uploadLabel: 'Upload profile photo',
         photoHint: 'JPG or PNG, up to 5 MB each, max 6 photos. The first photo is your main photo.',
+        lockedNote: 'Name, age and location are locked after signup to keep the community safe. Contact support to change them.',
         photos: 'Photos',
         removePhoto: 'Remove photo',
         makeMain: 'Set as main photo',

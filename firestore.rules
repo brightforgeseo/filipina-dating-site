@@ -265,13 +265,28 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    // Verification requests are user-readable and owner-created. Only server/admin should approve verified=true.
+    // Identity documents are private to their owner and allowlisted reviewers.
+    // Approval writes remain restricted to the server/Admin SDK.
     match /verifications/{userId} {
-      allow read: if isSignedIn();
+      allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId)
+        && request.resource.data.userId == userId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly([
+          'userId', 'method', 'selfieUrl', 'idFrontUrl', 'idBackUrl',
+          'status', 'createdAt', 'verified'
+        ])
         && (!('verified' in request.resource.data) || request.resource.data.verified == false);
+      // Resubmission may change evidence, but never approval/reviewer metadata.
+      // Approved evidence is immutable to clients; an admin must reopen it.
       allow update: if isOwner(userId)
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified']));
+        && (!('verified' in resource.data) || resource.data.verified == false)
+        && request.resource.data.userId == userId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'userId', 'method', 'selfieUrl', 'idFrontUrl', 'idBackUrl',
+          'status', 'createdAt'
+        ]);
       allow delete: if false;
     }
 

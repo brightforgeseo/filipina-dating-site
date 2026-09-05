@@ -14,7 +14,7 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(self), microphone=(self), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     # script-src/connect-src are deliberately not restricted: Astro inlines
     # hydration scripts and Firebase talks to many Google endpoints.

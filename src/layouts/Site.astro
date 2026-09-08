@@ -5,13 +5,20 @@ import '../styles/globals.css';
 import { parsePath, localizePath, LOCALIZED_PATHS, type Lang } from '../i18n';
 
 const {
-  title = 'FilWest — Filipina Dating',
-  description = 'FilWest is a dating site for Filipinas and the people who love them. Verified profiles, honest intentions — on the web and on the app.',
+  title = 'Filipina Dating | FilWest',
+  description = 'We are building FilWest for Filipinas and Western partners seeking serious relationships. Read our dating guidance and private-test plans.',
   lang = 'en',
-} = Astro.props as { title?: string; description?: string; lang?: Lang };
+  articleHeading,
+} = Astro.props as { title?: string; description?: string; lang?: Lang; articleHeading?: string };
 
+// Canonicalise slash variants without merging language-specific owners.
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const preferredPath = path === '/tl' || path === '/ceb' ? `${path}/` : path;
+const canonical = new URL(preferredPath, Astro.site);
 // hreflang alternates only for pages that actually exist in all languages.
-const { base } = parsePath(Astro.url.pathname);
+const { base } = parsePath(preferredPath);
+// Forms and account utilities are not acquisition pages. Let crawlers see noindex.
+const noindex = ['/login', '/signup', '/search', '/admin', '/verify', '/404'].includes(base);
 const localized = LOCALIZED_PATHS.includes(base);
 const alternates = localized
   ? (['en', 'tl', 'ceb'] as Lang[]).map((code) => ({
@@ -19,6 +26,22 @@ const alternates = localized
       href: new URL(localizePath(base, code), Astro.site),
     }))
   : [];
+const origin = new URL('/', Astro.site).href;
+const breadcrumbs = [
+  { name: 'FilWest', url: new URL(localizePath('/', lang), Astro.site).href },
+  ...(articleHeading ? [{ name: 'Dating guides', url: new URL('/guides', Astro.site).href }] : []),
+  ...(base !== '/' ? [{ name: articleHeading || title.split(/ [—|] /)[0], url: canonical.href }] : []),
+];
+// Identity only: no invented authors, dates, ratings, offers or safety certification.
+const graph: Record<string, unknown>[] = [
+  { '@type': 'Organization', '@id': `${origin}#organization`, name: 'FilWest', url: origin },
+  { '@type': 'WebSite', '@id': `${origin}#website`, name: 'FilWest', url: origin, publisher: { '@id': `${origin}#organization` } },
+  { '@type': articleHeading ? 'Article' : 'WebPage', '@id': `${canonical.href}#${articleHeading ? 'article' : 'webpage'}`, url: canonical.href,
+    ...(articleHeading ? { headline: articleHeading, mainEntityOfPage: canonical.href, publisher: { '@id': `${origin}#organization` } } : { name: title }),
+    description, inLanguage: lang, isPartOf: { '@id': `${origin}#website` } },
+  ...(breadcrumbs.length > 1 ? [{ '@type': 'BreadcrumbList', itemListElement: breadcrumbs.map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.name, item: b.url })) }] : []),
+];
+const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
 ---
 <!doctype html>
 <html lang={lang}>
@@ -28,6 +51,9 @@ const alternates = localized
   <meta name="google-site-verification" content="B9O38xL5Dpd1Hfpu6lDytKiRfZSg5APsIbl_jC7trVM" />
   <title>{title}</title>
   <meta name="description" content={description}/>
+  <link rel="canonical" href={canonical}/>
+  {noindex && <meta name="robots" content="noindex, follow"/>}
+  <meta property="og:url" content={canonical}/>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
   <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
   <meta name="theme-color" content="#FF1493"/>
@@ -37,6 +63,7 @@ const alternates = localized
   <meta property="og:description" content={description}/>
   <meta property="og:image" content={new URL('/og-image.png', Astro.site)}/>
   <meta name="twitter:card" content="summary_large_image"/>
+  {!noindex && <script type="application/ld+json" set:html={structuredData} />}
   {alternates.map((a) => <link rel="alternate" hreflang={a.code} href={a.href} />)}
   {localized && <link rel="alternate" hreflang="x-default" href={new URL(base, Astro.site)} />}
 </head>

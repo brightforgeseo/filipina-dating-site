@@ -70,9 +70,12 @@ service cloud.firestore {
         && resource.data.fromUserId == request.auth.uid;
     }
 
-    // Matches: both participants can read, update and delete. Creates must involve the signed-in user.
+    // Matches: participants can update chat metadata, but cannot transfer access.
+    // Creates must involve the signed-in user; mutual consent is not enforced here.
     match /matches/{matchId} {
-      allow read, update, delete: if isParticipant(resource.data.user1Id, resource.data.user2Id);
+      allow read, delete: if isParticipant(resource.data.user1Id, resource.data.user2Id);
+      allow update: if isParticipant(resource.data.user1Id, resource.data.user2Id)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['user1Id', 'user2Id']);
       allow create: if isSignedIn()
         && (request.resource.data.user1Id == request.auth.uid
             || request.resource.data.user2Id == request.auth.uid);
@@ -100,8 +103,10 @@ service cloud.firestore {
     // Auto-flags (reporterId 'system') are written by Cloud Functions.
     match /reports/{reportId} {
       allow read: if isAdmin();
+      // Both mobile and web submit 'open'; other statuses evade the admin queue.
       allow create: if isSignedIn()
-        && request.resource.data.reporterId == request.auth.uid;
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.status == 'open';
       allow update: if isAdmin();
       allow delete: if false;
     }

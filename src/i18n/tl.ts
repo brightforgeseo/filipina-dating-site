@@ -5,25 +5,25 @@ import type { Dict } from './en';
 export const tl: Dict = {
   meta: {
     home: {
-      title: 'FilWest — Verified na Filipino-Western Dating para sa Totoong Relasyon',
-      desc: 'Ang FilWest ang lugar kung saan bumubuo ng totoong relasyon ang mga Filipina at Western na lalaki. Verified na profile, babala laban sa scam sa bawat chat, libreng EN–Tagalog na translation, at video call bago bumili ng ticket.',
+      title: 'Filipino-Western Dating para sa Seryosong Relasyon | FilWest',
+      desc: 'Bumubuo kami ng FilWest para sa mga Filipina at lalaking Kanluranin na naghahanap ng seryosong relasyon. Basahin ang aming mga gabay at plano sa pribadong pagsubok.',
     },
     pricing: {
-      title: 'Presyo — FilWest',
-      desc: 'Presyo ng FilWest: libre para sa mga babaeng taga-Pilipinas, patas na plan para sa iba. Walang tagong bayarin, kanselahin anumang oras.',
+      title: 'Presyo at Access | FilWest',
+      desc: 'Basahin ang aming plano sa pribadong pagsubok at mga kailangang kumpirmahin bago mag-alok ng bayad na access. Walang ibinebentang subscription dito.',
     },
     safety: {
-      title: 'Kaligtasan — FilWest',
-      desc: 'Paano pinapanatiling ligtas ng FilWest ang long-distance dating: identity verification, video call bago magkita, at team na sumusuri sa bawat report.',
+      title: 'Kaligtasan sa Dating | FilWest',
+      desc: 'Mga pag-iingat sa Filipino-Western dating: protektahan ang personal na impormasyon, magtakda ng hangganan sa pera at kumilos kapag may kahina-hinala.',
     },
     login: { title: 'Mag-log in — FilWest', desc: 'Mag-log in sa FilWest. Naghihintay ang mga mensahe at match mo.' },
-    signup: { title: 'Mag-sign up — FilWest', desc: 'Gumawa ng FilWest account sa dalawang hakbang. Libre para sa mga babaeng taga-Pilipinas, palagi.' },
+    signup: { title: 'Gumawa ng Account | FilWest', desc: 'Gumawa ng FilWest account. Basahin muna ang impormasyon sa access bago magbahagi ng personal na detalye.' },
   },
 
   nav: {
     how: 'Paano gumagana',
     safety: 'Kaligtasan',
-    stories: 'Mga kwento',
+    stories: "Aming pananaw",
     pricing: 'Presyo',
     app: 'Kunin ang app',
     login: 'Mag-log in',
@@ -31,82 +31,142 @@ export const tl: Dict = {
   },
 
   footer: {
-    tagline: 'Dating para sa mga Filipina at sa mga taong nagmamahal sa kanila. Parehong profile, parehong mensahe — sa web at sa app.',
-    freeChip: 'Libre para sa mga Filipina',
-    product: 'Produkto',
-    company: 'Kumpanya',
-    legal: 'Legal',
-    aboutSafety: 'Tungkol sa kaligtasan',
-    guides: 'Mga gabay sa dating',
-    contact: 'Makipag-ugnayan',
-    terms: 'Mga Tuntunin',
-    privacy: 'Privacy',
-    community: 'Patakaran ng komunidad',
+    "tagline": "Bumubuo kami ng lugar para sa mga Filipina at lalaking Kanluranin na naghahanap ng seryosong relasyon sa kabila ng magkaibang kultura.",
+    "freeChip": "Naghahanda para sa pribadong pagsubok",
+    "product": "Produkto",
+    "company": "Kumpanya",
+    "legal": "Legal",
+    "aboutSafety": "Tungkol sa kaligtasan",
+    "guides": "Mga gabay sa dating",
+    "contact": "Makipag-ugnayan",
+    "terms": "Mga Tuntunin",
+    "privacy": "Privacy",
+    "community": "Patakaran ng komunidad"
   },
 
   hero: {
-    chip: 'Sa iOS, Android, at web',
-    line1: 'Verified na profile.',
-    line2: 'Tapat na hangarin.',
-    line3: 'Totoong pag-ibig.',
-    body: 'Ang FilWest ang lugar kung saan bumubuo ng totoong relasyon ang mga Filipina at Western na lalaki. ID-verified na badge, babala laban sa scam sa bawat chat, libreng translation sa English at Tagalog, at video call bago pa man bumili ng ticket ang sinuman.',
-    ctaSignup: 'Mag-sign up nang libre',
-    ctaHow: 'Paano ito gumagana',
-    freeNote: 'Libre para sa mga babaeng taga-Pilipinas. Palagi.',
-    verified: 'Verified',
-    phoneBio: '"Titser, mahilig sa kape, pamilya muna. Hanap ko \'yung pakiramdam na parang nasa tahanan."',
-    matchTitle: 'May match ka!',
-    matchSub: 'Ikaw at si Mariel',
-    idVerifiedTitle: 'ID verified',
-    idVerifiedSub: 'Hanapin ang badge',
+    "chip": "Naghahanda para sa pribadong pagsubok",
+    "line1": "Malinaw na hangarin.",
+    "line2": "Dalawang kultura.",
+    "line3": "Tunay na ugnayan.",
+    "body": "Para sa mga Filipina at lalaking Kanluranin na naghahanap ng seryosong relasyon. Inihahanda namin ang pribadong pagsubok sa profile, pagtutugma, usapan at kaligtasan.",
+    "ctaSignup": "Gumawa ng account",
+    "ctaHow": "Paano ito gumagana",
+    "freeNote": "Patuloy pa ang pagsusuri sa mga feature at platform.",
+    "verified": "Verified",
+    "phoneBio": "\"Titser, mahilig sa kape, pamilya muna. Hanap ko 'yung pakiramdam na parang nasa tahanan.\"",
+    "matchTitle": "May match ka!",
+    "matchSub": "Ikaw at si Mariel",
+    "idVerifiedTitle": "ID verified",
+    "idVerifiedSub": "Hanapin ang badge"
   },
 
   features: [
-    { big: 'ID + selfie', small: 'Verification badge na sinusuri ng tao' },
-    { big: 'EN · TL', small: 'Libreng tap-to-translate sa chat' },
-    { big: 'Libre', small: 'Para sa mga babaeng taga-Pilipinas' },
-    { big: 'iOS · Web', small: 'Isang account, kahit anong device' },
+    {
+      "big": "Hangarin",
+      "small": "Pag-usapan ang mahalaga"
+    },
+    {
+      "big": "Kultura",
+      "small": "Igalang ang pinagmulan"
+    },
+    {
+      "big": "Tiwala",
+      "small": "Kilalanin muna ang isa’t isa"
+    },
+    {
+      "big": "Pribadong pagsubok",
+      "small": "Suriin muna ang mga pangunahing gamit"
+    }
   ],
 
   how: {
-    eyebrow: 'Paano gumagana ang FilWest',
-    title: 'Apat na hakbang mula "hello" hanggang sa personal na pagkikita.',
-    steps: [
-      { title: 'Gumawa ng profile', body: 'Mag-sign up nang libre sa dalawang hakbang. Pagkatapos, magpa-verify — government ID at live selfie na sinusuri ng totoong tao — para makuha ang badge mo.' },
-      { title: 'Mag-swipe at mag-match', body: 'Tingnan ang mga totoong tao malapit sa\'yo at sa abroad. Kapag nagustuhan niyo ang isa\'t isa, match na!' },
-      { title: 'Mag-chat at mag-translate', body: 'Magpadala ng mensahe, photo, at video. I-tap ang kahit anong mensahe para i-translate sa pagitan ng English at Tagalog — libre para sa lahat.' },
-      { title: 'Mag-video call kapag handa na', body: 'Magkita nang harapan sa encrypted video call bago magplano ng biyahe. Walang madalian, walang pressure.' },
-    ],
+    "eyebrow": "Paano gumagana ang FilWest",
+    "title": "Magsimula sa tapat na usapan.",
+    "steps": [
+      {
+        "title": "Sabihin ang iyong hangarin",
+        "body": "Linawin ang relasyong gusto mo at ang distansyang kaya mong harapin."
+      },
+      {
+        "title": "Kilalanin ang isa’t isa",
+        "body": "Magtanong tungkol sa buhay, pamilya at mga plano."
+      },
+      {
+        "title": "Igalang ang sariling bilis",
+        "body": "Walang obligasyong magbigay ng larawan, pera, atensyon o pakikipagkita."
+      },
+      {
+        "title": "Magplano ng ligtas na pagkikita",
+        "body": "Pumili ng pampublikong lugar, magsabi sa pinagkakatiwalaan at ayusin ang sarili mong biyahe."
+      }
+    ]
   },
 
   safety: {
-    eyebrow: 'Kaligtasan',
-    title: 'Ligtas mula umpisa.',
-    body: 'Gumagana lang ang long-distance dating kung ligtas ang pakiramdam ng lahat. Ganoon binuo ang FilWest — simula sa araw ng pag-sign up mo, hindi kapag may nangyari nang masama.',
-    items: [
-      { t: 'Verification gamit ang ID at selfie', d: 'Pwedeng magpa-verify ang mga member gamit ang government ID at live selfie na sinusuri ng totoong tao. Ang mga aprubado ay may verified badge — hanapin ito bago ka ma-attach.' },
-      { t: 'May built-in na video call', d: 'Encrypted video call mismo sa app, para magkita kayo nang harapan bago magplano ng biyahe. Walang lilipad nang nakapikit.' },
-      { t: 'Bawal manghingi ng pera', d: 'Awtomatikong fina-flag ang mga banggit ng wire transfer, gift card, o padala para suriin ng tao. Bina-ban ang mga lumalabag.' },
-      { t: 'Mabilis mag-report at mag-block', d: 'Isang tap lang, blocked na ang user kahit saan, sa magkabilang direksyon. Sinusuri ng totoong tao ang mga report — hindi pila na walang katapusan.' },
+    "eyebrow": "Kaligtasan",
+    "title": "Higit sa badge ang tiwala.",
+    "body": "Walang dating service ang makagagarantiya sa pagkakakilanlan o hangarin ng isang tao. Panatilihin ang iyong hangganan.",
+    "items": [
+      {
+        "t": "Isang palatandaan lamang ang badge",
+        "d": "Hindi ito garantiya ng ugali o kaligtasan. Huwag umasa sa label lang."
+      },
+      {
+        "t": "Huwag magpadala ng pera sa ka-match",
+        "d": "Mag-ingat sa hiling na padala, gift card, investment o pambayad sa emergency."
+      },
+      {
+        "t": "Ingatan ang personal na impormasyon",
+        "d": "Huwag ibigay sa ka-match ang ID, detalye sa bangko, password o tirahan."
+      },
+      {
+        "t": "Huminto kapag may mali",
+        "d": "Itago ang ebidensya at gamitin ang magagamit na pag-uulat. Sa agarang panganib, tumawag sa lokal na emergency services."
+      }
     ],
-    panelTitle: 'Verification · live',
-    rows: [
-      { label: 'Government ID', value: 'Pasaporte · verified' },
-      { label: 'Live selfie check', value: 'Match score 99.2%' },
-      { label: 'Numero ng telepono', value: '+63 9•• ••• 4421' },
-      { label: 'Edad ng account', value: '6 na buwan · consistent' },
-    ],
+    "panelTitle": "Bago magtiwala sa isang profile",
+    "rows": [
+      {
+        "label": "Pagkakakilanlan",
+        "value": "Ang badge ay isang palatandaan, hindi garantiya."
+      },
+      {
+        "label": "Pera",
+        "value": "Huwag magpadala ng pera sa ka-match."
+      },
+      {
+        "label": "Oras",
+        "value": "Bumuo ng tiwala sa tuloy-tuloy na usapan."
+      },
+      {
+        "label": "Pagkikita",
+        "value": "Magkita sa pampublikong lugar at ipaalam ang plano sa kakilala."
+      }
+    ]
   },
 
   stories: {
-    eyebrow: 'Mula sa mga member',
-    title: 'Mga couple na dito nagsimula.',
-    items: [
-      { quote: 'Nag-sign up ako sa laptop, tinapos ang profile ko sa app habang nasa train, at nagkaroon ng unang totoong usapan nang gabi ring iyon. Parehong account, walang abala.', name: 'David', meta: 'Austin · na-match kay Mariel, Cebu' },
-      { quote: 'Ang ID check ang nagbigay sa akin ng kumpiyansa. Lahat ng naging match ko ay totoong tao — walang peke, walang nagsasayang ng oras.', name: 'Marcus', meta: 'London · na-match kay Angeline, Davao' },
-      { quote: 'Binago ng translation button kung paano ako makipag-usap sa kanya. Nasasabi ko ang totoong ibig kong sabihin sa Tagalog at nababasa pa rin niya ito sa English.', name: 'Rhea', meta: 'Iloilo · na-match kay Tom, Vancouver' },
-    ],
-  },
+    "eyebrow": "Aming pananaw",
+    "title": "Mas magandang simula sa totoong usapan.",
+    "items": [
+        {
+            "quote": "Sabihin ang hinahanap mo sa relasyon. Pag-usapan ang pamilya, distansya at mga plano bago mangako.",
+            "name": "Magsimula sa hangarin",
+            "meta": "Aming pananaw"
+        },
+        {
+            "quote": "Magtanong sa halip na magpalagay. Pag-usapan ang wika, tradisyon ng pamilya at mga inaasahan.",
+            "name": "Igalang ang dalawang kultura",
+            "meta": "Aming pananaw"
+        },
+        {
+            "quote": "Wala kang obligasyong magbigay ng pera, larawan o pakikipagkita. Huwag magmadali at huminto kung may mali.",
+            "name": "Panatilihin ang hangganan mo",
+            "meta": "Aming pananaw"
+        }
+    ]
+},
 
   pricing: {
     eyebrow: 'Presyo',
@@ -145,51 +205,76 @@ export const tl: Dict = {
   },
 
   different: {
-    eyebrow: 'Bakit FilWest',
-    title: 'Hindi basta isa pang dating app.',
-    items: [
-      { t: 'Hindi database ng mga patay na profile', d: 'Awtomatikong tinatago ang mga hindi aktibong profile. Ang nakikita mo sa Discover ay mga taong talagang narito.' },
-      { t: 'Hindi laro ng swipe', d: 'Ang mga profile ay nakatuon sa hangarin — kasal, pangmatagalang plano, timeline ng pagkikita — hindi lang mga photo.' },
-      { t: 'Walang credit traps', d: 'Walang coins, walang bayad kada mensahe. Isang simpleng subscription para sa mga partner sa abroad; hinding-hindi nagbabayad ang mga Filipina.' },
-      { t: 'Walang pressure na umalis ng platform', d: 'Ang messaging, photo, at video ay nananatili sa loob ng FilWest, kung saan pinoprotektahan ka ng blocking, reporting, at babala laban sa scam.' },
-      { t: 'Ginawa para sa Filipino-Western na pag-ibig', d: 'May built-in na Tagalog at Cebuano, iginagalang ang kulturang pamilya-muna, at dinisenyo para sa distansya sa pagitan ng Maynila at Manchester.' },
-    ],
+    "eyebrow": "Bakit FilWest",
+    "title": "Para sa seryosong hangarin.",
+    "items": [
+      {
+        "t": "Malinaw na komunidad",
+        "d": "Para sa mga Filipina at Kanluraning partner na naghahanap ng pangmatagalang relasyon."
+      },
+      {
+        "t": "Kasama ang kultura",
+        "d": "Pag-usapan ang pamilya, wika at tradisyon."
+      },
+      {
+        "t": "Kailangan ng plano ang distansya",
+        "d": "Pag-usapan ang biyahe, paglipat at panahon bago mangako."
+      },
+      {
+        "t": "Unahin ang paggalang",
+        "d": "Walang karapatan ang iba sa iyong oras, larawan o pera."
+      },
+      {
+        "t": "Subukan bago mangako",
+        "d": "Nauuna ang pribadong pagsubok bago ang malawakang paglabas."
+      }
+    ]
   },
 
   pricingPage: { eyebrow: 'Presyo', h1a: 'Patas na presyo.', h1b: 'Tapat na hangarin.' },
 
   safetyPage: {
-    eyebrow: 'Safety center',
-    h1a: 'Kaligtasan muna,',
-    h1b: 'sa bawat hakbang.',
-    intro: 'Gumagana lang ang long-distance dating kung ligtas ang pakiramdam ng lahat. Magpa-verify gamit ang government ID at live selfie para makuha ang badge mo, magkita nang harapan sa encrypted video call bago magplano ng biyahe, at hayaang awtomatikong i-flag ng aming mga sistema ang panghihingi ng pera para suriin ng tao.',
-    howTitle: 'Paano ka pinoprotektahan ng FilWest',
-    how: [
-      { t: 'Pag-iwas sa pekeng profile', d: 'Kailangang i-verify ng bawat account ang email bago gamitin ang FilWest, at maaaring magpa-verify ang mga member gamit ang government ID at live selfie sa app. Awtomatikong inaalis sa Discover ang mga hindi aktibo at hindi kumpletong profile.' },
-      { t: 'Labag sa patakaran ang panghihingi ng pera', d: 'Ang paghingi ng pera, gift card, o padala sa mga member ay dahilan para ma-ban. Awtomatikong nagpapakita ng babala ang chat kapag may binanggit na paglilipat ng pera, at isang tap lang ang pag-report.' },
-      { t: 'Ano ang nangyayari kapag nag-report ka', d: 'Direktang napupunta ang mga report sa aming review queue kasama ang ebidensya ng mensahe. Hindi kailanman malalaman ng na-report kung sino ang nag-report, at bina-ban ang paulit-ulit na lumalabag.' },
-      { t: 'Video bago lumipad', d: 'Magkita nang harapan sa video call sa app bago magplano ng kahit anong biyahe. Ang taong laging may dahilan para iwasan ang video ay red flag.' },
-      { t: 'Para sa mga lalaki sa abroad', d: 'Huwag kailanman magpadala ng pera sa taong hindi mo pa nakikilala nang personal — anuman ang kwento. Mauunawaan ito ng totoong partner. Panatilihin ang usapan sa loob ng FilWest kung saan pinoprotektahan ka ng mga babala at pag-report.' },
-      { t: 'Para sa mga Filipina', d: 'Wala kang utang na photo, video, o atensyon kaninuman dahil lang may subscription sila. I-block at i-report ang sinumang namimilit — kumpidensyal ito, at hinding-hindi mo na sila makikita ulit.' },
-    ],
+    "eyebrow": "Safety center",
+    "h1a": "Kaligtasan muna,",
+    "h1b": "sa bawat hakbang.",
+    "intro": "Mahalaga ang pag-iingat saanman kayo magkakilala. Patuloy pa ang pagsusuri sa pribadong pagsubok; hindi ito pangako ng tuloy-tuloy na pagbabantay.",
+    "howTitle": "Praktikal na kaligtasan sa pakikipag-date",
+    "how": [
+      {
+        "t": "Isang palatandaan lamang ang badge",
+        "d": "Hindi ito garantiya ng ugali o kaligtasan. Huwag umasa sa label lang."
+      },
+      {
+        "t": "Huwag magpadala ng pera sa ka-match",
+        "d": "Mag-ingat sa hiling na padala, gift card, investment o pambayad sa emergency."
+      },
+      {
+        "t": "Ingatan ang personal na impormasyon",
+        "d": "Huwag ibigay sa ka-match ang ID, detalye sa bangko, password o tirahan."
+      },
+      {
+        "t": "Huminto kapag may mali",
+        "d": "Itago ang ebidensya at gamitin ang magagamit na pag-uulat. Sa agarang panganib, tumawag sa lokal na emergency services."
+      }
+    ]
   },
 
   showcase: {
-    eyebrow: 'I-download',
-    title: 'Kasama mo ang FilWest kahit saan.',
-    body: 'Iisa ang account ng app at ng website. Simulan ang usapan sa laptop, ituloy sa phone. Walang syncing, walang ulit na pag-log in.',
-    bullets: [
-      'Push notification para sa bagong match, mensahe, at Super Like',
-      'Tap-to-translate sa chat, EN ↔ Tagalog — libre para sa lahat',
-      'Encrypted na video call, mismo sa app',
-      'Tingnan kung sino ang nag-like sa\'yo at mag-like pabalik agad, sa Plus',
+    "eyebrow": "I-download",
+    "title": "Web at app, sabay na sinusubok.",
+    "body": "Layunin namin ang magkakatugmang karanasan sa website at app. Kailangan pang matapos ang pagsusuri bago ang mas malawak na paglabas.",
+    "bullets": [
+      "Pokus: profile at pagtutugma",
+      "Suriin ang usapan sa mga kasamang platform",
+      "Suriin ang pag-block, ulat at verification",
+      "Wala pang kumpirmadong petsa o native app availability dito"
     ],
-    webCta: 'Gamitin sa web →',
-    online: 'Online',
-    translated: 'salin: have you eaten yet?',
-    msg2: 'Katatapos ko lang mag-almusal 🍳',
-    msg3: 'Libre ako ngayong weekend kung gusto mong mag-video call',
-    typeMessage: 'Mag-type ng mensahe…',
+    "webCta": "Gamitin sa web →",
+    "online": "Online",
+    "translated": "salin: have you eaten yet?",
+    "msg2": "Katatapos ko lang mag-almusal 🍳",
+    "msg3": "Libre ako ngayong weekend kung gusto mong mag-video call",
+    "typeMessage": "Mag-type ng mensahe…"
   },
 
   auth: {
@@ -216,16 +301,16 @@ export const tl: Dict = {
       remembered: 'Naalala mo na?',
       backToLogin: 'Balik sa pag-log in',
       chipVerified: 'ID-verified na badge',
-      chipCountries: '38 bansa',
-      panelQuote: '"Nagkakilala kami isang Martes. Pagkalipas ng anim na buwan, nakikilala ko na ang pamilya niya sa Cebu."',
-      panelName: 'David, 41',
-      panelMeta: 'Austin · member mula \'24',
+      chipCountries: "Pagkilala sa ibang kultura",
+      panelQuote: "Huwag magmadali. Magtanong nang maayos. Panatilihin ang iyong hangganan.",
+      panelName: "FilWest",
+      panelMeta: "Gabay sa dating, hindi testimonya ng member",
     },
     signup: {
       stepOf: (n: number) => `Hakbang ${n} ng 2`,
       title1: 'Gumawa ng account.',
       title2: 'Magkwento tungkol sa\'yo.',
-      sub1: 'Libre para sa mga babaeng taga-Pilipinas. Palagi.',
+      sub1: 'Ang paggawa ng account ay hindi pagbili ng subscription. Basahin muna ang impormasyon sa presyo at access.',
       sub2: 'Ilang detalye para maipakita namin sa\'yo ang mga totoong match.',
       firstName: 'Pangalan',
       email: 'Email',

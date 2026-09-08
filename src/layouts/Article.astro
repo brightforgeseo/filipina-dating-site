@@ -2,7 +2,7 @@
 import Site from './Site.astro';
 const { title, description, eyebrow = 'Guides', heading } = Astro.props;
 ---
-<Site title={title} description={description}>
+<Site title={title} description={description} articleHeading={heading}>
   <article class="max-w-[760px] mx-auto px-8 pt-16 pb-24">
     <div class="eyebrow">{eyebrow}</div>
     <h1 class="heading-display mt-3" style="font-size: clamp(36px, 5vw, 56px)">{heading}</h1>
@@ -11,7 +11,7 @@ const { title, description, eyebrow = 'Guides', heading } = Astro.props;
     </div>
     <div class="mt-14 pt-8 border-t border-line flex flex-wrap gap-3 items-center justify-between">
       <a href="/guides" class="btn btn-ghost btn-sm">← All guides</a>
-      <a href="/signup" class="btn btn-primary btn-sm">Join FilWest free</a>
+      <a href="/pricing" class="btn btn-primary btn-sm">View access options</a>
     </div>
   </article>
 </Site>

@@ -13,7 +13,7 @@ const colors = ['var(--blush)', '#FFE5EC', '#FFD6E0'];
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       {d.stories.items.map((s, i) => (
         <div class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-4">
-          <div class="font-display text-[44px] text-coral leading-none -mb-3">“</div>
+          <div class="font-display text-[28px] text-coral leading-none">{i + 1}</div>
           <div class="text-[16px] leading-[1.5] text-ink">{s.quote}</div>
           <div class="flex items-center gap-3 mt-auto pt-5 border-t border-line">
             <div class="w-10 h-10 rounded-full flex items-center justify-center font-display font-semibold text-ink" style={`background: ${colors[i]}`}>

@@ -3,25 +3,25 @@
 export const en = {
   meta: {
     home: {
-      title: 'FilWest — Verified Filipino-Western Dating for Real Relationships',
-      desc: 'FilWest is where Filipinas and Western men build real relationships. Verified profiles, scam warnings in every chat, free EN–Tagalog translation, and video calls before anyone books a flight.',
+      title: 'Filipina Dating Site for Serious Relationships | FilWest',
+      desc: 'We are building FilWest for Filipinas and Western men seeking serious relationships. Explore our approach, dating guidance and private-test plans.',
     },
     pricing: {
-      title: 'Pricing — FilWest',
-      desc: 'FilWest pricing: free for women from the Philippines, fair plans for everyone else. No hidden fees, cancel anytime.',
+      title: 'Pricing and Access | FilWest',
+      desc: 'Read our current private-test plans and what still needs confirming before paid access. No subscription is sold here.',
     },
     safety: {
-      title: 'Safety — FilWest',
-      desc: 'How FilWest keeps long-distance dating safe: identity verification, video calls before meeting, and a team that reviews every report.',
+      title: 'Dating Safety and Reporting | FilWest',
+      desc: 'Practical precautions for Filipino-Western dating: protect your personal details, keep financial boundaries and know what to do when something feels wrong.',
     },
     login: { title: 'Log in — FilWest', desc: 'Log in to FilWest. Your messages and matches are waiting.' },
-    signup: { title: 'Sign up — FilWest', desc: 'Create your FilWest account in two steps. Free for women from the Philippines, always.' },
+    signup: { title: 'Create an Account | FilWest', desc: 'Create a FilWest account. Check our current access information before sharing personal details.' },
   },
 
   nav: {
     how: 'How it works',
     safety: 'Safety',
-    stories: 'Stories',
+    stories: "Our approach",
     pricing: 'Pricing',
     app: 'Get the app',
     login: 'Log in',
@@ -29,82 +29,142 @@ export const en = {
   },
 
   footer: {
-    tagline: 'Dating for Filipinas and the people who love them. Same profiles, same messages, on the web and on the app.',
-    freeChip: 'Free for Filipinas',
-    product: 'Product',
-    company: 'Company',
-    legal: 'Legal',
-    aboutSafety: 'About safety',
-    guides: 'Dating guides',
-    contact: 'Contact',
-    terms: 'Terms',
-    privacy: 'Privacy',
-    community: 'Community rules',
+    "tagline": "We are building a place for Filipinas and Western partners seeking serious relationships across cultures.",
+    "freeChip": "Preparing a private test",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "aboutSafety": "About safety",
+    "guides": "Dating guides",
+    "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "community": "Community rules"
   },
 
   hero: {
-    chip: 'On iOS, Android, and the web',
-    line1: 'Verified profiles.',
-    line2: 'Honest intentions.',
-    line3: 'Real love.',
-    body: 'FilWest is where Filipinas and Western men build real relationships. ID-verified badges, scam warnings in every chat, free translation between English and Tagalog, and video calls before anyone books a flight.',
-    ctaSignup: 'Sign up free',
-    ctaHow: 'See how it works',
-    freeNote: 'Free for women from the Philippines. Always.',
-    verified: 'Verified',
-    phoneBio: '"Teacher, coffee person, family first. Looking for something that feels like home."',
-    matchTitle: "It's a match!",
-    matchSub: 'You & Mariel',
-    idVerifiedTitle: 'ID verified',
-    idVerifiedSub: 'Look for the badge',
+    "chip": "Preparing a private test",
+    "line1": "Filipina",
+    "line2": "dating.",
+    "line3": "Real intent.",
+    "body": "We are building FilWest for Filipinas and men abroad seeking a serious relationship, whether you are in the US, UK or Australia. We are preparing a private test before a wider release.",
+    "ctaSignup": "Create an account",
+    "ctaHow": "See how it works",
+    "freeNote": "Private-test preparation. Feature and platform checks are still in progress.",
+    "verified": "Verified",
+    "phoneBio": "\"Teacher, coffee person, family first. Looking for something that feels like home.\"",
+    "matchTitle": "It's a match!",
+    "matchSub": "You & Mariel",
+    "idVerifiedTitle": "ID verified",
+    "idVerifiedSub": "Look for the badge"
   },
 
   features: [
-    { big: 'ID + selfie', small: 'Human-reviewed verification badge' },
-    { big: 'EN · TL', small: 'Free tap-to-translate in chat' },
-    { big: 'Free', small: 'For women from the Philippines' },
-    { big: 'iOS · Web', small: 'One account, every device' },
+    {
+      "big": "Intent",
+      "small": "Talk about what matters"
+    },
+    {
+      "big": "Culture",
+      "small": "Respect both backgrounds"
+    },
+    {
+      "big": "Trust",
+      "small": "Take time to know someone"
+    },
+    {
+      "big": "Private test",
+      "small": "Prove the basics first"
+    }
   ],
 
   how: {
-    eyebrow: 'How FilWest works',
-    title: 'Four steps from hello to hello in person.',
-    steps: [
-      { title: 'Create your profile', body: 'Sign up free in two steps. Then get verified — a government ID and a live selfie, reviewed by a human team — to earn your badge.' },
-      { title: 'Swipe and match', body: "Browse real people near you and abroad. When you both like each other, it's a match." },
-      { title: 'Chat and translate', body: 'Send messages, photos, and videos. Tap any message to translate between English and Tagalog — free for everyone.' },
-      { title: 'Video call when ready', body: 'Meet face-to-face over an encrypted video call before you plan a trip. No rush, no pressure.' },
-    ],
+    "eyebrow": "How FilWest works",
+    "title": "Start with an honest conversation.",
+    "steps": [
+      {
+        "title": "Share your intentions",
+        "body": "Be clear about the relationship you want and the distance you can realistically manage."
+      },
+      {
+        "title": "Get to know each other",
+        "body": "Ask about everyday life, family and future plans."
+      },
+      {
+        "title": "Respect each other’s pace",
+        "body": "Neither person owes the other photos, money, attention or a meeting."
+      },
+      {
+        "title": "Plan a safer first meeting",
+        "body": "Choose a public place, tell someone you trust and keep your own travel arrangements."
+      }
+    ]
   },
 
   safety: {
-    eyebrow: 'Safety',
-    title: 'Safe by default.',
-    body: 'Long-distance dating only works if everyone feels safe. FilWest is built around that — starting the day you sign up, not once something goes wrong.',
-    items: [
-      { t: 'ID + selfie verification', d: 'Members can verify with a government ID and a live selfie, reviewed by a human team. Approved members earn a verified badge — look for it before you get attached.' },
-      { t: 'Video calls built in', d: 'Encrypted video calls right in the app, so you can meet face-to-face before planning a trip. Nobody flies blind.' },
-      { t: 'No money requests', d: 'Mentions of wire transfers, gift cards, or remittances get flagged automatically for human review. Violators are banned.' },
-      { t: 'Report and block fast', d: 'One tap blocks a user everywhere, in both directions. Reports are reviewed by a real human team, not a queue that never clears.' },
+    "eyebrow": "Safety",
+    "title": "Trust takes more than a badge.",
+    "body": "No dating service can guarantee someone’s identity or intentions. Keep your boundaries and act on warning signs.",
+    "items": [
+      {
+        "t": "Treat badges as one signal",
+        "d": "A badge is not a guarantee of character or safety. Do not rely on a profile label alone."
+      },
+      {
+        "t": "Never send money to a match",
+        "d": "Be cautious about requests for transfers, gift cards, investments or emergency payments."
+      },
+      {
+        "t": "Protect personal information",
+        "d": "Do not share identity documents, banking details, passwords or your home address with a match."
+      },
+      {
+        "t": "Stop when something feels wrong",
+        "d": "Keep relevant evidence and use available reporting controls. For immediate danger, contact local emergency services."
+      }
     ],
-    panelTitle: 'Verification · live',
-    rows: [
-      { label: 'Government ID', value: 'Passport · verified' },
-      { label: 'Live selfie check', value: 'Match score 99.2%' },
-      { label: 'Phone number', value: '+63 9•• ••• 4421' },
-      { label: 'Account age', value: '6 months · consistent' },
-    ],
+    "panelTitle": "Before you trust a profile",
+    "rows": [
+      {
+        "label": "Identity",
+        "value": "A badge is one signal, not a guarantee."
+      },
+      {
+        "label": "Money",
+        "value": "Never send money to a match."
+      },
+      {
+        "label": "Time",
+        "value": "Build trust through consistent conversations."
+      },
+      {
+        "label": "Meeting",
+        "value": "Meet in public and tell someone your plans."
+      }
+    ]
   },
 
   stories: {
-    eyebrow: 'From members',
-    title: 'Couples who started here.',
-    items: [
-      { quote: 'I signed up on my laptop, finished my profile on the app on the train, and had my first real conversation that evening. Same account, no friction.', name: 'David', meta: 'Austin · matched with Mariel, Cebu' },
-      { quote: "The ID check gave me confidence. Every match I've had is a real person — no fakes, no time wasters.", name: 'Marcus', meta: 'London · matched with Angeline, Davao' },
-      { quote: 'The translation button changed how I talk to him. I can say what I actually mean in Tagalog and he still reads it in English.', name: 'Rhea', meta: 'Iloilo · matched with Tom, Vancouver' },
-    ],
-  },
+    "eyebrow": "Our approach",
+    "title": "A better start to a real conversation.",
+    "items": [
+        {
+            "quote": "Say what you want from a relationship. Talk about family, distance and plans before making promises.",
+            "name": "Start with intent",
+            "meta": "Our approach"
+        },
+        {
+            "quote": "Ask rather than assume. Language, family traditions and expectations deserve a proper conversation.",
+            "name": "Make room for both cultures",
+            "meta": "Our approach"
+        },
+        {
+            "quote": "You do not owe anyone money, photos or a meeting. Take your time and stop if something feels wrong.",
+            "name": "Keep your boundaries",
+            "meta": "Our approach"
+        }
+    ]
+},
 
   pricing: {
     eyebrow: 'Pricing',
@@ -143,51 +203,76 @@ export const en = {
   },
 
   different: {
-    eyebrow: 'Why FilWest',
-    title: 'Not another dating app.',
-    items: [
-      { t: 'Not a dead-profile database', d: 'Inactive profiles are hidden automatically. What you see in Discover is people who are actually here.' },
-      { t: 'Not a casual swipe game', d: 'Profiles are built around intent — marriage, long-term plans, timelines to meet — not just photos.' },
-      { t: 'No credit traps', d: 'No coins, no pay-per-message. One simple subscription for partners abroad; Filipinas never pay.' },
-      { t: 'No pressure to move off-platform', d: 'Messaging, photos, and video stay inside FilWest, where blocking, reporting, and scam warnings protect you.' },
-      { t: 'Built for Filipino-Western love', d: 'Tagalog and Cebuano built in, family-first culture respected, and designed for the distance between Manila and Manchester.' },
-    ],
+    "eyebrow": "Why FilWest",
+    "title": "Built around serious intentions.",
+    "items": [
+      {
+        "t": "A focused community",
+        "d": "Our focus is Filipinas and Western partners seeking a genuine long-term relationship."
+      },
+      {
+        "t": "Culture belongs in the conversation",
+        "d": "Family expectations, language and traditions deserve more than assumptions."
+      },
+      {
+        "t": "Distance needs a plan",
+        "d": "Talk about travel, relocation and timelines before promising a future together."
+      },
+      {
+        "t": "Respect comes first",
+        "d": "Interest never entitles someone to your time, photos or money."
+      },
+      {
+        "t": "Test before promising",
+        "d": "The private test comes before claims about feature reliability or a wider release."
+      }
+    ]
   },
 
   pricingPage: { eyebrow: 'Pricing', h1a: 'Fair pricing.', h1b: 'Honest intent.' },
 
   safetyPage: {
-    eyebrow: 'Safety center',
-    h1a: 'Safety first,',
-    h1b: 'every step.',
-    intro: 'Long-distance dating only works if everyone feels safe. Verify with a government ID and a live selfie to earn your badge, meet face-to-face over encrypted video calls before planning a trip, and let our systems flag money requests automatically for human review.',
-    howTitle: 'How FilWest protects you',
-    how: [
-      { t: 'Fake-profile prevention', d: 'Every account must verify its email before using FilWest, and members can verify with a government ID and live selfie in the app. Inactive and incomplete profiles are pushed out of Discover automatically.' },
-      { t: 'Money requests are against the rules', d: 'Asking members for money, gift cards, or remittances is a bannable offence. Chat shows an automatic warning whenever a message mentions money transfers, and reporting it takes one tap.' },
-      { t: 'What happens when you report', d: 'Reports go straight to our review queue with the message evidence attached. The member you report is never told who reported them, and repeat offenders are banned.' },
-      { t: 'Video before you fly', d: 'Meet face-to-face over a video call in the app before planning any trip. Someone who always has a reason to avoid video is a red flag.' },
-      { t: 'For men abroad', d: 'Never send money to someone you have not met — no matter the story. Real partners will understand. Keep conversations inside FilWest, where warnings and reporting protect you.' },
-      { t: 'For Filipinas', d: 'You never owe anyone photos, video, or attention because they have a subscription. Block and report anyone who pressures you — it is confidential, and you will never see them again.' },
-    ],
+    "eyebrow": "Safety center",
+    "h1a": "Safety first,",
+    "h1b": "every step.",
+    "intro": "These precautions apply wherever you meet someone. FilWest’s private-test safety checks remain in progress; this is not a promise of continuous monitoring or guaranteed protection.",
+    "howTitle": "Practical dating safety",
+    "how": [
+      {
+        "t": "Treat badges as one signal",
+        "d": "A badge is not a guarantee of character or safety. Do not rely on a profile label alone."
+      },
+      {
+        "t": "Never send money to a match",
+        "d": "Be cautious about requests for transfers, gift cards, investments or emergency payments."
+      },
+      {
+        "t": "Protect personal information",
+        "d": "Do not share identity documents, banking details, passwords or your home address with a match."
+      },
+      {
+        "t": "Stop when something feels wrong",
+        "d": "Keep relevant evidence and use available reporting controls. For immediate danger, contact local emergency services."
+      }
+    ]
   },
 
   showcase: {
-    eyebrow: 'Download',
-    title: 'FilWest goes where you go.',
-    body: 'The app and the website share the same account. Start a conversation on your laptop, keep it going on your phone. No syncing, no re-login.',
-    bullets: [
-      'Push notifications for new matches, messages, and Super Likes',
-      'Tap-to-translate in chat, EN ↔ Tagalog — free for everyone',
-      'Encrypted video calls, right in the app',
-      'See who liked you and like back instantly, with Plus',
+    "eyebrow": "Download",
+    "title": "Web and app, tested together.",
+    "body": "Our goal is one consistent FilWest experience across website and app. Cross-platform acceptance testing is still required before a wider release.",
+    "bullets": [
+      "Private-test focus: profiles and matching",
+      "Check conversations across included platforms",
+      "Validate block, report and verification behaviour",
+      "Native availability and release dates are not confirmed here"
     ],
-    webCta: 'Use on web →',
-    online: 'Online',
-    translated: 'translated: have you eaten yet?',
-    msg2: 'Just had breakfast 🍳',
-    msg3: "I'm free this weekend if you want to video call",
-    typeMessage: 'Type a message…',
+    "webCta": "Use on web →",
+    "online": "Online",
+    "translated": "translated: have you eaten yet?",
+    "msg2": "Just had breakfast 🍳",
+    "msg3": "I'm free this weekend if you want to video call",
+    "typeMessage": "Type a message…"
   },
 
   auth: {
@@ -214,16 +299,16 @@ export const en = {
       remembered: 'Remembered it?',
       backToLogin: 'Back to log in',
       chipVerified: 'ID-verified badges',
-      chipCountries: '38 countries',
-      panelQuote: '"We met on a Tuesday. Six months later I was meeting her family in Cebu."',
-      panelName: 'David, 41',
-      panelMeta: "Austin · member since '24",
+      chipCountries: "Cross-cultural dating",
+      panelQuote: "Take your time. Ask good questions. Keep your boundaries.",
+      panelName: "FilWest",
+      panelMeta: "Dating guidance, not a member testimonial",
     },
     signup: {
       stepOf: (n: number) => `Step ${n} of 2`,
       title1: 'Create your account.',
       title2: 'Tell us about you.',
-      sub1: 'Free for women from the Philippines. Always.',
+      sub1: 'Creating an account is not a subscription purchase. Check our pricing and access information first.',
       sub2: 'A few details so we can show you real matches.',
       firstName: 'First name',
       email: 'Email',

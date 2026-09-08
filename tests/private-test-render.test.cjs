@@ -1,0 +1,2 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+for(const page of ['index.html','pricing/index.html','tl/index.html','tl/pricing/index.html','ceb/index.html','ceb/pricing/index.html'])test(`${page}: no paid offer during private-test preparation`,()=>{const html=fs.readFileSync(path.join(__dirname,'../dist',page),'utf8');assert.doesNotMatch(html,/\$19|\$49/);assert.match(html,/data-private-test/)});

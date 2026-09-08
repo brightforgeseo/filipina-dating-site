@@ -1,6 +1,7 @@
 ---
 import Site from '../../layouts/Site.astro';
 import Safety from '../marketing/Safety.astro';
+import { SUPPORT_EMAIL } from '../../lib/constants';
 import { t, type Lang } from '../../i18n';
 
 const { lang = 'en' } = Astro.props as { lang?: Lang };
@@ -33,4 +34,20 @@ const d = t(lang);
       </div>
     </div>
   </section>
+  {lang === 'en' && (
+    <section data-safety-response class="max-w-[900px] mx-auto px-8 pb-24 text-ink-soft">
+      <h2 class="heading-1 text-ink mb-5" style="font-size: clamp(28px, 4vw, 40px)">A Video Call Is Not Proof of Identity</h2>
+      <p class="leading-relaxed mb-5">A video call does not prove someone’s identity or intentions. Images and video can be manipulated, and a real person can still deceive you. Treat a call as one part of getting to know someone, not permission to send money, share private documents or ignore inconsistent behaviour.</p>
+      <h3 class="font-display font-semibold text-xl text-ink mb-3">What a Badge Can and Cannot Tell You</h3>
+      <p class="leading-relaxed mb-7">Confirming an email address is different from checking a selfie or an identity document. None establishes someone’s intentions or guarantees your safety. We are still testing our verification and reporting controls before a wider release. We do not promise liveness detection, background checks or continuous human monitoring.</p>
+      <h3 class="font-display font-semibold text-xl text-ink mb-3">If You Suspect a Scam</h3>
+      <ol class="list-decimal pl-6 space-y-3 leading-relaxed">
+        <li>Stop sending money or personal information. You do not need to prove fraud before ending contact.</li>
+        <li>If it is safe, save the profile link or username, relevant messages, dates and payment references before blocking. Do not repost someone’s private documents or intimate images.</li>
+        <li>Use the reporting controls where the conversation happened. If a profile disappears or you cannot reach an in-app report, our public contact address is <a class="text-coral underline break-all" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Do not email passwords, full payment-card details or identity documents.</li>
+        <li>If money was sent, contact your bank or payment provider promptly. For a US online-fraud report, use the <a class="text-coral underline" href="https://www.ic3.gov/">FBI Internet Crime Complaint Center</a>. Outside the US, contact your local police or national fraud-reporting service.</li>
+      </ol>
+      <p class="leading-relaxed mt-6">A message to us is not an emergency response or a guarantee of recovering money. For immediate danger, contact local emergency services. These precautions still matter if you move to another app.</p>
+    </section>
+  )}
 </Site>

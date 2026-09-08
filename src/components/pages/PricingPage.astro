@@ -14,4 +14,28 @@ const d = t(lang);
     </h1>
   </div>
   <Pricing lang={lang} />
+  {lang === 'en' && (
+    <section data-access-clarity class="max-w-[900px] mx-auto px-8 pb-24">
+      <h2 class="heading-1 mb-8" style="font-size: clamp(28px, 4vw, 40px)">What Access Means Right Now</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white border border-line rounded-2xl p-6">
+          <h3 class="font-display font-semibold text-lg mb-3">Western Men and Free Access</h3>
+          <p class="text-sm text-ink-soft leading-relaxed">Creating an account is not the same as buying a plan or confirming full messaging access. We are preparing a free private test, but invitations are not open yet. A general free-membership offer and the features available before upgrading are not confirmed here.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl p-6">
+          <h3 class="font-display font-semibold text-lg mb-3">Price and Currency</h3>
+          <p class="text-sm text-ink-soft leading-relaxed">We are not selling a subscription here. A paid launch price, billing currency, taxes and regional availability have not been confirmed. Do not treat an old dollar amount as a current offer or assume it means US dollars.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl p-6">
+          <h3 class="font-display font-semibold text-lg mb-3">Renewal, Cancellation and Restore</h3>
+          <p class="text-sm text-ink-soft leading-relaxed">Before paying for any future plan, check the total charge, renewal interval, cancellation deadline and where the purchase is managed. We have not confirmed cross-platform purchase or restore behaviour for release. Account deletion should not be used as a substitute for cancelling a subscription with the billing provider.</p>
+        </div>
+        <div class="bg-white border border-line rounded-2xl p-6">
+          <h3 class="font-display font-semibold text-lg mb-3">Plus, VIP and Planned Features</h3>
+          <p class="text-sm text-ink-soft leading-relaxed">We are not offering a confirmed Plus or VIP feature bundle here. Profile boosts, incognito browsing and featured placement are not current promises. Translation, messaging limits and web/app access need to be confirmed before they form part of a paid offer.</p>
+        </div>
+      </div>
+      <p class="mt-7 text-sm text-ink-soft leading-relaxed">You can read our <a href="/safety" class="text-coral underline">dating safety guidance</a> without an account. We do not ask for payment or identity documents to read it.</p>
+    </section>
+  )}
 </Site>

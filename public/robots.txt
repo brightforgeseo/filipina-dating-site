@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /app/
 
+# Account utilities emit noindex. Crawling is allowed so it can be read.
+# Authentication and server rules, not robots.txt, protect private data.
 Sitemap: https://filipinawest.com/sitemap.xml

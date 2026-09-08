@@ -3,29 +3,82 @@ import Site from '../../layouts/Site.astro';
 
 const guides = [
   {
-    href: '/guides/dating-a-filipina-respectfully',
-    title: 'Dating a Filipina respectfully',
-    desc: 'Family, faith, and courtship — what matters in Filipino dating culture and how to show up well.',
+    "href": "/guides/filipina-dating-sites-serious-relationships",
+    "group": "Choosing a Dating Site",
+    "title": "Filipina dating sites for serious relationships: how to choose",
+    "desc": "FilWest-owned comparison of Filipina dating sites for serious relationships, checked 8 September 2026. Public rules, who each option suits, and what to verify before you pay."
   },
   {
-    href: '/guides/first-video-call-tips',
-    title: 'Your first video call: how to make it great',
-    desc: 'Beat the nerves, handle the time difference, and turn a first call into a second one.',
+    "href": "/guides/free-vs-paid-filipina-dating",
+    "group": "Choosing a Dating Site",
+    "title": "Free vs paid Filipina dating sites: what Western men should check",
+    "desc": "FilWest explains free Filipina dating sites, including signup, replies, paid initiation and cancellation, and what Western men should verify before paying."
   },
   {
-    href: '/guides/red-flags-international-dating',
-    title: 'Red flags in international dating',
-    desc: 'The patterns scammers use, the warning signs to watch for, and what to do when something feels off.',
+    "href": "/guides/religion-and-dating-in-the-philippines",
+    "group": "Culture and Expectations",
+    "title": "Religion and dating in the Philippines: conversations before commitment",
+    "desc": "Ask about worship, children, and ceremonies before you treat a Filipino-Western relationship as committed. Faith labels are not a shared household."
   },
   {
-    href: '/guides/meeting-safely-in-the-philippines',
-    title: 'Meeting safely in the Philippines',
-    desc: 'Planning the first real-life meeting: where to meet, what to arrange, and how to keep both people comfortable.',
+    "href": "/guides/dating-a-filipina-respectfully",
+    "group": "Culture and Expectations",
+    "title": "Filipino dating culture: a respectful guide for Western men",
+    "desc": "How Western men can date a Filipina respectfully: ask her about pace, family, faith and intent. Courtship without stereotypes, scripts or money pressure."
   },
+  {
+    "href": "/guides/meeting-safely-in-the-philippines",
+    "group": "Your First Meeting",
+    "title": "Meeting a Filipina in the Philippines: first-visit safety checklist",
+    "desc": "Plan a first visit with a public meeting, your own hotel and transport, and a way to leave. Recheck official advice for the exact Philippine route before you book."
+  },
+  {
+    "href": "/guides/meeting-filipina-parents",
+    "group": "Culture and Expectations",
+    "title": "Meeting your Filipina partner’s parents: practical first-visit advice",
+    "desc": "Prepare a family introduction with your partner: who to meet, modest gifts, questions, and boundaries. A visit is context, not marriage consent."
+  },
+  {
+    "href": "/guides/filipinocupid-vs-christian-filipina",
+    "group": "Choosing a Dating Site",
+    "title": "FilipinoCupid vs Christian Filipina: comparing fit, access and safety",
+    "desc": "FilWest compares FilipinoCupid and Christian Filipina on public fit, messaging access, billing terms and safety language. Checked 8 September 2026. Not a test or ranking."
+  },
+  {
+    "href": "/guides/long-distance-relationship-with-a-filipina",
+    "group": "Your First Meeting",
+    "title": "Long-distance relationships with a Filipina: routines, trust and visit plans",
+    "desc": "Build a keepable call schedule, speak exclusivity, set money boundaries, and plan a dated, budgeted visit. Practical guidance for the stretch between calls and meetings."
+  },
+  {
+    "href": "/guides/how-to-message-a-filipina-online",
+    "group": "Distance and Communication",
+    "title": "How to message a Filipina online respectfully",
+    "desc": "Read her profile, send one real question, keep the chat mutual, and stop when she stops. Practical first-message guidance without scripts or pressure."
+  },
+  {
+    "href": "/guides/red-flags-international-dating",
+    "group": "Distance and Communication",
+    "title": "Filipina dating scams: warning signs and what to do",
+    "desc": "Learn which Filipina dating scam warning signs should stop contact, how to save evidence, and when to report to the platform, your bank, and official fraud channels."
+  },
+  {
+    "href": "/guides/first-video-call-tips",
+    "group": "Conversations and Safety",
+    "title": "First video call with a Filipina: timing, conversation and safety",
+    "desc": "Prepare a first video call with a Filipina by naming cities, checking DST dates, agreeing a short ending, and treating quiet or lag as logistics, not proof of intent."
+  },
+  {
+    "href": "/guides/filipina-dating-profile-tips-for-men",
+    "group": "Distance and Communication",
+    "title": "A dating profile for a serious Filipino-Western relationship",
+    "desc": "Prepare an honest dating profile for a Filipino-Western relationship: recent photos, real location, intent, travel, children, and privacy before you publish."
+  }
 ];
+const groups = [...new Set(guides.map(g => g.group))];
 ---
 <Site
-  title="Dating Guides — FilWest"
+  title="Filipino-Western Dating Guides | FilWest"
   description="Practical guides for Filipino-Western dating: culture, video calls, red flags, and meeting safely in the Philippines."
 >
   <div class="max-w-[1240px] mx-auto px-8 pt-16 pb-24">
@@ -36,14 +89,23 @@ const guides = [
     <p class="text-[16px] leading-[1.6] text-ink-soft max-w-[640px] mt-5">
       Honest, practical advice for Filipinas and Western partners building something real across the distance.
     </p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-12">
-      {guides.map((g) => (
+    <section class="mt-10 p-6 bg-white border border-line rounded-2xl">
+      <h2 class="font-display font-semibold text-xl mb-3">Choose Your Next Step</h2>
+      <p class="text-sm text-ink-soft leading-relaxed">Deciding whether to join? Read our <a href="/pricing" class="text-coral underline">pricing and access information</a>. If a conversation worries you, start with our <a href="/safety" class="text-coral underline">safety and reporting guidance</a>. For culture, calls and a first visit, choose a guide below.</p>
+    </section>
+    {groups.map(group => (
+    <section class="mt-12">
+      <h2 class="font-display font-semibold text-2xl mb-5">{group}</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {guides.filter(g => g.group === group).map((g) => (
         <a href={g.href} class="bg-white border border-line rounded-2xl p-7 flex flex-col gap-2 hover:shadow-lg hover:-translate-y-0.5 transition">
-          <h2 class="font-display font-semibold text-[20px] tracking-[-0.01em] leading-[1.25] m-0">{g.title}</h2>
+          <h3 class="font-display font-semibold text-[20px] tracking-[-0.01em] leading-[1.25] m-0">{g.title}</h3>
           <p class="text-sm text-ink-soft leading-[1.55] m-0">{g.desc}</p>
           <span class="text-coral text-sm font-semibold mt-1">Read the guide →</span>
         </a>
       ))}
-    </div>
+      </div>
+    </section>
+    ))}
   </div>
 </Site>

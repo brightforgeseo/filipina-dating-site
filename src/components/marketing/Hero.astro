@@ -27,9 +27,17 @@ const l = (p: string) => localizePath(p, lang);
         <a href={l('/#how')} class="btn btn-ghost btn-lg">{d.hero.ctaHow}</a>
       </div>
       <div class="mt-8 text-xs text-muted">{d.hero.freeNote}</div>
+      {lang === 'en' && (
+        <div data-home-decisions class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-coral">
+          <a href="/pricing" class="underline underline-offset-4">Pricing and access</a>
+          <a href="/safety" class="underline underline-offset-4">Dating safety</a>
+          <a href="/guides" class="underline underline-offset-4">Dating guides</a>
+        </div>
+      )}
     </div>
 
     <div class="relative h-[540px] flex items-center justify-center">
+      <p data-profile-illustration class="absolute -top-7 inset-x-0 text-center text-xs text-muted">{{en: 'Example profile, not a real member', tl: 'Halimbawang profile, hindi totoong member', ceb: 'Pananglitan nga profile, dili tinuod nga member'}[lang]}</p>
       <div class="relative w-[300px] h-[520px] rounded-[44px] p-3" style="background: #1F1419; box-shadow: 0 30px 80px rgba(255,20,147,0.25)">
         <div class="w-full h-full rounded-[34px] overflow-hidden relative" style="background: linear-gradient(160deg, #FFDEE9, #FFB6C1)">
           <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-5 rounded-full bg-black/80"></div>

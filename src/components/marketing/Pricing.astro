@@ -1,61 +1,39 @@
 ---
-import { t, localizePath, type Lang } from '../../i18n';
+import { localizePath, type Lang } from '../../i18n';
 const { lang = 'en' } = Astro.props as { lang?: Lang };
-const d = t(lang);
-const l = (p: string) => localizePath(p, lang);
-const hrefs = [l('/signup'), l('/#app'), l('/#app')];
-const featuredIdx = 1;
+const copy = {
+  en: {
+    label: 'Private test preparation', title: 'Get the basics right. Then grow.',
+    body: 'We are preparing a free, invitation-only test of FilWest. Profiles, matching, conversations and safety controls come first.',
+    steps: ['Invitations are not open yet.', 'Paid subscriptions and gifts are not offered on this page.', 'No payment or identity documents are needed to read about the test.'],
+    note: 'Test access will follow deployment checks and a confirmed review process. This is not a public-launch announcement.',
+    cta: 'Read our safety guidance',
+  },
+  tl: {
+    label: 'Paghahanda sa pribadong pagsubok', title: 'Ayusin muna ang pundasyon. Saka palawakin.',
+    body: 'Naghahanda kami ng libre at imbitasyon-lamang na pagsubok ng FilWest. Uunahin ang profile, matching, usapan at mga kontrol sa kaligtasan.',
+    steps: ['Hindi pa bukas ang mga imbitasyon.', 'Walang iniaalok na bayad na subscription o regalo sa pahinang ito.', 'Hindi kailangan ng bayad o dokumento ng pagkakakilanlan para basahin ang tungkol sa pagsubok.'],
+    note: 'Magsisimula ang access pagkatapos ng mga pagsusuri sa deployment at pagkumpirma sa proseso ng review. Hindi ito anunsyo ng pampublikong paglulunsad.',
+    cta: 'Basahin ang gabay sa kaligtasan',
+  },
+  ceb: {
+    label: 'Pag-andam sa pribadong pagsulay', title: 'Ayuhon una ang pundasyon. Unya palapdon.',
+    body: 'Nag-andam kami og libre nga pagsulay sa FilWest para lamang sa mga giimbitar. Unahon ang profile, matching, panag-istorya ug mga kontrol sa kaluwasan.',
+    steps: ['Dili pa bukas ang mga imbitasyon.', 'Walay gitanyag nga bayranang subscription o regalo niini nga panid.', 'Dili kinahanglan og bayad o dokumento sa pagkatawo aron mobasa bahin sa pagsulay.'],
+    note: 'Mosunod ang access human sa mga pagsusi sa deployment ug pagkumpirma sa proseso sa review. Dili kini pahibalo sa publikong paglunsad.',
+    cta: 'Basaha ang giya sa kaluwasan',
+  },
+}[lang];
 ---
-<section id="pricing" class="pb-24">
+<section id="pricing" data-private-test class="pb-24">
   <div class="max-w-[1240px] mx-auto px-8">
-    <div class="max-w-[760px] mx-auto text-center mb-14 flex flex-col gap-3.5">
-      <div class="eyebrow">{d.pricing.eyebrow}</div>
-      <h2 class="heading-1" style="font-size: clamp(36px, 5vw, 56px)">{d.pricing.title1}<br/>{d.pricing.title2}</h2>
-      <p class="text-[16px] leading-[1.55] text-ink-soft">{d.pricing.body}</p>
+    <div class="rounded-[28px] bg-white border border-line p-8 md:p-14 max-w-[900px] mx-auto">
+      <div class="eyebrow">{copy.label}</div>
+      <h2 class="heading-1 my-5" style="font-size: clamp(32px, 5vw, 54px)">{copy.title}</h2>
+      <p class="text-[17px] leading-[1.6] text-ink-soft">{copy.body}</p>
+      <ul class="my-7 pl-5 space-y-3 text-ink-soft list-disc">{copy.steps.map(step => <li>{step}</li>)}</ul>
+      <a href={localizePath('/safety',lang)} class="btn btn-primary">{copy.cta}</a>
+      <p class="text-sm text-muted mt-6 leading-relaxed">{copy.note}</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      {d.pricing.tiers.map((tier, i) => {
-        const featured = i === featuredIdx;
-        return (
-        <div class={`rounded-2xl p-8 flex flex-col gap-5 ${featured ? 'text-white shadow-lg' : 'bg-white border border-line'}`} style={featured ? 'background: linear-gradient(135deg, var(--forest) 0%, var(--coral) 100%)' : ''}>
-          <div class="flex justify-between items-center">
-            <h3 class="font-display font-bold text-[24px] m-0">{tier.name}</h3>
-            {featured && <span class="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: rgba(255,255,255,0.25)">{d.pricing.mostPopular}</span>}
-          </div>
-          <div class="flex items-baseline gap-1.5">
-            <span class="font-display font-bold text-[44px] tracking-[-0.02em] leading-none">{tier.price}</span>
-            <span class="text-sm" style={featured ? 'color: rgba(255,255,255,0.7)' : 'color: var(--muted)'}>{tier.per}</span>
-          </div>
-          <p class="text-sm m-0" style={featured ? 'color: rgba(255,255,255,0.85)' : 'color: var(--ink-soft)'}>{tier.desc}</p>
-          <ul class="list-none p-0 m-0 flex flex-col gap-2.5">
-            {tier.feats.map(f => (
-              <li class="flex gap-2 items-start text-sm" style={featured ? 'color: #fff' : 'color: var(--ink-soft)'}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style={`margin-top:2px; flex-shrink:0; color: ${featured ? '#fff' : 'var(--coral)'}`}><path d="M5 12l4 4L19 6"/></svg>
-                {f}
-              </li>
-            ))}
-          </ul>
-          <a href={hrefs[i]} class={`btn ${featured ? '' : 'btn-ghost'}`} style={featured ? 'background: #fff; color: var(--forest-deep); justify-content: center' : 'justify-content: center'}>{tier.cta}</a>
-        </div>
-        );
-      })}
-    </div>
-    <div class="mt-12">
-      <h3 class="font-display font-semibold text-[24px] text-center mb-7">{d.pricing.promisesTitle}</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        {d.pricing.promises.map((pr) => (
-          <div class="bg-white border border-line rounded-2xl p-6 flex flex-col gap-2">
-            <div class="flex items-center gap-2 font-semibold text-[15px]">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 12l4 4L19 6"/></svg>
-              {pr.t}
-            </div>
-            <p class="text-[13px] text-ink-soft leading-[1.55] m-0">{pr.d}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-    <p class="text-center text-[13px] text-muted mt-8">
-      {d.pricing.note}
-    </p>
   </div>
 </section>

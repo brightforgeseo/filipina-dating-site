@@ -5,25 +5,25 @@ import type { Dict } from './en';
 export const ceb: Dict = {
   meta: {
     home: {
-      title: 'FilWest — Verified nga Filipino-Western Dating para sa Tinuod nga Relasyon',
-      desc: 'Ang FilWest mao ang dapit diin ang mga Filipina ug Western nga lalaki magtukod og tinuod nga relasyon. Verified nga profile, pasidaan batok sa scam sa matag chat, libre nga EN–Tagalog nga translation, ug video call sa dili pa mopalit og ticket.',
+      title: 'Filipino-Western Dating para sa Seryosong Relasyon | FilWest',
+      desc: 'Nagtukod kami sa FilWest para sa mga Filipina ug lalaking Kasadpan nga nangita og seryosong relasyon. Basaha ang among mga giya ug plano sa pribadong pagsulay.',
     },
     pricing: {
-      title: 'Presyo — FilWest',
-      desc: 'Presyo sa FilWest: libre para sa mga babaye gikan sa Pilipinas, patas nga plan para sa uban. Walay tinago nga bayad, kanselaha bisan kanus-a.',
+      title: 'Presyo ug Access | FilWest',
+      desc: 'Basaha ang among plano sa pribadong pagsulay ug mga kinahanglan kumpirmahon sa dili pa magtanyag og bayranang access. Walay gibaligyang subscription dinhi.',
     },
     safety: {
-      title: 'Kaluwasan — FilWest',
-      desc: 'Giunsa pagpabilin sa FilWest nga luwas ang long-distance dating: identity verification, video call sa dili pa magkita, ug team nga mosusi sa matag report.',
+      title: 'Kaluwasan sa Dating | FilWest',
+      desc: 'Mga pag-amping sa Filipino-Western dating: panalipdi ang personal nga impormasyon, pagtakda og utlanan sa kwarta ug lihok kung adunay kadudahan.',
     },
     login: { title: 'Pag-log in — FilWest', desc: 'Pag-log in sa FilWest. Nagahulat ang imong mga mensahe ug match.' },
-    signup: { title: 'Pag-sign up — FilWest', desc: 'Paghimo og FilWest account sa duha ka lakang. Libre para sa mga babaye gikan sa Pilipinas, kanunay.' },
+    signup: { title: 'Paghimo og Account | FilWest', desc: 'Paghimo og FilWest account. Basaha una ang impormasyon sa access sa dili pa mopaambit og personal nga detalye.' },
   },
 
   nav: {
     how: 'Giunsa kini',
     safety: 'Kaluwasan',
-    stories: 'Mga istorya',
+    stories: "Among pamaagi",
     pricing: 'Presyo',
     app: 'Kuhaa ang app',
     login: 'Pag-log in',
@@ -31,82 +31,142 @@ export const ceb: Dict = {
   },
 
   footer: {
-    tagline: 'Dating para sa mga Filipina ug sa mga tawong nahigugma kanila. Parehas nga profile, parehas nga mensahe — sa web ug sa app.',
-    freeChip: 'Libre para sa mga Filipina',
-    product: 'Produkto',
-    company: 'Kompanya',
-    legal: 'Legal',
-    aboutSafety: 'Bahin sa kaluwasan',
-    guides: 'Mga giya sa dating',
-    contact: 'Kontaka kami',
-    terms: 'Mga Termino',
-    privacy: 'Privacy',
-    community: 'Mga lagda sa komunidad',
+    "tagline": "Nagtukod kami og dapit para sa mga Filipina ug lalaking Kasadpan nga nangita og seryosong relasyon tali sa lainlaing kultura.",
+    "freeChip": "Nag-andam para sa pribadong pagsulay",
+    "product": "Produkto",
+    "company": "Kompanya",
+    "legal": "Legal",
+    "aboutSafety": "Bahin sa kaluwasan",
+    "guides": "Mga giya sa dating",
+    "contact": "Kontaka kami",
+    "terms": "Mga Termino",
+    "privacy": "Privacy",
+    "community": "Mga lagda sa komunidad"
   },
 
   hero: {
-    chip: 'Sa iOS, Android, ug web',
-    line1: 'Verified nga profile.',
-    line2: 'Matinud-anon nga tuyo.',
-    line3: 'Tinuod nga gugma.',
-    body: 'Ang FilWest mao ang dapit diin ang mga Filipina ug Western nga lalaki magtukod og tinuod nga relasyon. ID-verified nga badge, pasidaan batok sa scam sa matag chat, libre nga translation sa English ug Tagalog, ug video call sa dili pa mopalit og ticket si bisan kinsa.',
-    ctaSignup: 'Pag-sign up nga libre',
-    ctaHow: 'Tan-awa giunsa kini',
-    freeNote: 'Libre para sa mga babaye gikan sa Pilipinas. Kanunay.',
-    verified: 'Verified',
-    phoneBio: '"Maestra, hilig og kape, pamilya una. Nangita ko og pamati nga murag naa sa balay."',
-    matchTitle: 'Naa kay match!',
-    matchSub: 'Ikaw ug si Mariel',
-    idVerifiedTitle: 'ID verified',
-    idVerifiedSub: 'Pangitaa ang badge',
+    "chip": "Nag-andam para sa pribadong pagsulay",
+    "line1": "Klarong tuyo.",
+    "line2": "Duha ka kultura.",
+    "line3": "Tinuod nga koneksyon.",
+    "body": "Alang sa mga Filipina ug lalaking Kasadpan nga nangita og seryosong relasyon. Giandam namo ang pribadong pagsulay sa profile, pagpares, panag-istorya ug kaluwasan.",
+    "ctaSignup": "Paghimo og account",
+    "ctaHow": "Tan-awa giunsa kini",
+    "freeNote": "Nagpadayon pa ang pagsusi sa mga feature ug platform.",
+    "verified": "Verified",
+    "phoneBio": "\"Maestra, hilig og kape, pamilya una. Nangita ko og pamati nga murag naa sa balay.\"",
+    "matchTitle": "Naa kay match!",
+    "matchSub": "Ikaw ug si Mariel",
+    "idVerifiedTitle": "ID verified",
+    "idVerifiedSub": "Pangitaa ang badge"
   },
 
   features: [
-    { big: 'ID + selfie', small: 'Verification badge nga gisusi sa tawo' },
-    { big: 'EN · TL', small: 'Libre nga tap-to-translate sa chat' },
-    { big: 'Libre', small: 'Para sa mga babaye gikan sa Pilipinas' },
-    { big: 'iOS · Web', small: 'Usa ka account, bisan unsang device' },
+    {
+      "big": "Tuyo",
+      "small": "Hisgoti ang importante"
+    },
+    {
+      "big": "Kultura",
+      "small": "Tahora ang gigikanan"
+    },
+    {
+      "big": "Pagsalig",
+      "small": "Ilha una ang usag usa"
+    },
+    {
+      "big": "Pribadong pagsulay",
+      "small": "Sulayi una ang mga batakang gamit"
+    }
   ],
 
   how: {
-    eyebrow: 'Giunsa paglihok ang FilWest',
-    title: 'Upat ka lakang gikan sa "hello" hangtod sa personal nga panagkita.',
-    steps: [
-      { title: 'Paghimo og profile', body: 'Pag-sign up nga libre sa duha ka lakang. Dayon pagpa-verify — government ID ug live selfie nga gisusi sa tinuod nga tawo — aron makuha ang imong badge.' },
-      { title: 'Pag-swipe ug pag-match', body: 'Tan-awa ang mga tinuod nga tawo duol nimo ug sa abroad. Kung nagustohan ninyo ang usag-usa, match na!' },
-      { title: 'Pag-chat ug pag-translate', body: 'Pagpadala og mensahe, photo, ug video. I-tap ang bisan unsang mensahe aron ma-translate tali sa English ug Tagalog — libre para sa tanan.' },
-      { title: 'Pag-video call kung andam na', body: 'Magkita nga nawong sa nawong pinaagi sa encrypted video call sa dili pa magplano og biyahe. Walay dinalian, walay pressure.' },
-    ],
+    "eyebrow": "Giunsa paglihok ang FilWest",
+    "title": "Sugdi sa matinud-anong panag-istorya.",
+    "steps": [
+      {
+        "title": "Isulti ang imong tuyo",
+        "body": "Klaroha ang relasyong imong gusto ug ang gilay-on nga kaya nimong atubangon."
+      },
+      {
+        "title": "Ilha ang usag usa",
+        "body": "Pangutana bahin sa kinabuhi, pamilya ug mga plano."
+      },
+      {
+        "title": "Tahora ang kaugalingong dagan",
+        "body": "Walay obligasyong mohatag og litrato, kwarta, atensyon o pakigkita."
+      },
+      {
+        "title": "Planoha ang luwas nga pagkita",
+        "body": "Pagpili og publikong lugar, pahibalo sa kasaligan ug ayoha ang kaugalingong biyahe."
+      }
+    ]
   },
 
   safety: {
-    eyebrow: 'Kaluwasan',
-    title: 'Luwas sukad sa sinugdanan.',
-    body: 'Molihok ra ang long-distance dating kung luwas ang gibati sa tanan. Ingon ana gitukod ang FilWest — sugod sa adlaw sa imong pag-sign up, dili kung naa nay nahitabo nga daotan.',
-    items: [
-      { t: 'Verification gamit ang ID ug selfie', d: 'Mahimong magpa-verify ang mga member gamit ang government ID ug live selfie nga gisusi sa tinuod nga tawo. Ang mga naaprubahan adunay verified badge — pangitaa kini sa dili pa ka ma-attach.' },
-      { t: 'Naay built-in nga video call', d: 'Encrypted video call diretso sa app, aron magkita mo nga nawong sa nawong sa dili pa magplano og biyahe. Walay molupad nga nagpiyong.' },
-      { t: 'Bawal mangayo og kwarta', d: 'Awtomatikong gi-flag ang mga paghisgot og wire transfer, gift card, o padala aron susihon sa tawo. Gi-ban ang mga molapas.' },
-      { t: 'Paspas nga pag-report ug pag-block', d: 'Usa ka tap ra, blocked na ang user bisan asa, sa duha ka direksyon. Gisusi sa tinuod nga tawo ang mga report — dili pila nga walay kataposan.' },
+    "eyebrow": "Kaluwasan",
+    "title": "Labaw sa badge ang pagsalig.",
+    "body": "Walay dating service nga makagarantiya sa identidad o tuyo sa usa ka tawo. Panalipdi ang imong mga limitasyon.",
+    "items": [
+      {
+        "t": "Usa lang ka timailhan ang badge",
+        "d": "Dili kini garantiya sa batasan o kaluwasan. Ayaw pagsalig sa label lang."
+      },
+      {
+        "t": "Ayaw pagpadala og kwarta sa ka-match",
+        "d": "Pagbantay sa hangyo alang sa padala, gift card, investment o emergency."
+      },
+      {
+        "t": "Panalipdi ang personal nga impormasyon",
+        "d": "Ayaw ipaambit sa ka-match ang ID, detalye sa bangko, password o adres."
+      },
+      {
+        "t": "Hunong kon adunay sayop",
+        "d": "Tipigi ang ebidensya ug gamita ang anaa nga pagreport. Sa diha-diha nga peligro, tawag sa lokal nga emergency services."
+      }
     ],
-    panelTitle: 'Verification · live',
-    rows: [
-      { label: 'Government ID', value: 'Pasaporte · verified' },
-      { label: 'Live selfie check', value: 'Match score 99.2%' },
-      { label: 'Numero sa telepono', value: '+63 9•• ••• 4421' },
-      { label: 'Edad sa account', value: '6 ka bulan · consistent' },
-    ],
+    "panelTitle": "Sa dili pa mosalig sa usa ka profile",
+    "rows": [
+      {
+        "label": "Pagkatawo",
+        "value": "Ang badge usa ka timailhan, dili garantiya."
+      },
+      {
+        "label": "Kwarta",
+        "value": "Ayaw pagpadala og kwarta sa imong ka-match."
+      },
+      {
+        "label": "Panahon",
+        "value": "Tukora ang pagsalig pinaagi sa makanunayong panag-istorya."
+      },
+      {
+        "label": "Panagkita",
+        "value": "Pakigkita sa publikong lugar ug ipahibalo ang plano sa imong kaila."
+      }
+    ]
   },
 
   stories: {
-    eyebrow: 'Gikan sa mga member',
-    title: 'Mga couple nga dinhi nagsugod.',
-    items: [
-      { quote: 'Nag-sign up ko sa laptop, gihuman ang akong profile sa app samtang naa sa train, ug nakabaton og unang tinuod nga istoryahanay nianang gabhiona. Parehas nga account, walay kahasol.', name: 'David', meta: 'Austin · na-match kang Mariel, Cebu' },
-      { quote: 'Ang ID check maoy naghatag nako og kompiyansa. Ang tanan nakong match tinuod nga tawo — walay peke, walay mag-usik sa oras.', name: 'Marcus', meta: 'London · na-match kang Angeline, Davao' },
-      { quote: 'Giusab sa translation button kung giunsa nako pakig-istorya niya. Masulti nako ang tinuod nakong buot ipasabot ug mabasa gihapon niya kini sa English.', name: 'Rhea', meta: 'Iloilo · na-match kang Tom, Vancouver' },
-    ],
-  },
+    "eyebrow": "Among pamaagi",
+    "title": "Mas maayong sinugdanan sa tinuod nga panag-istorya.",
+    "items": [
+        {
+            "quote": "Isulti ang imong gipangita sa relasyon. Hisgoti ang pamilya, distansya ug mga plano sa dili pa mosaad.",
+            "name": "Sugdi sa imong tuyo",
+            "meta": "Among pamaagi"
+        },
+        {
+            "quote": "Pangutana imbes maghunahuna nga kahibalo ka na. Hisgoti ang pinulongan, tradisyon ug mga gilaoman.",
+            "name": "Tahora ang duha ka kultura",
+            "meta": "Among pamaagi"
+        },
+        {
+            "quote": "Wala kay obligasyon nga mohatag og kwarta, hulagway o pakigkita. Ayaw pagdali ug hunong kung adunay dili maayo.",
+            "name": "Hupti ang imong mga utlanan",
+            "meta": "Among pamaagi"
+        }
+    ]
+},
 
   pricing: {
     eyebrow: 'Presyo',
@@ -145,51 +205,76 @@ export const ceb: Dict = {
   },
 
   different: {
-    eyebrow: 'Ngano FilWest',
-    title: 'Dili basta usa pa ka dating app.',
-    items: [
-      { t: 'Dili database sa patay nga mga profile', d: 'Awtomatikong gitago ang dili aktibo nga mga profile. Ang imong makita sa Discover mga tawong tinuod nga ania.' },
-      { t: 'Dili dula sa swipe', d: 'Ang mga profile gitukod palibot sa tuyo — kaminyoon, long-term nga plano, timeline sa panagkita — dili lang mga photo.' },
-      { t: 'Walay credit traps', d: 'Walay coins, walay bayad matag mensahe. Usa ka simple nga subscription para sa mga partner sa abroad; dili gyud mobayad ang mga Filipina.' },
-      { t: 'Walay pressure nga mobiya sa platform', d: 'Ang messaging, photo, ug video magpabilin sulod sa FilWest, diin panalipdan ka sa blocking, reporting, ug pasidaan batok sa scam.' },
-      { t: 'Gihimo para sa Filipino-Western nga gugma', d: 'Adunay built-in nga Tagalog ug Cebuano, gitahod ang kulturang pamilya-una, ug gidesinyo para sa distansya tali sa Manila ug Manchester.' },
-    ],
+    "eyebrow": "Ngano FilWest",
+    "title": "Alang sa seryosong tuyo.",
+    "items": [
+      {
+        "t": "Klarong komunidad",
+        "d": "Alang sa mga Filipina ug Kasadpang partner nga nangita og malungtarong relasyon."
+      },
+      {
+        "t": "Apil ang kultura",
+        "d": "Hisgoti ang pamilya, pinulongan ug tradisyon."
+      },
+      {
+        "t": "Kinahanglan og plano ang gilay-on",
+        "d": "Hisgoti ang biyahe, pagbalhin ug panahon una mosaad."
+      },
+      {
+        "t": "Pagrespeto una",
+        "d": "Walay katungod ang uban sa imong oras, litrato o kwarta."
+      },
+      {
+        "t": "Sulayi una mosaad",
+        "d": "Ang pribadong pagsulay maoy una sa mas lapad nga pagpagawas."
+      }
+    ]
   },
 
   pricingPage: { eyebrow: 'Presyo', h1a: 'Patas nga presyo.', h1b: 'Matinud-anon nga tuyo.' },
 
   safetyPage: {
-    eyebrow: 'Safety center',
-    h1a: 'Kaluwasan una,',
-    h1b: 'sa matag lakang.',
-    intro: 'Molihok ra ang long-distance dating kung luwas ang gibati sa tanan. Pagpa-verify gamit ang government ID ug live selfie aron makuha ang imong badge, magkita nga nawong sa nawong pinaagi sa encrypted video call sa dili pa magplano og biyahe, ug pasagdi nga awtomatikong i-flag sa among mga sistema ang pagpangayo og kwarta aron susihon sa tawo.',
-    howTitle: 'Giunsa ka panalipdan sa FilWest',
-    how: [
-      { t: 'Paglikay sa peke nga profile', d: 'Kinahanglan i-verify sa matag account ang email sa dili pa gamiton ang FilWest, ug mahimong magpa-verify ang mga member gamit ang government ID ug live selfie sa app. Awtomatikong gitangtang sa Discover ang dili aktibo ug dili kompleto nga mga profile.' },
-      { t: 'Supak sa lagda ang pagpangayo og kwarta', d: 'Ang pagpangayo og kwarta, gift card, o padala sa mga member rason aron ma-ban. Awtomatikong magpakita og pasidaan ang chat kung adunay paghisgot og pagbalhin og kwarta, ug usa ka tap ra ang pag-report.' },
-      { t: 'Unsa ang mahitabo kung mo-report ka', d: 'Direkta nga moadto ang mga report sa among review queue uban ang ebidensya sa mensahe. Dili gyud mahibaloan sa gi-report kung kinsa ang nag-report, ug gi-ban ang balik-balik nga molapas.' },
-      { t: 'Video sa dili pa molupad', d: 'Magkita nga nawong sa nawong sa video call sa app sa dili pa magplano og bisan unsang biyahe. Ang tawong kanunay adunay rason aron likayan ang video usa ka red flag.' },
-      { t: 'Para sa mga lalaki sa abroad', d: 'Ayaw gyud pagpadala og kwarta sa tawong wala pa nimo maila og personal — bisan unsa pa ang istorya. Masabtan kini sa tinuod nga partner. Ipabilin ang istoryahanay sulod sa FilWest diin panalipdan ka sa mga pasidaan ug pag-report.' },
-      { t: 'Para sa mga Filipina', d: 'Wala kay utang nga photo, video, o atensyon kang bisan kinsa tungod lang kay aduna silay subscription. I-block ug i-report si bisan kinsa nga mamugos — kompidensyal kini, ug dili na gyud nimo sila makita pag-usab.' },
-    ],
+    "eyebrow": "Safety center",
+    "h1a": "Kaluwasan una,",
+    "h1b": "sa matag lakang.",
+    "intro": "Importante ang pag-amping bisan asa kamo nagkaila. Nagpadayon pa ang pagsusi sa pribadong pagsulay; dili kini saad sa padayon nga pagbantay.",
+    "howTitle": "Praktikal nga kaluwasan sa pag-date",
+    "how": [
+      {
+        "t": "Usa lang ka timailhan ang badge",
+        "d": "Dili kini garantiya sa batasan o kaluwasan. Ayaw pagsalig sa label lang."
+      },
+      {
+        "t": "Ayaw pagpadala og kwarta sa ka-match",
+        "d": "Pagbantay sa hangyo alang sa padala, gift card, investment o emergency."
+      },
+      {
+        "t": "Panalipdi ang personal nga impormasyon",
+        "d": "Ayaw ipaambit sa ka-match ang ID, detalye sa bangko, password o adres."
+      },
+      {
+        "t": "Hunong kon adunay sayop",
+        "d": "Tipigi ang ebidensya ug gamita ang anaa nga pagreport. Sa diha-diha nga peligro, tawag sa lokal nga emergency services."
+      }
+    ]
   },
 
   showcase: {
-    eyebrow: 'I-download',
-    title: 'Kauban nimo ang FilWest bisan asa.',
-    body: 'Usa ra ang account sa app ug sa website. Sugdi ang istoryahanay sa laptop, ipadayon sa phone. Walay syncing, walay balik-balik nga pag-log in.',
-    bullets: [
-      'Push notification para sa bag-ong match, mensahe, ug Super Like',
-      'Tap-to-translate sa chat, EN ↔ Tagalog — libre para sa tanan',
-      'Encrypted nga video call, diretso sa app',
-      'Tan-awa kinsa ang nag-like nimo ug i-like balik dayon, sa Plus',
+    "eyebrow": "I-download",
+    "title": "Web ug app, dungan nga sulayan.",
+    "body": "Tumong namo ang managsamang kasinatian sa website ug app. Kinahanglan pa ang pagsusi una sa mas lapad nga pagpagawas.",
+    "bullets": [
+      "Pokus: profile ug pagpares",
+      "Susihon ang panag-istorya sa apil nga platform",
+      "Susihon ang block, report ug verification",
+      "Walay gikumpirmang petsa o native app availability dinhi"
     ],
-    webCta: 'Gamita sa web →',
-    online: 'Online',
-    translated: 'gihubad: have you eaten yet?',
-    msg2: 'Bag-o lang ko nahuman og pamahaw 🍳',
-    msg3: 'Libre ko karong weekend kung gusto nimo mag-video call',
-    typeMessage: 'Pag-type og mensahe…',
+    "webCta": "Gamita sa web →",
+    "online": "Online",
+    "translated": "gihubad: have you eaten yet?",
+    "msg2": "Bag-o lang ko nahuman og pamahaw 🍳",
+    "msg3": "Libre ko karong weekend kung gusto nimo mag-video call",
+    "typeMessage": "Pag-type og mensahe…"
   },
 
   auth: {
@@ -216,16 +301,16 @@ export const ceb: Dict = {
       remembered: 'Nahinumdoman na?',
       backToLogin: 'Balik sa pag-log in',
       chipVerified: 'ID-verified nga badge',
-      chipCountries: '38 ka nasod',
-      panelQuote: '"Nagkaila mi usa ka Martes. Paglabay sa unom ka bulan, nakaila na ko sa iyang pamilya sa Cebu."',
-      panelName: 'David, 41',
-      panelMeta: 'Austin · member sukad \'24',
+      chipCountries: "Pag-ila sa laing kultura",
+      panelQuote: "Ayaw pagdali. Pangutana og tarong. Hupti ang imong mga utlanan.",
+      panelName: "FilWest",
+      panelMeta: "Giya sa dating, dili testimonya sa member",
     },
     signup: {
       stepOf: (n: number) => `Lakang ${n} sa 2`,
       title1: 'Paghimo og account.',
       title2: 'Isulti bahin nimo.',
-      sub1: 'Libre para sa mga babaye gikan sa Pilipinas. Kanunay.',
+      sub1: 'Ang paghimo og account dili pagpalit og subscription. Basaha una ang impormasyon sa presyo ug access.',
       sub2: 'Pipila ka detalye aron mapakita namo nimo ang mga tinuod nga match.',
       firstName: 'Pangalan',
       email: 'Email',

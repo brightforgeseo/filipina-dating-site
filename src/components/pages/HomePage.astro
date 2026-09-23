@@ -3,6 +3,7 @@ import Site from '../../layouts/Site.astro';
 import Hero from '../marketing/Hero.astro';
 import FeatureBar from '../marketing/FeatureBar.astro';
 import HowItWorks from '../marketing/HowItWorks.astro';
+import SeoIntro from '../marketing/SeoIntro.astro';
 import Safety from '../marketing/Safety.astro';
 import Testimonials from '../marketing/Testimonials.astro';
 import Different from '../marketing/Different.astro';
@@ -17,6 +18,7 @@ const d = t(lang);
   <Hero lang={lang} />
   <FeatureBar lang={lang} />
   <HowItWorks lang={lang} />
+  {lang === 'en' && <SeoIntro />}
   <Safety lang={lang} />
   <Testimonials lang={lang} />
   <Different lang={lang} />

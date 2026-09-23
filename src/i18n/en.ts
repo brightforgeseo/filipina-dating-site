@@ -3,8 +3,8 @@
 export const en = {
   meta: {
     home: {
-      title: 'Filipina Dating Site for Serious Relationships | FilWest',
-      desc: 'We are building FilWest for Filipinas and Western men seeking serious relationships. Explore our approach, dating guidance and private-test plans.',
+      title: 'Filipina Dating Site & App for Serious Relationships | FilWest',
+      desc: 'Meet Filipina singles and Western partners seeking serious relationships. Explore FilWest dating guidance, safety information and private-test plans.',
     },
     pricing: {
       title: 'Pricing and Access | FilWest',

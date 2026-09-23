@@ -1,10 +1,10 @@
 const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');const ts=require('typescript');
 const root=path.resolve(__dirname,'..');
-test('guide hub groups all twelve local article owners and homepage links to useful decision pages',()=>{
+test('guide hub groups all nineteen local article owners and homepage links to useful decision pages',()=>{
  const hub=fs.readFileSync(path.join(root,'dist/guides/index.html'),'utf8');
- for(const group of ['Choose Your Next Step','Culture and Expectations','Conversations and Safety','Your First Meeting']) assert.ok(hub.includes(group),group);
+ for(const group of ['Choose Your Next Step','Choosing a Dating Site','Culture and Expectations','Conversations and Safety','Distance and Communication','Your First Meeting']) assert.ok(hub.includes(group),group);
  const owners=[...hub.matchAll(/href="(\/guides\/[^"#?]+)"/g)].map(m=>m[1]);
- assert.equal(new Set(owners).size,12);
+ assert.equal(new Set(owners).size,19);
  for(const owner of owners) assert.ok(fs.existsSync(path.join(root,'dist',owner,'index.html')),owner);
  const home=fs.readFileSync(path.join(root,'dist/index.html'),'utf8');
  assert.match(home,/data-home-decisions/);
@@ -30,7 +30,7 @@ test('safety adds layered video caution and an off-platform reporting route with
 });
 function dict(lang){const output={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(root,`src/i18n/${lang}.ts`),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:output});return output[lang];}
 test('English homepage owns the category and includes men abroad without fake product proof',()=>{
- const d=dict('en'); assert.match(d.meta.home.title,/Filipina Dating Site/);
+ const d=dict('en'); assert.match(d.meta.home.title,/Filipina Dating Site & App/);
  assert.match([d.hero.line1,d.hero.line2,d.hero.line3].join(' '),/Filipina dating/i);
  assert.match(d.hero.body,/US/);assert.match(d.hero.body,/UK/);assert.match(d.hero.body,/Australia/);
 });

@@ -12,7 +12,7 @@ const { base } = parsePath(Astro.url.pathname);
 const switchBase = LOCALIZED_PATHS.includes(base) ? base : '/';
 ---
 <nav class="sticky top-0 z-50 backdrop-blur-xl border-b border-line" style="background: rgba(255,245,247,0.88)">
-  <div class="max-w-[1240px] mx-auto px-8 h-[68px] flex items-center justify-between max-md:px-4">
+  <div class="max-w-[1240px] mx-auto px-8 min-h-[68px] flex items-center justify-between max-md:px-4 max-sm:flex-wrap max-sm:gap-2 max-sm:py-3">
     <a href={l('/')} class="flex items-center gap-2.5 font-display text-[22px] font-bold tracking-[-0.02em] text-ink">
       <LogoMark />
       FilWest
@@ -35,8 +35,8 @@ const switchBase = LOCALIZED_PATHS.includes(base) ? base : '/';
         <option value="ceb" selected={lang === 'ceb'}>CEB</option>
       </select>
       <a href={l('/login')} class="btn btn-ghost btn-sm">{d.nav.login}</a>
-      <a href={l('/signup')} class="btn btn-primary btn-sm">
-        {d.nav.signup}
+      <a href="/#launch-list" class="btn btn-primary btn-sm">
+        {lang === 'en' ? 'Join launch list' : 'Launch list (EN)'}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </a>
     </div>

@@ -4,7 +4,7 @@ export const en = {
   meta: {
     home: {
       title: 'Filipina Dating Site & App for Serious Relationships | FilWest',
-      desc: 'Meet Filipina singles and Western partners seeking serious relationships. Explore FilWest dating guidance, safety information and private-test plans.',
+      desc: 'FilWest is a Filipina dating site and app in development for serious relationships. Join our launch email list and explore Filipino-Western dating guides.',
     },
     pricing: {
       title: 'Pricing and Access | FilWest',
@@ -23,7 +23,7 @@ export const en = {
     safety: 'Safety',
     stories: "Our approach",
     pricing: 'Pricing',
-    app: 'Get the app',
+    app: 'App preview',
     login: 'Log in',
     signup: 'Sign up',
   },
@@ -45,7 +45,7 @@ export const en = {
   hero: {
     "chip": "Preparing a private test",
     "line1": "Filipina",
-    "line2": "dating.",
+    "line2": "dating site.",
     "line3": "Real intent.",
     "body": "We are building FilWest for Filipinas and men abroad seeking a serious relationship, whether you are in the US, UK or Australia. We are preparing a private test before a wider release.",
     "ctaSignup": "Create an account",

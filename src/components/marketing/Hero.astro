@@ -8,7 +8,7 @@ const l = (p: string) => localizePath(p, lang);
   <div class="absolute -top-20 -right-20 w-[520px] h-[520px] rounded-full opacity-40" style="background: radial-gradient(closest-side, var(--blush), transparent)"></div>
   <div class="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full opacity-30" style="background: radial-gradient(closest-side, var(--ivory-2), transparent)"></div>
 
-  <div class="max-w-[1240px] mx-auto px-8 grid md:grid-cols-[1.1fr_1fr] gap-16 items-center relative">
+  <div class="max-w-[1240px] mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-[1.1fr_1fr] gap-16 items-center relative">
     <div>
       <div class="chip chip-coral">
         <span class="w-1.5 h-1.5 rounded-full" style="background: var(--coral)"></span>
@@ -23,7 +23,7 @@ const l = (p: string) => localizePath(p, lang);
         {d.hero.body}
       </p>
       <div class="mt-8 flex gap-3 items-center flex-wrap">
-        <a href={l('/signup')} class="btn btn-primary btn-lg">{d.hero.ctaSignup} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        <a href="/#launch-list" class="btn btn-primary btn-lg">{lang === 'en' ? 'Join the launch list' : 'Join launch list (English)'} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
         <a href={l('/#how')} class="btn btn-ghost btn-lg">{d.hero.ctaHow}</a>
       </div>
       <div class="mt-8 text-xs text-muted">{d.hero.freeNote}</div>
@@ -38,7 +38,7 @@ const l = (p: string) => localizePath(p, lang);
 
     <div class="relative h-[540px] flex items-center justify-center">
       <p data-profile-illustration class="absolute -top-7 inset-x-0 text-center text-xs text-muted">{{en: 'Example profile, not a real member', tl: 'Halimbawang profile, hindi totoong member', ceb: 'Pananglitan nga profile, dili tinuod nga member'}[lang]}</p>
-      <div class="relative w-[300px] h-[520px] rounded-[44px] p-3" style="background: #1F1419; box-shadow: 0 30px 80px rgba(255,20,147,0.25)">
+      <div class="relative w-[300px] max-w-full h-[520px] rounded-[44px] p-3" style="background: #1F1419; box-shadow: 0 30px 80px rgba(255,20,147,0.25)">
         <div class="w-full h-full rounded-[34px] overflow-hidden relative" style="background: linear-gradient(160deg, #FFDEE9, #FFB6C1)">
           <div class="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-5 rounded-full bg-black/80"></div>
           <div class="absolute top-10 left-5 right-5 flex gap-1">

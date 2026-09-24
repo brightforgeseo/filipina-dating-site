@@ -1,0 +1,37 @@
+---
+// Netlify detects this static form at deploy time. Enable Forms before publication.
+---
+<section id="launch-list" class="px-5 pb-20 scroll-mt-24" aria-labelledby="launch-title">
+  <div class="max-w-[900px] mx-auto rounded-[28px] border border-line bg-white p-6 md:p-12">
+    <p class="eyebrow">Coming soon</p>
+    <h2 id="launch-title" class="heading-1 mt-3 mb-4" style="font-size: clamp(28px, 4vw, 44px); line-height: 1.15">Be there when FilWest opens.</h2>
+    <p class="text-ink-soft leading-relaxed mb-6">We are building a Filipina dating site and app for serious Filipino-Western relationships. Join our launch email list and we will let you know when you can start. No account, payment or identity documents needed.</p>
+    <form name="filwest-launch" method="POST" action="/launch-list-thanks" data-netlify="true" netlify-honeypot="company-website">
+      <input type="hidden" name="form-name" value="filwest-launch" />
+      <input type="hidden" name="consent-version" value="launch-2026-09-24" />
+      <p hidden><label>Leave this blank <input name="company-website" tabindex="-1" autocomplete="off" /></label></p>
+      <label for="launch-email" class="block font-semibold mb-2">Email address</label>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input id="launch-email" name="email" type="email" autocomplete="email" maxlength="254" required class="min-w-0 flex-1 border border-line rounded-xl px-4 py-3 bg-white text-ink focus:outline-2 focus:outline-coral" placeholder="you@example.com" aria-describedby="launch-privacy" />
+        <button type="submit" class="btn btn-primary">Notify me at launch</button>
+      </div>
+      <label class="flex items-start gap-3 mt-5 text-sm leading-relaxed text-ink-soft">
+        <input type="checkbox" name="launch-consent" value="yes" required class="mt-1 shrink-0" />
+        <span>I am 18 or over and agree to receive emails about FilWest's launch and access availability.</span>
+      </label>
+      <p id="launch-privacy" class="mt-4 text-sm text-muted">We will use your email for these updates, not create a dating profile. You can leave the list by emailing <a class="underline" href="mailto:support@filipinawest.com?subject=Remove%20me%20from%20the%20launch%20list">support@filipinawest.com</a>. Read our <a class="underline" href="/privacy#launch-list-privacy">privacy notice</a>. A launch date has not been announced.</p>
+      <p data-local-notice hidden class="mt-4 text-sm text-ink-soft" role="status">Preview only: email collection is not connected here. No address has been submitted.</p>
+    </form>
+  </div>
+</section>
+<script>
+  // Never simulate successful collection on a local preview.
+  const form = document.querySelector<HTMLFormElement>('form[name="filwest-launch"]');
+  if (form && ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const notice = form.querySelector<HTMLElement>('[data-local-notice]');
+      if (notice) notice.hidden = false;
+    });
+  }
+</script>

@@ -1,6 +1,7 @@
 ---
 import Site from '../../layouts/Site.astro';
 import Hero from '../marketing/Hero.astro';
+import LaunchList from '../marketing/LaunchList.astro';
 import FeatureBar from '../marketing/FeatureBar.astro';
 import HowItWorks from '../marketing/HowItWorks.astro';
 import SeoIntro from '../marketing/SeoIntro.astro';
@@ -16,6 +17,7 @@ const d = t(lang);
 ---
 <Site title={d.meta.home.title} description={d.meta.home.desc} lang={lang}>
   <Hero lang={lang} />
+  {lang === 'en' && <LaunchList />}
   <FeatureBar lang={lang} />
   <HowItWorks lang={lang} />
   {lang === 'en' && <SeoIntro />}

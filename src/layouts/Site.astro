@@ -18,7 +18,7 @@ const canonical = new URL(preferredPath, Astro.site);
 // hreflang alternates only for pages that actually exist in all languages.
 const { base } = parsePath(preferredPath);
 // Forms and account utilities are not acquisition pages. Let crawlers see noindex.
-const noindex = ['/login', '/signup', '/search', '/admin', '/verify', '/404'].includes(base);
+const noindex = ['/login', '/signup', '/search', '/admin', '/verify', '/404', '/launch-list-thanks'].includes(base);
 const localized = LOCALIZED_PATHS.includes(base);
 const alternates = localized
   ? (['en', 'tl', 'ceb'] as Lang[]).map((code) => ({

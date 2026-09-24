@@ -9,8 +9,8 @@ const playStoreUrl = import.meta.env.PUBLIC_PLAY_STORE_URL;
 ---
 <section id="app" class="pb-24">
   <div class="max-w-[1240px] mx-auto px-8">
-    <div class="rounded-[28px] px-10 md:px-16 py-16 md:py-20 overflow-hidden relative" style="background: linear-gradient(180deg, var(--ivory-2), var(--blush))">
-      <div class="grid md:grid-cols-[1fr_1.1fr] gap-12 items-center">
+    <div class="rounded-[28px] px-5 md:px-16 py-16 md:py-20 overflow-hidden relative" style="background: linear-gradient(180deg, var(--ivory-2), var(--blush))">
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_1.1fr] gap-12 items-center">
         <div>
           <div class="eyebrow">{d.showcase.eyebrow}</div>
           <h2 class="heading-1 my-4" style="font-size: clamp(36px, 5vw, 54px)">{d.showcase.title}</h2>
@@ -38,7 +38,7 @@ const playStoreUrl = import.meta.env.PUBLIC_PLAY_STORE_URL;
                 <div class="text-left leading-tight"><div class="text-[10px] opacity-80">Get it on</div><div>Google Play</div></div>
               </a>
             )}
-            <a href={localizePath('/signup', lang)} class="btn btn-primary">{d.showcase.webCta}</a>
+            <a href="/#launch-list" class="btn btn-primary">{lang === 'en' ? 'Get launch updates' : 'Launch updates (English)'}</a>
           </div>
         </div>
 

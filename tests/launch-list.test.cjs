@@ -4,9 +4,9 @@ const fs = require('node:fs');
 const read = path => fs.readFileSync(path, 'utf8');
 test('static launch form declares Netlify capture and minimal explicit consent', () => {
   const html = read('dist/index.html');
-  assert.match(html, /name="filwest-launch" method="POST" action="\/launch-list-thanks" data-netlify="true"/);
+  assert.match(html, /name="filwest-launch" method="POST" action="\/\.netlify\/functions\/launch-list"/);
   assert.match(html, /name="form-name" value="filwest-launch"/);
-  assert.match(html, /netlify-honeypot="company-website"/);
+  assert.match(html, /name="company-website"/);
   assert.match(html, /name="email" type="email"[^>]*required/);
   assert.match(html, /type="checkbox" name="launch-consent" value="yes" required/);
   assert.doesNotMatch(html, /name="launch-consent"[^>]*checked/);
